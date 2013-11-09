@@ -116,7 +116,7 @@ namespace UnusefulPlayer
             }
         }
 
-#region "Events"
+#region Events
 
         protected override void OnPaint(PaintEventArgs e)
         {

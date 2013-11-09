@@ -79,6 +79,7 @@ namespace UnusefulPlayer.PlayerControls
         /// <param name="oldContainerSize">La vecchia dimensione di this</param>
         private void AdjustSizeWithAnchor(PlayerControl control, SizeF oldContainerSize)
         {
+            // FIXME Lasciare che le posizioni e le dimensioni diventino con la virgola?
             var a_left = (control.Anchor & AnchorStyles.Left) == AnchorStyles.Left;
             var a_right = (control.Anchor & AnchorStyles.Right) == AnchorStyles.Right;
             var a_top = (control.Anchor & AnchorStyles.Top) == AnchorStyles.Top;
@@ -141,7 +142,7 @@ namespace UnusefulPlayer.PlayerControls
             return result;
         }
 
-        #region "Events"
+        #region Events
 
         protected override void OnPaint(Graphics g)
         {
