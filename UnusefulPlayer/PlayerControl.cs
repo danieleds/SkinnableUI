@@ -34,10 +34,24 @@ namespace UnusefulPlayer.PlayerControls
             Play,
             [SemanticTypeMeta("Pause", typeof(PlayerControls.Button))]
             Pause,
+            [SemanticTypeMeta("Play/Pause", typeof(PlayerControls.Button))]
+            PlayPause,
             [SemanticTypeMeta("Stop", typeof(PlayerControls.Button))]
             Stop,
+            [SemanticTypeMeta("Back", typeof(PlayerControls.Button))]
+            Back,
+            [SemanticTypeMeta("Forward", typeof(PlayerControls.Button))]
+            Forward,
             [SemanticTypeMeta("Song Progress", typeof(PlayerControls.TrackBar))]
-            SongProgress
+            SongProgress,
+            [SemanticTypeMeta("Current Time", typeof(PlayerControls.Label))]
+            CurrentTime,
+            [SemanticTypeMeta("Total Time", typeof(PlayerControls.Label))]
+            TotalTime,
+            [SemanticTypeMeta("Remaining Time", typeof(PlayerControls.Label))]
+            RemainingTime,
+            [SemanticTypeMeta("Free Text", typeof(PlayerControls.Label))]
+            FreeText
         }
 
         protected PlayerControl(SemanticType controlType)
@@ -45,13 +59,6 @@ namespace UnusefulPlayer.PlayerControls
             this.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.Semantic = controlType;
         }
-
-        // Associa ad un controllo del player (es. Play, Volume) un tipo (es. Button, Slider)
-        /*public struct PlayerControlInstanceInfo
-        {
-            public String Title;
-            public Type InstanceType;
-        }*/
 
         public static SemanticTypeMeta GetPlayerControlInstanceInfo(SemanticType t)
         {
