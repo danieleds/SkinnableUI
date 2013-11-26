@@ -64,6 +64,12 @@ namespace UnusefulPlayer
                 setter(int.Parse(element.GetAttribute(attribute), System.Globalization.NumberFormatInfo.InvariantInfo));
         }
 
+        public static void LoadBoolean(XmlElement element, string attribute, Action<bool> setter)
+        {
+            if (element.HasAttribute(attribute))
+                setter(XmlConvert.ToBoolean(element.GetAttribute(attribute)));
+        }
+
         public static void LoadFloat(XmlElement element, string attribute, Action<float> setter)
         {
             if (element.HasAttribute(attribute))
@@ -102,6 +108,20 @@ namespace UnusefulPlayer
         {
             if (element.HasAttribute(attribute))
                 setter(new System.Drawing.Bitmap(resources[element.GetAttribute(attribute)]));
+        }
+
+
+
+        public static void SetNinePatch(NinePatch p9, string nodeName, Dictionary<string, System.IO.MemoryStream> resources, System.Xml.XmlElement node)
+        {
+            if (p9 != null)
+            {
+                System.IO.MemoryStream m = new System.IO.MemoryStream();
+                p9.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
+                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
+                resources.Add(filename, m);
+                node.SetAttribute(nodeName, filename);
+            }
         }
     }
 }

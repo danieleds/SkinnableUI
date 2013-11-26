@@ -14,23 +14,36 @@ namespace UnusefulPlayer
 {
     public partial class MusicPlayer : Form
     {
-        public MusicPlayer()
-        {
-            InitializeComponent();
-            ResetUI();
-            waveOut = new WaveOut();
-        }
 
         Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>> controls = new Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>>();
-        List<PlayerControls.Button> play;
-        List<PlayerControls.TrackBar> songProgress;
+        List<PlayerControls.Button> play = new List<PlayerControls.Button>();
+        List<PlayerControls.TrackBar> songProgress = new List<PlayerControls.TrackBar>();
 
         Mp3FileReader mp3Reader;
         WaveOut waveOut;
 
+        Timer tmr = new Timer { Interval = 100 };
+
+        public MusicPlayer()
+        {
+            InitializeComponent();
+            
+            foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
+                this.controls.Add(c, new List<PlayerControls.PlayerControl>());
+            
+            waveOut = new WaveOut();
+
+            tmr.Tick += tmr_Tick;
+        }
+
+        void tmr_Tick(object sender, EventArgs e)
+        {
+            songProgress.ForEach(item => item.Value = (int)mp3Reader.CurrentTime.TotalMilliseconds);
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
-
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -45,7 +58,7 @@ namespace UnusefulPlayer
 
         private void playerView1_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            /*if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files[0].EndsWith(".skn"))
@@ -62,20 +75,31 @@ namespace UnusefulPlayer
                         MessageBox.Show("Skin is not valid");
                     }
                 }
-            }
+            }*/
         }
 
         private void MusicPlayer_Load(object sender, EventArgs e)
         {
-            mp3Reader = new Mp3FileReader(@"aaa.mp3");
-            waveOut.Init(mp3Reader);
+            OpenFileDialog fd = new OpenFileDialog();
+            if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                playerView1.LoadSkin(fd.FileName);
+                playerView1.Width -= 1;
+                playerView1.Width += 1;
+                AttachEvents();
 
-            Timer t = new Timer();
-            t.Interval = 500;
-            t.Tick += delegate(object sender2, EventArgs ev) {
-                songProgress.ForEach(item => item.Value = (item.Value + 1) % item.Maximum);
-            };
-            t.Start();
+
+                mp3Reader = new Mp3FileReader(@"aaa.mp3");
+                waveOut.Init(mp3Reader);
+
+                songProgress.ForEach(item => item.Maximum = (int)mp3Reader.TotalTime.TotalMilliseconds);
+
+                tmr.Start();
+            }
+            else
+            {
+                this.Close();
+            }
         }
 
         List<T> GetControls<T>(PlayerControls.PlayerControl.SemanticType type) where T : PlayerControls.PlayerControl
@@ -85,7 +109,7 @@ namespace UnusefulPlayer
             return new List<T>(tmp.Cast<T>());
         }
 
-        void ResetUI()
+        /*void ResetUI()
         {
             this.controls.Clear();
             play.Clear();
@@ -93,11 +117,11 @@ namespace UnusefulPlayer
 
             foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
                 this.controls.Add(c, new List<PlayerControls.PlayerControl>());
-        }
+        }*/
 
         private void AttachEvents()
         {
-            ResetUI();
+            //ResetUI();
 
             var ctrls = this.playerView1.ContainerControl.GetAllChildren();
             foreach (var item in ctrls)
@@ -107,6 +131,18 @@ namespace UnusefulPlayer
                 if (item.Semantic == PlayerControls.PlayerControl.SemanticType.Play)
                 {
                     item.Click += play_Click;
+                }
+                else if (item.Semantic == PlayerControls.PlayerControl.SemanticType.Pause)
+                {
+                    item.Click += pause_Click;
+                }
+                else if (item.Semantic == PlayerControls.PlayerControl.SemanticType.PlayPause)
+                {
+                    if (typeof(PlayerControls.ToggleButton).IsAssignableFrom(item.GetType()))
+                    {
+                        var t = (PlayerControls.ToggleButton)item;
+                        t.CheckedChanged += playPause_CheckedChanged;
+                    }
                 }
                 else if (item.Semantic == PlayerControls.PlayerControl.SemanticType.SongProgress)
                 {
@@ -122,6 +158,20 @@ namespace UnusefulPlayer
             songProgress = GetControls<PlayerControls.TrackBar>(PlayerControls.PlayerControl.SemanticType.SongProgress);
         }
 
+        void playPause_CheckedChanged(object sender, EventArgs e)
+        {
+            var ctl = (PlayerControls.ToggleButton)sender;
+            if (ctl.Checked)
+                waveOut.Play();
+            else
+                waveOut.Pause();
+        }
+
+        private void pause_Click(object sender, EventArgs e)
+        {
+            waveOut.Pause();
+        }
+
         void songProgress_UserChangedValue(object sender, EventArgs e)
         {
             var tb = (PlayerControls.TrackBar)sender;
@@ -132,13 +182,12 @@ namespace UnusefulPlayer
 
         void play_Click(object sender, EventArgs e)
         {
-            //MessageBox.Show("Play clicked");
             waveOut.Play();
         }
 
         private void playerView1_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            /*if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 if (files[0].EndsWith(".skn"))
@@ -149,7 +198,7 @@ namespace UnusefulPlayer
                 {
                     e.Effect = DragDropEffects.None;
                 }
-            }
+            }*/
         }
 
         private void playerView1_DragOver(object sender, DragEventArgs e)

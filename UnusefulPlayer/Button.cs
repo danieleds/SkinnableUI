@@ -19,7 +19,7 @@ namespace UnusefulPlayer.PlayerControls
         private bool pressed;
         private bool hover;
 
-        private NinePatch backgroundNormal9P;
+        protected NinePatch backgroundNormal9P;
         [DefaultValue(null)]
         public Bitmap BackgroundNormal9P
         {
@@ -34,7 +34,7 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        private NinePatch backgroundHover9P;
+        protected NinePatch backgroundHover9P;
         [DefaultValue(null)]
         public Bitmap BackgroundHover9P
         {
@@ -49,7 +49,7 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        private NinePatch backgroundPressed9P;
+        protected NinePatch backgroundPressed9P;
         [DefaultValue(null)]
         public Bitmap BackgroundPressed9P
         {
@@ -153,32 +153,9 @@ namespace UnusefulPlayer.PlayerControls
             var node = base.GetXmlElement(document, resources);
             node.SetAttribute("text", this.Text);
 
-            if (this.backgroundNormal9P != null)
-            {
-                System.IO.MemoryStream m = new System.IO.MemoryStream();
-                this.backgroundNormal9P.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute("backgroundNormal9P", filename);
-            }
-
-            if (this.backgroundHover9P != null)
-            {
-                System.IO.MemoryStream m = new System.IO.MemoryStream();
-                this.backgroundHover9P.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute("backgroundHover9P", filename);
-            }
-
-            if (this.backgroundPressed9P != null)
-            {
-                var m = new System.IO.MemoryStream();
-                this.backgroundPressed9P.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute("backgroundPressed9P", filename);
-            }
+            SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundHover9P, "backgroundHover9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundPressed9P, "backgroundPressed9P", resources, node);
 
             return node;
         }

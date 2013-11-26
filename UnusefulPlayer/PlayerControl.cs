@@ -34,7 +34,7 @@ namespace UnusefulPlayer.PlayerControls
             Play,
             [SemanticTypeMeta("Pause", typeof(PlayerControls.Button))]
             Pause,
-            [SemanticTypeMeta("Play/Pause", typeof(PlayerControls.Button))]
+            [SemanticTypeMeta("Play/Pause", typeof(PlayerControls.ToggleButton))]
             PlayPause,
             [SemanticTypeMeta("Stop", typeof(PlayerControls.Button))]
             Stop,
@@ -331,7 +331,7 @@ namespace UnusefulPlayer.PlayerControls
         // Lavora nelle coordinate del controllo
         public virtual bool IsInside(PointF p)
         {
-            // FIXME Opzione per permettere di escludere le parti trasparenti!
+            // FIXME Opzione per permettere di escludere le parti trasparenti! http://bobpowell.net/region_from_bitmap.aspx
             var inRectangle = new RectangleF(new PointF(), this.size).Contains(p);
             /*if (inRectangle)
             {

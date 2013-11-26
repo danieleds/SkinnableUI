@@ -253,41 +253,10 @@ namespace UnusefulPlayer.PlayerControls
             node.SetAttribute("maximum", this.Maximum.ToString(inv));
             node.SetAttribute("value", this.Value.ToString(inv));
 
-            if (this.backgroundNormal9P != null)
-            {
-                System.IO.MemoryStream m = new System.IO.MemoryStream();
-                this.backgroundNormal9P.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute("backgroundNormal9P", filename);
-            }
-
-            if (this.backgroundIndicatorNormal9P != null)
-            {
-                System.IO.MemoryStream m = new System.IO.MemoryStream();
-                this.backgroundIndicatorNormal9P.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute("backgroundIndicatorNormal9P", filename);
-            }
-
-            if (this.backgroundIndicatorHover9P != null)
-            {
-                System.IO.MemoryStream m = new System.IO.MemoryStream();
-                this.backgroundIndicatorHover9P.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute("backgroundIndicatorHover9P", filename);
-            }
-
-            if (this.backgroundIndicatorPressed9P != null)
-            {
-                var m = new System.IO.MemoryStream();
-                this.backgroundIndicatorPressed9P.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute("backgroundIndicatorPressed9P", filename);
-            }
+            SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundIndicatorNormal9P, "backgroundIndicatorNormal9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundIndicatorHover9P, "backgroundIndicatorHover9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundIndicatorPressed9P, "backgroundIndicatorPressed9P", resources, node);
 
             return node;
         }
