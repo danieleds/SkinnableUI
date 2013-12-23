@@ -17,7 +17,15 @@ namespace UnusefulPlayer
 
         Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>> controls = new Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>>();
         List<PlayerControls.Button> play = new List<PlayerControls.Button>();
+        List<PlayerControls.Button> pause = new List<PlayerControls.Button>();
+        List<PlayerControls.ToggleButton> playPause = new List<PlayerControls.ToggleButton>();
+        List<PlayerControls.Button> stop = new List<PlayerControls.Button>();
         List<PlayerControls.TrackBar> songProgress = new List<PlayerControls.TrackBar>();
+
+        List<PlayerControls.Label> title = new List<PlayerControls.Label>();
+        List<PlayerControls.Label> artist = new List<PlayerControls.Label>();
+        List<PlayerControls.Label> album = new List<PlayerControls.Label>();
+        List<PlayerControls.Label> year = new List<PlayerControls.Label>();
 
         Mp3FileReader mp3Reader;
         WaveOut waveOut;
@@ -80,7 +88,7 @@ namespace UnusefulPlayer
 
         private void MusicPlayer_Load(object sender, EventArgs e)
         {
-            OpenFileDialog fd = new OpenFileDialog();
+            OpenFileDialog fd = new OpenFileDialog { Filter = "Skin file|*.skn" };
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 playerView1.LoadSkin(fd.FileName);
@@ -89,11 +97,19 @@ namespace UnusefulPlayer
                 AttachEvents();
 
 
-                mp3Reader = new Mp3FileReader(@"aaa.mp3");
+                var path = @"aaa.mp3";
+                mp3Reader = new Mp3FileReader(path);
                 waveOut.Init(mp3Reader);
-
+                
                 songProgress.ForEach(item => item.Maximum = (int)mp3Reader.TotalTime.TotalMilliseconds);
 
+                TagLib.File f = TagLib.File.Create(path);
+                title.ForEach(item => item.Text = f.Tag.Title);
+                artist.ForEach(item => item.Text = f.Tag.JoinedPerformers.Trim() != "" ? f.Tag.JoinedPerformers : f.Tag.JoinedAlbumArtists);
+                album.ForEach(item => item.Text = f.Tag.Album);
+                year.ForEach(item => item.Text = f.Tag.Year.ToString());
+                //f.Tag.Pictures[0].
+                
                 tmr.Start();
             }
             else
@@ -144,6 +160,10 @@ namespace UnusefulPlayer
                         t.CheckedChanged += playPause_CheckedChanged;
                     }
                 }
+                else if (item.Semantic == PlayerControls.PlayerControl.SemanticType.Stop)
+                {
+                    item.Click += stop_Click;
+                }
                 else if (item.Semantic == PlayerControls.PlayerControl.SemanticType.SongProgress)
                 {
                     if (typeof(PlayerControls.TrackBar).IsAssignableFrom(item.GetType()))
@@ -155,7 +175,21 @@ namespace UnusefulPlayer
             }
 
             play = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Play);
+            pause = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Pause);
+            playPause = GetControls<PlayerControls.ToggleButton>(PlayerControls.PlayerControl.SemanticType.PlayPause);
+            stop = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Stop);
             songProgress = GetControls<PlayerControls.TrackBar>(PlayerControls.PlayerControl.SemanticType.SongProgress);
+            title = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Title);
+            artist = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Artist);
+            album = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Album);
+            year = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Year);
+        }
+
+        void stop_Click(object sender, EventArgs e)
+        {
+            playPause.ForEach(item => item.Checked = false);
+            waveOut.Stop();
+            mp3Reader.Seek(0, System.IO.SeekOrigin.Begin);
         }
 
         void playPause_CheckedChanged(object sender, EventArgs e)
@@ -175,9 +209,7 @@ namespace UnusefulPlayer
         void songProgress_UserChangedValue(object sender, EventArgs e)
         {
             var tb = (PlayerControls.TrackBar)sender;
-            this.Text = tb.Value.ToString();
-            mp3Reader.Skip(-mp3Reader.CurrentTime.Milliseconds);
-            mp3Reader.Skip(tb.Value);
+            mp3Reader.CurrentTime = new TimeSpan(0, 0, 0, 0, tb.Value);
         }
 
         void play_Click(object sender, EventArgs e)

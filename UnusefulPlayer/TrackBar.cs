@@ -18,13 +18,13 @@ namespace UnusefulPlayer.PlayerControls
         private bool pressed;
         private bool hover;
 
-        private const int INDICATOR_MAX_WIDTH = 10;
-
         public delegate void ValueChangedEventHandler(object sender, EventArgs e);
         public event ValueChangedEventHandler ValueChanged;
 
         public delegate void UserChangedValueEventHandler(object sender, EventArgs e);
         public event UserChangedValueEventHandler UserChangedValue;
+
+        private const float DEFAULT_INDICATOR_WIDTH = 10f;
 
         private NinePatch backgroundNormal9P;
         [DefaultValue(null)]
@@ -86,6 +86,21 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        private NinePatch backgroundIndicatorBar9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundIndicatorBar9P
+        {
+            get { return backgroundIndicatorBar9P != null ? backgroundIndicatorBar9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundIndicatorBar9P = null;
+                else
+                    this.backgroundIndicatorBar9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
         private int minimum = 0;
         public int Minimum
         {
@@ -141,9 +156,19 @@ namespace UnusefulPlayer.PlayerControls
             else
                 drawDefaultBackground(g);
 
-            // Disegno indicatore
+
             var cx_pos = this.value * contentBox.Width / (this.maximum - this.minimum);
-            var indicator_box = new RectangleF(contentBox.X, contentBox.Y, cx_pos + ((float)INDICATOR_MAX_WIDTH / 2), contentBox.Height);
+            var indicator_bar_box = new RectangleF(contentBox.X, contentBox.Y, cx_pos, contentBox.Height);
+
+            // Disegno barra indicatore
+            if (backgroundIndicatorBar9P != null)
+            {
+                backgroundIndicatorBar9P.Paint(g, indicator_bar_box);
+            }
+
+            // Disegno indicatore
+            var indicator_width = backgroundIndicatorNormal9P != null ? backgroundIndicatorNormal9P.Image.Width : DEFAULT_INDICATOR_WIDTH;
+            var indicator_box = new RectangleF(contentBox.X, contentBox.Y, cx_pos + (((float)indicator_width-2) / 2), contentBox.Height);
             if (pressed)
             {
                 if (backgroundIndicatorPressed9P != null)
@@ -182,7 +207,7 @@ namespace UnusefulPlayer.PlayerControls
         private void drawDefaultIndicator(Graphics g, RectangleF indicatorBox)
         {
             const float w = 6;
-            g.FillRectangle(SystemBrushes.ControlDarkDark, indicatorBox.X + indicatorBox.Width - ((float)INDICATOR_MAX_WIDTH / 2) - (w / 2), indicatorBox.Y, w, indicatorBox.Height);
+            g.FillRectangle(SystemBrushes.ControlDarkDark, indicatorBox.X + indicatorBox.Width - (DEFAULT_INDICATOR_WIDTH / 2) - (w / 2), indicatorBox.Y, w, indicatorBox.Height);
         }
 
         public override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
@@ -257,6 +282,7 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.SetNinePatch(this.backgroundIndicatorNormal9P, "backgroundIndicatorNormal9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundIndicatorHover9P, "backgroundIndicatorHover9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundIndicatorPressed9P, "backgroundIndicatorPressed9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundIndicatorBar9P, "backgroundIndicatorBar9P", resources, node);
 
             return node;
         }
@@ -271,6 +297,7 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorNormal9P", resources, s => this.BackgroundIndicatorNormal9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorHover9P", resources, s => this.BackgroundIndicatorHover9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorPressed9P", resources, s => this.BackgroundIndicatorPressed9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorBar9P", resources, s => this.BackgroundIndicatorBar9P = s);
         }
 
     }

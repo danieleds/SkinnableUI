@@ -31,6 +31,21 @@ namespace UnusefulPlayer.PlayerControls
             this.Size = new SizeF(150, 100);
         }
 
+        protected NinePatch backgroundNormal9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundNormal9P
+        {
+            get { return backgroundNormal9P != null ? backgroundNormal9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundNormal9P = null;
+                else
+                    this.backgroundNormal9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
         /// <summary>
         /// Attenzione: aggiungere e rimuovere controlli direttamente da questa lista non genera eventi, né inizializza le proprietà dei controlli.
         /// </summary>
@@ -146,13 +161,21 @@ namespace UnusefulPlayer.PlayerControls
 
         protected override void OnPaint(Graphics g)
         {
-            g.FillRectangle(new SolidBrush(Color.FromArgb(25, 0, 0, 0)), 0, 0, this.Size.Width - 1, this.Size.Height - 1);
-            g.DrawRectangle(Pens.White, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+            if (backgroundNormal9P != null)
+                backgroundNormal9P.Paint(g, this.Size);
+            else
+                drawDefaultContainer(g);
             
             foreach (PlayerControl c in this.controls.Reverse())
             {
                 c.InternalPaint(g);
             }
+        }
+
+        private void drawDefaultContainer(Graphics g)
+        {
+            g.FillRectangle(new SolidBrush(Color.FromArgb(25, 0, 0, 0)), 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+            g.DrawRectangle(Pens.White, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
         }
 
         public override void OnMouseDown(MouseEventArgs e)
@@ -282,7 +305,7 @@ namespace UnusefulPlayer.PlayerControls
         public override System.Xml.XmlElement GetXmlElement(System.Xml.XmlDocument document, Dictionary<string, System.IO.MemoryStream> resources)
         {
             var node = base.GetXmlElement(document, resources);
-            //node.SetAttribute("text", this.Text);
+            SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
 
             foreach (var item in this.Controls.Reverse()) // FIXME Z-index
             {
@@ -296,7 +319,7 @@ namespace UnusefulPlayer.PlayerControls
         {
             base.FromXmlElement(element, resources);
 
-            // SerializationHelper.LoadString(element, "text", s => this.Text = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
 
             foreach (System.Xml.XmlElement child in element.ChildNodes)
             {

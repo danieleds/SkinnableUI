@@ -28,30 +28,22 @@ namespace UnusefulPlayer.PlayerControls
 
         public enum SemanticType
         {
-            [SemanticTypeMeta("Container", typeof(PlayerControls.Container))]
-            Container,
-            [SemanticTypeMeta("Play", typeof(PlayerControls.Button))]
-            Play,
-            [SemanticTypeMeta("Pause", typeof(PlayerControls.Button))]
-            Pause,
-            [SemanticTypeMeta("Play/Pause", typeof(PlayerControls.ToggleButton))]
-            PlayPause,
-            [SemanticTypeMeta("Stop", typeof(PlayerControls.Button))]
-            Stop,
-            [SemanticTypeMeta("Back", typeof(PlayerControls.Button))]
-            Back,
-            [SemanticTypeMeta("Forward", typeof(PlayerControls.Button))]
-            Forward,
-            [SemanticTypeMeta("Song Progress", typeof(PlayerControls.TrackBar))]
-            SongProgress,
-            [SemanticTypeMeta("Current Time", typeof(PlayerControls.Label))]
-            CurrentTime,
-            [SemanticTypeMeta("Total Time", typeof(PlayerControls.Label))]
-            TotalTime,
-            [SemanticTypeMeta("Remaining Time", typeof(PlayerControls.Label))]
-            RemainingTime,
-            [SemanticTypeMeta("Free Text", typeof(PlayerControls.Label))]
-            FreeText
+            [SemanticTypeMeta("Container", typeof(PlayerControls.Container))] Container,
+            [SemanticTypeMeta("Play", typeof(PlayerControls.Button))] Play,
+            [SemanticTypeMeta("Pause", typeof(PlayerControls.Button))] Pause,
+            [SemanticTypeMeta("Play/Pause", typeof(PlayerControls.ToggleButton))] PlayPause,
+            [SemanticTypeMeta("Stop", typeof(PlayerControls.Button))] Stop,
+            [SemanticTypeMeta("Back", typeof(PlayerControls.Button))] Back,
+            [SemanticTypeMeta("Forward", typeof(PlayerControls.Button))] Forward,
+            [SemanticTypeMeta("Song Progress", typeof(PlayerControls.TrackBar))] SongProgress,
+            [SemanticTypeMeta("Current Time", typeof(PlayerControls.Label))] CurrentTime,
+            [SemanticTypeMeta("Total Time", typeof(PlayerControls.Label))] TotalTime,
+            [SemanticTypeMeta("Remaining Time", typeof(PlayerControls.Label))] RemainingTime,
+            [SemanticTypeMeta("Title", typeof(PlayerControls.Label))] Title,
+            [SemanticTypeMeta("Artist", typeof(PlayerControls.Label))] Artist,
+            [SemanticTypeMeta("Album", typeof(PlayerControls.Label))] Album,
+            [SemanticTypeMeta("Year", typeof(PlayerControls.Label))] Year,
+            [SemanticTypeMeta("Free Text", typeof(PlayerControls.Label))] FreeText
         }
 
         protected PlayerControl(SemanticType controlType)
@@ -241,7 +233,7 @@ namespace UnusefulPlayer.PlayerControls
             var g = Graphics.FromImage(b);
             using (g)
             {
-                g.Clear(Color.Transparent);
+                //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
                 this.OnPaint(g);
             }
             return b;
