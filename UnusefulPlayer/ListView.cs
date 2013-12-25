@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace UnusefulPlayer.PlayerControls
 {
@@ -14,6 +15,12 @@ namespace UnusefulPlayer.PlayerControls
         public ListView(SemanticType c) : base(c)
         {
             this.Size = new SizeF(75, 30);
+            items.CollectionChanged += items_CollectionChanged;
+        }
+
+        void items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            this.Invalidate();
         }
 
         private bool pressed;
@@ -64,8 +71,19 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        private string text;
-        public string Text { get { return text; } set { text = value; this.Invalidate(); } }
+        private ObservableCollection<IListViewItem> items = new ObservableCollection<IListViewItem>();
+
+        public ObservableCollection<IListViewItem> Items { get { return items; } }
+
+        public static interface IListViewItem
+        {
+            /// <summary>
+            /// Restituisce il valore su un certo campo.
+            /// </summary>
+            /// <param name="field">Id del campo.</param>
+            /// <returns></returns>
+            public string getValue(int field);
+        }
 
         protected override void OnPaint(System.Drawing.Graphics g)
         {
@@ -102,9 +120,6 @@ namespace UnusefulPlayer.PlayerControls
                 else
                     drawDefaultButton(g);
             }
-
-            g.SetClip(contentBox, System.Drawing.Drawing2D.CombineMode.Intersect);
-            g.DrawString(this.Text, this.Font, new SolidBrush(this.ForeColor), contentBox.Width / 2 - strSize.Width / 2 + contentBox.Left, contentBox.Height / 2 - strSize.Height / 2 + contentBox.Top);
         }
 
         private void drawDefaultButton(Graphics g)

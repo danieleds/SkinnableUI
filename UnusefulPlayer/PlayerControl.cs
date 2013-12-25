@@ -43,7 +43,8 @@ namespace UnusefulPlayer.PlayerControls
             [SemanticTypeMeta("Artist", typeof(PlayerControls.Label))] Artist,
             [SemanticTypeMeta("Album", typeof(PlayerControls.Label))] Album,
             [SemanticTypeMeta("Year", typeof(PlayerControls.Label))] Year,
-            [SemanticTypeMeta("Free Text", typeof(PlayerControls.Label))] FreeText
+            [SemanticTypeMeta("Free Text", typeof(PlayerControls.Label))] FreeText,
+            [SemanticTypeMeta("Playlist", typeof(PlayerControls.ListView))] Playlist
         }
 
         protected PlayerControl(SemanticType controlType)
