@@ -72,12 +72,12 @@ namespace UnusefulPlayer.PlayerControls
 
         private float getHeaderHeight()
         {
-            return 20;
+            return 20; // TODO
         }
 
         private float getRowHeight()
         {
-            return 20;
+            return 20; // TODO
         }
 
         protected override void OnPaint(System.Drawing.Graphics g)
@@ -102,10 +102,20 @@ namespace UnusefulPlayer.PlayerControls
 
             var headerHeight = getHeaderHeight();
             g.FillRectangle(SystemBrushes.ButtonFace, 1, 0, this.Size.Width - 2, headerHeight+1);
+            float width_sum = 0;
             for (int i = 0; i < columns.Count; i++)
             {
-                g.FillRectangle(SystemBrushes.ButtonFace, (100 * i), 0, 100, headerHeight);
-                g.DrawRectangle(SystemPens.ButtonShadow, (100 * i), 0, 100, headerHeight);
+                var col = columns[i];
+                g.FillRectangle(SystemBrushes.ButtonFace, width_sum, 0, col.Width, headerHeight);
+                g.DrawRectangle(SystemPens.ButtonShadow, width_sum, 0, col.Width, headerHeight);
+
+                var s = g.Save();
+                g.SetClip(new RectangleF(width_sum, 0, col.Width - 3, headerHeight), System.Drawing.Drawing2D.CombineMode.Intersect);
+                var strSize = g.MeasureString(columns[i].Title, this.Font);
+                g.DrawString(col.Title, this.Font, Brushes.Black, width_sum + 5, headerHeight / 2 - strSize.Height / 2 + 1);
+                g.Restore(s);
+
+                width_sum += col.Width;
             }
 
             g.DrawRectangle(SystemPens.ButtonShadow, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
@@ -124,8 +134,25 @@ namespace UnusefulPlayer.PlayerControls
 
             for (int i = 0; i < items.Count; i++)
             {
+                var item = items[i];
+
                 g.FillRectangle(Brushes.AliceBlue, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
                 g.DrawRectangle(Pens.LightBlue, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
+
+                float width_sum = 0;
+                for (int j = 0; j < columns.Count; j++)
+                {
+                    var col = columns[j];
+
+                    var s = g.Save();
+                    g.SetClip(new RectangleF(width_sum, (rowHeight * i) + 1, col.Width - 3, rowHeight - 2), System.Drawing.Drawing2D.CombineMode.Intersect);
+                    var content = j < item.Values.Count ? items[i].Values[j].ToString() : "";
+                    var strSize = g.MeasureString(content, this.Font);
+                    g.DrawString(content, this.Font, Brushes.Black, width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
+                    g.Restore(s);
+
+                    width_sum += col.Width;
+                }
             }
 
             g.Restore(t);
@@ -279,7 +306,10 @@ namespace UnusefulPlayer.PlayerControls
                     foreach (System.Xml.XmlElement item in child.ChildNodes)
                     {
                         var r = new ListViewRow();
-                        r.Values.Add(item.GetAttribute("value"));
+                        foreach (System.Xml.XmlElement value in item.ChildNodes)
+                        {
+                            r.Values.Add(value.GetAttribute("value"));
+                        }
                         this.Items.Add(r);
                     }
                 }
