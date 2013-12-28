@@ -173,7 +173,6 @@ namespace UnusefulPlayer.PlayerControls
             this.Checked = !this.Checked;
         }
 
-        // FIXME Si rischia di inserire inutilmente le solite risorse duplicate, ad esempio se due bottoni usano la stessa bgImage...
         public override System.Xml.XmlElement GetXmlElement(System.Xml.XmlDocument document, Dictionary<string, System.IO.MemoryStream> resources)
         {
             var node = base.GetXmlElement(document, resources);

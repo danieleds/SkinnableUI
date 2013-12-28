@@ -154,6 +154,16 @@ namespace UnusefulPlayer
             }
         }
 
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            base.OnMouseWheel(e);
+            if(!BlockInputEvents)
+            {
+                MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(this.containerControl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(this.containerControl.Top, 0, MidpointRounding.ToEven), e.Delta);
+                this.containerControl.OnMouseWheel(e2);
+            }
+        }
+
 #endregion
 
     }

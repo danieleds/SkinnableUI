@@ -41,62 +41,62 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        private NinePatch backgroundIndicatorNormal9P;
+        private NinePatch indicatorNormal9P;
         [DefaultValue(null)]
-        public Bitmap BackgroundIndicatorNormal9P
+        public Bitmap IndicatorNormal9P
         {
-            get { return backgroundIndicatorNormal9P != null ? backgroundIndicatorNormal9P.Image : null; }
+            get { return indicatorNormal9P != null ? indicatorNormal9P.Image : null; }
             set
             {
                 if (value == null)
-                    this.backgroundIndicatorNormal9P = null;
+                    this.indicatorNormal9P = null;
                 else
-                    this.backgroundIndicatorNormal9P = new NinePatch(value);
+                    this.indicatorNormal9P = new NinePatch(value);
                 this.Invalidate();
             }
         }
 
-        private NinePatch backgroundIndicatorHover9P;
+        private NinePatch indicatorHover9P;
         [DefaultValue(null)]
-        public Bitmap BackgroundIndicatorHover9P
+        public Bitmap IndicatorHover9P
         {
-            get { return backgroundIndicatorHover9P != null ? backgroundIndicatorHover9P.Image : null; }
+            get { return indicatorHover9P != null ? indicatorHover9P.Image : null; }
             set
             {
                 if (value == null)
-                    this.backgroundIndicatorHover9P = null;
+                    this.indicatorHover9P = null;
                 else
-                    this.backgroundIndicatorHover9P = new NinePatch(value);
+                    this.indicatorHover9P = new NinePatch(value);
                 this.Invalidate();
             }
         }
 
-        private NinePatch backgroundIndicatorPressed9P;
+        private NinePatch indicatorPressed9P;
         [DefaultValue(null)]
-        public Bitmap BackgroundIndicatorPressed9P
+        public Bitmap IndicatorPressed9P
         {
-            get { return backgroundIndicatorPressed9P != null ? backgroundIndicatorPressed9P.Image : null; }
+            get { return indicatorPressed9P != null ? indicatorPressed9P.Image : null; }
             set
             {
                 if (value == null)
-                    this.backgroundIndicatorPressed9P = null;
+                    this.indicatorPressed9P = null;
                 else
-                    this.backgroundIndicatorPressed9P = new NinePatch(value);
+                    this.indicatorPressed9P = new NinePatch(value);
                 this.Invalidate();
             }
         }
 
-        private NinePatch backgroundIndicatorBar9P;
+        private NinePatch indicatorBar9P;
         [DefaultValue(null)]
-        public Bitmap BackgroundIndicatorBar9P
+        public Bitmap IndicatorBar9P
         {
-            get { return backgroundIndicatorBar9P != null ? backgroundIndicatorBar9P.Image : null; }
+            get { return indicatorBar9P != null ? indicatorBar9P.Image : null; }
             set
             {
                 if (value == null)
-                    this.backgroundIndicatorBar9P = null;
+                    this.indicatorBar9P = null;
                 else
-                    this.backgroundIndicatorBar9P = new NinePatch(value);
+                    this.indicatorBar9P = new NinePatch(value);
                 this.Invalidate();
             }
         }
@@ -157,45 +157,49 @@ namespace UnusefulPlayer.PlayerControls
                 drawDefaultBackground(g);
 
 
-            var cx_pos = this.value * contentBox.Width / (this.maximum - this.minimum);
+            var cx_pos = (float)this.value * contentBox.Width / (float)(this.maximum - this.minimum);
             var indicator_bar_box = new RectangleF(contentBox.X, contentBox.Y, cx_pos, contentBox.Height);
 
             // Disegno barra indicatore
-            if (backgroundIndicatorBar9P != null)
+            if (indicatorBar9P != null)
             {
-                backgroundIndicatorBar9P.Paint(g, indicator_bar_box);
+                indicatorBar9P.Paint(g, indicator_bar_box);
             }
 
             // Disegno indicatore
-            var indicator_width = backgroundIndicatorNormal9P != null ? backgroundIndicatorNormal9P.Image.Width : DEFAULT_INDICATOR_WIDTH;
-            var indicator_box = new RectangleF(contentBox.X, contentBox.Y, cx_pos + (((float)indicator_width-2) / 2), contentBox.Height);
+            var indicator_width = indicatorNormal9P != null ? indicatorNormal9P.Image.Width-2 : DEFAULT_INDICATOR_WIDTH;
+            var indicator_box = new RectangleF(contentBox.X + cx_pos - (((float)indicator_width) / 2), contentBox.Y, indicator_width-1, contentBox.Height);
             if (pressed)
             {
-                if (backgroundIndicatorPressed9P != null)
+                if (indicatorPressed9P != null)
                 {
-                    backgroundIndicatorPressed9P.Paint(g, indicator_box);
+                    indicatorPressed9P.Paint(g, indicator_box);
                 }
                 else
                     drawDefaultIndicator(g, indicator_box);
             }
             else if(hover)
             {
-                if (backgroundIndicatorHover9P != null)
+                if (indicatorHover9P != null)
                 {
-                    backgroundIndicatorHover9P.Paint(g, indicator_box);
+                    indicatorHover9P.Paint(g, indicator_box);
                 }
                 else
                     drawDefaultIndicator(g, indicator_box);
             }
             else
             {
-                if (backgroundIndicatorNormal9P != null)
+                if (indicatorNormal9P != null)
                 {
-                    backgroundIndicatorNormal9P.Paint(g, indicator_box);
+                    indicatorNormal9P.Paint(g, indicator_box);
                 }
                 else
                     drawDefaultIndicator(g, indicator_box);
             }
+
+            //g.DrawRectangle(Pens.Red, contentBox.X, contentBox.Y, contentBox.Width, contentBox.Height);
+            //g.DrawRectangle(Pens.Blue, indicator_bar_box.X, indicator_bar_box.Y, indicator_bar_box.Width, indicator_bar_box.Height);
+            //g.DrawLine(Pens.Red, contentBox.X + cx_pos, 0, contentBox.X + cx_pos, this.Size.Height);
         }
 
         private void drawDefaultBackground(Graphics g)
@@ -269,7 +273,6 @@ namespace UnusefulPlayer.PlayerControls
             this.Invalidate();
         }
 
-        // FIXME Si rischia di inserire inutilmente le solite risorse duplicate, ad esempio se due bottoni usano la stessa bgImage...
         public override System.Xml.XmlElement GetXmlElement(System.Xml.XmlDocument document, Dictionary<string, System.IO.MemoryStream> resources)
         {
             var node = base.GetXmlElement(document, resources);
@@ -279,10 +282,10 @@ namespace UnusefulPlayer.PlayerControls
             node.SetAttribute("value", this.Value.ToString(inv));
 
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundIndicatorNormal9P, "backgroundIndicatorNormal9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundIndicatorHover9P, "backgroundIndicatorHover9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundIndicatorPressed9P, "backgroundIndicatorPressed9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundIndicatorBar9P, "backgroundIndicatorBar9P", resources, node);
+            SerializationHelper.SetNinePatch(this.indicatorNormal9P, "indicatorNormal9P", resources, node);
+            SerializationHelper.SetNinePatch(this.indicatorHover9P, "indicatorHover9P", resources, node);
+            SerializationHelper.SetNinePatch(this.indicatorPressed9P, "indicatorPressed9P", resources, node);
+            SerializationHelper.SetNinePatch(this.indicatorBar9P, "indicatorBar9P", resources, node);
 
             return node;
         }
@@ -294,10 +297,10 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadInteger(element, "maximum", s => this.Maximum = s);
             SerializationHelper.LoadInteger(element, "value", s => this.Value = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorNormal9P", resources, s => this.BackgroundIndicatorNormal9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorHover9P", resources, s => this.BackgroundIndicatorHover9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorPressed9P", resources, s => this.BackgroundIndicatorPressed9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundIndicatorBar9P", resources, s => this.BackgroundIndicatorBar9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "indicatorNormal9P", resources, s => this.IndicatorNormal9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "indicatorHover9P", resources, s => this.IndicatorHover9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "indicatorPressed9P", resources, s => this.IndicatorPressed9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "indicatorBar9P", resources, s => this.IndicatorBar9P = s);
         }
 
     }

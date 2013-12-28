@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 using System.Windows.Forms;
+using System.Collections.ObjectModel;
 
 namespace UnusefulPlayer.PlayerControls
 {
@@ -29,7 +30,13 @@ namespace UnusefulPlayer.PlayerControls
         public Container(SemanticType c) : base(c)
         {
             this.Size = new SizeF(150, 100);
+            //controls.CollectionChanged += controls_CollectionChanged;
         }
+
+        /*void controls_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            // FIXME Spostare qui la logica di AddPlayerControl e RemovePlayerControl
+        }*/
 
         protected NinePatch backgroundNormal9P;
         [DefaultValue(null)]
@@ -52,6 +59,7 @@ namespace UnusefulPlayer.PlayerControls
         [Browsable(false)]
         public LinkedList<PlayerControl> Controls { get { return this.controls; } }
 
+        // FIXME Rimuovere e usare ObservableCollection
         public void AddPlayerControl(PlayerControl c)
         {
             this.controls.AddFirst(c);
@@ -297,6 +305,18 @@ namespace UnusefulPlayer.PlayerControls
                         hoverctl.OnMouseHover(new EventArgs());
                     }
                 }
+            }
+        }
+
+        public override void OnMouseWheel(MouseEventArgs e)
+        {
+            base.OnMouseWheel(e);
+
+            PlayerControl ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
+            if (ctl != null)
+            {
+                MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
+                ctl.OnMouseWheel(e2);
             }
         }
 

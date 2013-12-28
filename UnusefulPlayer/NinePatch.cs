@@ -99,7 +99,7 @@ namespace UnusefulPlayer
         public void Paint(Graphics g, RectangleF rect)
         {
             g.TranslateTransform(rect.X, rect.Y);
-            this.Paint(g, rect.Size);
+            this.Paint(g, new SizeF(rect.Size.Width + 1, rect.Size.Height + 1));
             g.TranslateTransform(-rect.X, -rect.Y);
         }
 
@@ -159,7 +159,7 @@ namespace UnusefulPlayer
 
         public RectangleF GetContentBox(SizeF size)
         {
-            return new RectangleF(paddingLeft, paddingTop, size.Width - paddingLeft - paddingRight, size.Height - paddingTop - paddingBottom);
+            return new RectangleF(paddingLeft, paddingTop, size.Width - paddingLeft - paddingRight - 1, size.Height - paddingTop - paddingBottom - 1);
         }
     }
 }

@@ -80,6 +80,9 @@ namespace UnusefulPlayer.PlayerControls
         public delegate void MouseUpEventHandler(object sender, MouseEventArgs e);
         public event MouseUpEventHandler MouseUp;
 
+        public delegate void WheelEventHandler(object sender, MouseEventArgs e);
+        public event WheelEventHandler Wheel;
+
         public delegate void ClickEventHandler(object sender, EventArgs e);
         public event ClickEventHandler Click;
 
@@ -350,6 +353,11 @@ namespace UnusefulPlayer.PlayerControls
             if (MouseUp != null) MouseUp(this, e);
         }
 
+        public virtual void OnMouseWheel(MouseEventArgs e)
+        {
+            if (Wheel != null) Wheel(this, e);
+        }
+
         public virtual void OnClick(EventArgs e)
         {
             if (Click != null) Click(this, e);
@@ -374,5 +382,6 @@ namespace UnusefulPlayer.PlayerControls
         {
             if (Move != null) Move(this, e);
         }
+
     }
 }

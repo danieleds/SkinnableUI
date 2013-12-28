@@ -118,10 +118,53 @@ namespace UnusefulPlayer
             {
                 System.IO.MemoryStream m = new System.IO.MemoryStream();
                 p9.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
-                String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
-                resources.Add(filename, m);
-                node.SetAttribute(nodeName, filename);
+
+                String duplicateKey = null;
+                foreach (var item in resources)
+                {
+                    var res = item.Value;
+                    if (StreamsAreEqual(res, m))
+                    {
+                        duplicateKey = item.Key;
+                        break;
+                    }
+                }
+
+                if (duplicateKey == null)
+                { 
+                    String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
+                    resources.Add(filename, m);
+                    node.SetAttribute(nodeName, filename);
+                }
+                else
+                {
+                    node.SetAttribute(nodeName, duplicateKey);
+                }
             }
+        }
+
+        static bool StreamsAreEqual(System.IO.MemoryStream first, System.IO.MemoryStream second)
+        {
+            const int BYTES_TO_READ = sizeof(Int64);
+
+            if (first.Length != second.Length)
+                return false;
+
+            int iterations = (int)Math.Ceiling((double)first.Length / BYTES_TO_READ);
+
+            byte[] one = new byte[BYTES_TO_READ];
+            byte[] two = new byte[BYTES_TO_READ];
+
+            for (int i = 0; i < iterations; i++)
+            {
+                first.Read(one, 0, BYTES_TO_READ);
+                second.Read(two, 0, BYTES_TO_READ);
+
+                if (BitConverter.ToInt64(one, 0) != BitConverter.ToInt64(two, 0))
+                    return false;
+            }
+
+            return true;
         }
     }
 }
