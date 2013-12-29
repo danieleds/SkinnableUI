@@ -46,6 +46,7 @@ namespace UnusefulPlayer.PlayerControls
         {
             var node = base.GetXmlElement(document, resources);
             node.SetAttribute("text", this.Text);
+            node.SetAttribute("textAlign", this.TextAlign.ToString());
 
             return node;
         }
@@ -54,6 +55,7 @@ namespace UnusefulPlayer.PlayerControls
         {
             base.FromXmlElement(element, resources);
             SerializationHelper.LoadString(element, "text", s => this.Text = s);
+            SerializationHelper.LoadEnum<ContentAlignment>(element, "textAlign", s => this.TextAlign = s);
         }
 
     }
