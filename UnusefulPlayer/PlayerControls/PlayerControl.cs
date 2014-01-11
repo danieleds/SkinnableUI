@@ -125,6 +125,11 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        protected Animator GetAnimator()
+        {
+            return this.ParentView.animator;
+        }
+
         /// <summary>
         /// Ottiene la posizione di questo controllo relativamente al padre top-level
         /// </summary>

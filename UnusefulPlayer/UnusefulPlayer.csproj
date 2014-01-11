@@ -53,10 +53,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ListView.cs" />
-    <Compile Include="Container.cs" />
-    <Compile Include="ToggleButton.cs" />
-    <Compile Include="Label.cs" />
+    <Compile Include="Animator.cs" />
+    <Compile Include="PlayerControls\ListView.cs" />
+    <Compile Include="PlayerControls\Container.cs" />
+    <Compile Include="PlayerControls\ToggleButton.cs" />
+    <Compile Include="PlayerControls\Label.cs" />
     <Compile Include="frmSkinPreview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -65,14 +66,14 @@
     </Compile>
     <Compile Include="PlayerExtensionMethods.cs" />
     <Compile Include="Skin.cs" />
-    <Compile Include="TrackBar.cs" />
+    <Compile Include="PlayerControls\TrackBar.cs" />
     <Compile Include="frmSkinEditor.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="frmSkinEditor.Designer.cs">
       <DependentUpon>frmSkinEditor.cs</DependentUpon>
     </Compile>
-    <Compile Include="Button.cs" />
+    <Compile Include="PlayerControls\Button.cs" />
     <Compile Include="MusicPlayer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -80,8 +81,8 @@
       <DependentUpon>MusicPlayer.cs</DependentUpon>
     </Compile>
     <Compile Include="NinePatch.cs" />
-    <Compile Include="PlayerControl.cs" />
-    <Compile Include="PlayerControlEventArgs.cs" />
+    <Compile Include="PlayerControls\PlayerControl.cs" />
+    <Compile Include="PlayerControls\PlayerControlEventArgs.cs" />
     <Compile Include="PlayerView.cs">
       <SubType>UserControl</SubType>
     </Compile>

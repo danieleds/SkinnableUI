@@ -11,6 +11,9 @@ namespace UnusefulPlayer
     class NinePatch
     {
         private Bitmap image;
+        /// <summary>
+        /// Riferimento all'immagine 9-patch (comprende i pixel indicatori)
+        /// </summary>
         public Bitmap Image { get { return image; } }
 
         // Array di (inizio[px], fine[px], lunghezza[px]=fine-inizio+1, espandibile?)

@@ -146,7 +146,14 @@ namespace UnusefulPlayer.PlayerControls
 
                     var s = g.Save();
                     g.SetClip(new RectangleF(width_sum, (rowHeight * i) + 1, col.Width - 3, rowHeight - 2), System.Drawing.Drawing2D.CombineMode.Intersect);
-                    var content = j < item.Values.Count ? items[i].Values[j].ToString() : "";
+                    var content = "";
+                    if (j < item.Values.Count)
+                    {
+                        if (items[i].Values[j] != null)
+                            content = items[i].Values[j].ToString();
+                        else
+                            content = "";
+                    }
                     var strSize = g.MeasureString(content, this.Font);
                     g.DrawString(content, this.Font, Brushes.Black, width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
                     g.Restore(s);

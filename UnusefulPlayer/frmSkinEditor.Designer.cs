@@ -41,6 +41,7 @@
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.panel1 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.playerView1 = new UnusefulPlayer.PlayerViewDesigner();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -52,7 +53,6 @@
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnShowPaints = new System.Windows.Forms.ToolStripButton();
             this.btnPreview = new System.Windows.Forms.ToolStripButton();
-            this.playerView1 = new UnusefulPlayer.PlayerViewDesigner();
             this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
             this.rightPanel.SuspendLayout();
             this.leftPanel.SuspendLayout();
@@ -102,7 +102,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(216, 24);
             this.label2.TabIndex = 4;
-            this.label2.Text = "Properties";
+            this.label2.Text = "Style";
             this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // label1
@@ -114,7 +114,7 @@
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(200, 24);
             this.label1.TabIndex = 3;
-            this.label1.Text = "Toolbox";
+            this.label1.Text = "UI Elements";
             this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // leftPanel
@@ -187,6 +187,20 @@
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(400, 358);
             this.panel2.TabIndex = 3;
+            // 
+            // playerView1
+            // 
+            this.playerView1.AllowDrop = true;
+            this.playerView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.playerView1.BlockInputEvents = false;
+            this.playerView1.DebugShowPaints = false;
+            this.playerView1.Location = new System.Drawing.Point(3, 3);
+            this.playerView1.Name = "playerView1";
+            this.playerView1.SelectedControl = null;
+            this.playerView1.Size = new System.Drawing.Size(392, 350);
+            this.playerView1.TabIndex = 0;
             // 
             // toolStrip1
             // 
@@ -294,20 +308,6 @@
             this.btnPreview.Size = new System.Drawing.Size(23, 22);
             this.btnPreview.Text = "Preview";
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
-            // 
-            // playerView1
-            // 
-            this.playerView1.AllowDrop = true;
-            this.playerView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.playerView1.BlockInputEvents = false;
-            this.playerView1.DebugShowPaints = false;
-            this.playerView1.Location = new System.Drawing.Point(3, 3);
-            this.playerView1.Name = "playerView1";
-            this.playerView1.SelectedControl = null;
-            this.playerView1.Size = new System.Drawing.Size(392, 350);
-            this.playerView1.TabIndex = 0;
             // 
             // toolStripButton1
             // 

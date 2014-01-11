@@ -17,6 +17,7 @@ namespace UnusefulPlayer
         /// Gli elementi in testa sono sopra rispetto a quelli in coda.
         /// </summary>
         protected Container containerControl;
+        public Animator animator = new Animator();
 
         [Obsolete("Questa proprietà ha un comportamento nullo. Usare ContainerControl per impostare un contenitore di primo livello.")]
         new public ControlCollection Controls { get; private set; }

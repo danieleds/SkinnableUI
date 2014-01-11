@@ -28,8 +28,6 @@ namespace UnusefulPlayer
                     var item_part = pack.CreatePart(item_uri, "", CompressionOption.Maximum);
                     item.Value.WriteTo(item_part.GetStream());
                 }
-
-                pack.Close();
             } 
         }
 

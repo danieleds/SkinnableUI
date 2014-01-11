@@ -71,7 +71,7 @@ namespace UnusefulPlayer.PlayerControls
         {
             var strSize = g.MeasureString(this.Text, this.Font);
             var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);
-
+            
             if (pressed)
             {
                 if (backgroundPressed9P != null)
@@ -133,10 +133,16 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        //Animator.Animation animHover, animLeave;
         public override void OnMouseHover(EventArgs e)
         {
             base.OnMouseHover(e);
             this.hover = true;
+
+            /*animHover = this.GetAnimator().Attach(50, 400, this.backgroundNormal9P, this.backgroundHover9P, this.Invalidate);
+            animHover.Start();
+            animHover.Finish += (sender, ev) => this.GetAnimator().Detach(animHover);*/
+            
             this.Invalidate();
         }
 
@@ -144,6 +150,14 @@ namespace UnusefulPlayer.PlayerControls
         {
             base.OnMouseLeave(e);
             this.hover = false;
+
+            /*var p = animHover.Stop();
+            animHover.ClearImage();
+            animLeave = this.GetAnimator().Attach(50, 400, this.backgroundHover9P, this.backgroundNormal9P, this.Invalidate);
+            animLeave.Start(1-p);
+            this.GetAnimator().Detach(animHover);
+            animLeave.Finish += (sender, ev) => this.GetAnimator().Detach(animLeave);*/
+
             this.Invalidate();
         }
 
