@@ -112,11 +112,5 @@ namespace UnusefulPlayer
             f.ShowDialog();
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
-        {
-            var f = new MusicPlayer();
-            f.Show();
-        }
-
     }
 }

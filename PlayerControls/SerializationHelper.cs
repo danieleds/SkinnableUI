@@ -10,7 +10,7 @@ using System.IO.Compression;
 
 namespace UnusefulPlayer
 {
-    class SerializationHelper
+    public class SerializationHelper
     {
         public static readonly Uri PKG_SKIN_FILE = new Uri(@"/skin.xml", UriKind.Relative);
         public static readonly string PKG_RES_PREFIX = @"/_res__";

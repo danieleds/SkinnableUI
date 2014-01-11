@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace UnusefulPlayer
 {
-    class Animator : IDisposable
+    public class Animator : IDisposable
     {
         Timer tmr = new Timer();
         List<Animation> animations = new List<Animation>();

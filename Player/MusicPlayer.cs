@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio;
 using NAudio.Wave;
+using PlayerControls = UnusefulPlayer.PlayerControls;
 
-namespace UnusefulPlayer
+namespace Player
 {
     public partial class MusicPlayer : Form
     {
-
         Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>> controls = new Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>>();
         List<PlayerControls.Button> play = new List<PlayerControls.Button>();
         List<PlayerControls.Button> pause = new List<PlayerControls.Button>();
@@ -44,7 +44,7 @@ namespace UnusefulPlayer
         public MusicPlayer()
         {
             InitializeComponent();
-            
+
             foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
                 this.controls.Add(c, new List<PlayerControls.PlayerControl>());
             

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace UnusefulPlayer.PlayerControls
 {
-    class PlayerControlEventArgs
+    public class PlayerControlEventArgs
     {
         public PlayerControl Control;
         

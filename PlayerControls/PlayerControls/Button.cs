@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace UnusefulPlayer.PlayerControls
 {
-    class Button : PlayerControl
+    public class Button : PlayerControl
     {
 
         public Button(SemanticType c) : base(c)

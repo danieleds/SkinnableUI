@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace UnusefulPlayer
 {
-    class NinePatch
+    public class NinePatch
     {
         private Bitmap image;
         /// <summary>

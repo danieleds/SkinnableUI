@@ -11,7 +11,7 @@ using ExtensionMethods;
 
 namespace UnusefulPlayer.PlayerControls
 {
-    abstract class PlayerControl
+    public abstract class PlayerControl
     {
         [System.AttributeUsage(System.AttributeTargets.Field)]
         public class SemanticTypeMeta : System.Attribute

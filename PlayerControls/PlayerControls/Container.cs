@@ -10,7 +10,7 @@ using System.Collections.ObjectModel;
 
 namespace UnusefulPlayer.PlayerControls
 {
-    class Container : PlayerControl
+    public class Container : PlayerControl
     {
         /// <summary>
         /// L'ordine degli elementi in questa lista rappresenta il loro z-order.

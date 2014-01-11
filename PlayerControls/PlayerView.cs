@@ -10,7 +10,7 @@ using System.Drawing;
 namespace UnusefulPlayer
 {
     /* Contenitore di oggetti PlayerControl */
-    class PlayerView : UserControl
+    public class PlayerView : UserControl
     {
         /// <summary>
         /// L'ordine degli elementi in questa lista rappresenta il loro z-order.

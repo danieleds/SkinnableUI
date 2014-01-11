@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace UnusefulPlayer.PlayerControls
 {
-    class Label : PlayerControl
+    public class Label : PlayerControl
     {
 
         public Label(SemanticType c) : base(c)

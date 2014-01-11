@@ -8,7 +8,7 @@ using System.ComponentModel;
 
 namespace UnusefulPlayer.PlayerControls
 {
-    class TrackBar : PlayerControl
+    public class TrackBar : PlayerControl
     {
 
         public TrackBar(SemanticType c) : base(c)

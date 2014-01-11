@@ -1,4 +1,5 @@
-﻿namespace UnusefulPlayer
+﻿using UnusefulPlayer;
+namespace Player
 {
     partial class MusicPlayer
     {

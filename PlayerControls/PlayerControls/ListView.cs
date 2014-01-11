@@ -9,7 +9,7 @@ using System.Collections.ObjectModel;
 
 namespace UnusefulPlayer.PlayerControls
 {
-    class ListView : PlayerControl
+    public class ListView : PlayerControl
     {
         float curViewPosition = 0;
 
