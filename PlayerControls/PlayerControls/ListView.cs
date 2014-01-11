@@ -45,6 +45,23 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        private static Bitmap tmpBmp = new Bitmap(1, 1);
+        private float GetHeaderHeight()
+        {
+            SizeF result;
+            using (var g = Graphics.FromImage(tmpBmp))
+            {
+                result = g.MeasureString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,_!|", this.Font);
+            }
+
+            return result.Height * 1.5f;
+        }
+
+        private float GetRowHeight()
+        {
+            return GetHeaderHeight();
+        }
+
         private ObservableCollection<ListViewRow> items = new ObservableCollection<ListViewRow>();
         public ObservableCollection<ListViewRow> Items { get { return items; } }
 
@@ -70,16 +87,6 @@ namespace UnusefulPlayer.PlayerControls
             public float Width { get; set; }
         }
 
-        private float getHeaderHeight()
-        {
-            return 20; // TODO
-        }
-
-        private float getRowHeight()
-        {
-            return 20; // TODO
-        }
-
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);
@@ -98,9 +105,9 @@ namespace UnusefulPlayer.PlayerControls
 
         private void drawDefaultBackground(Graphics g)
         {
+            var headerHeight = GetHeaderHeight();
             g.FillRectangle(Brushes.White, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
 
-            var headerHeight = getHeaderHeight();
             g.FillRectangle(SystemBrushes.ButtonFace, 1, 0, this.Size.Width - 2, headerHeight+1);
             float width_sum = 0;
             for (int i = 0; i < columns.Count; i++)
@@ -123,9 +130,9 @@ namespace UnusefulPlayer.PlayerControls
 
         private void drawDefaultItems(Graphics g)
         {
-            var headerHeight = getHeaderHeight();
-            var rowHeight = getRowHeight();
-            var viewHeight = this.Size.Height - getHeaderHeight();
+            var headerHeight = GetHeaderHeight();
+            var rowHeight = GetRowHeight();
+            var viewHeight = this.Size.Height - headerHeight;
             float totWidth = this.columns.Sum(c => c.Width);
 
             var t = g.Save();
@@ -167,13 +174,15 @@ namespace UnusefulPlayer.PlayerControls
 
         private void drawScrollbar(Graphics g)
         {
-            var viewHeight = this.Size.Height - getHeaderHeight();
-            var contentHeight = getRowHeight() * this.items.Count;
+            var headerHeight = GetHeaderHeight();
+            var rowHeight = GetRowHeight();
+            var viewHeight = this.Size.Height - headerHeight;
+            var contentHeight = rowHeight * this.items.Count;
             if (contentHeight > viewHeight)
             {
                 var barw = 3;
                 var x = this.Size.Width - barw - 1;
-                g.FillRectangle(Brushes.Gray, x, getHeaderHeight() + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight);
+                g.FillRectangle(Brushes.Gray, x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight);
             }
         }
 
@@ -236,8 +245,11 @@ namespace UnusefulPlayer.PlayerControls
             }
             else
             {
-                var viewHeight = this.Size.Height - getHeaderHeight();
-                var contentHeight = getRowHeight() * this.items.Count;
+                var headerHeight = GetHeaderHeight();
+                var rowHeight = GetRowHeight();
+
+                var viewHeight = this.Size.Height - headerHeight;
+                var contentHeight = rowHeight * this.items.Count;
 
                 if (contentHeight < viewHeight)
                 {

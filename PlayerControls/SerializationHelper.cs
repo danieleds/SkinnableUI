@@ -117,16 +117,10 @@ namespace UnusefulPlayer
                 System.IO.MemoryStream m = new System.IO.MemoryStream();
                 p9.Image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
 
-                String duplicateKey = null;
-                foreach (var item in resources)
-                {
-                    var res = item.Value;
-                    if (StreamsAreEqual(res, m))
-                    {
-                        duplicateKey = item.Key;
-                        break;
-                    }
-                }
+                String duplicateKey = (from r in resources
+                                       where StreamsAreEqual(r.Value, m)
+                                       select r.Key)
+                                       .DefaultIfEmpty(null).FirstOrDefault();
 
                 if (duplicateKey == null)
                 { 

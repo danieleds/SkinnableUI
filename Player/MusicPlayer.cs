@@ -136,6 +136,12 @@ namespace Player
                 //f.Tag.Pictures[0].
                 
                 tmr.Start();
+
+                /*this.WindowState = FormWindowState.Normal;
+                this.TopMost = true;
+                this.Focus();
+                this.BringToFront();
+                this.TopMost = false;*/
             }
             else
             {
@@ -145,9 +151,11 @@ namespace Player
 
         List<T> GetControls<T>(PlayerControls.PlayerControl.SemanticType type) where T : PlayerControls.PlayerControl
         {
-            var tmp = new List<PlayerControls.PlayerControl>();
-            controls[type].ForEach(item => { if (item is T) tmp.Add(item); });
-            return new List<T>(tmp.Cast<T>());
+            var tmp = from ctl in controls[type]
+                      where ctl is T
+                      select (T)ctl;
+
+            return tmp.ToList();
         }
 
         /*void ResetUI()
