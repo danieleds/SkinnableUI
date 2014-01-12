@@ -36,7 +36,7 @@ namespace UnusefulPlayer
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         }
 
-        public bool DesignSkinMode { get { return false;  } }
+        public bool DesignSkinMode { get { return typeof(PlayerViewDesigner).IsAssignableFrom(this.GetType()); } }
 
         public Container ContainerControl
         {
@@ -111,9 +111,12 @@ namespace UnusefulPlayer
             base.OnResize(e);
             if (this.ContainerControl != null)
             {
-                this.ContainerControl.Left = 0;
-                this.ContainerControl.Top = 0;
-                this.ContainerControl.Size = new SizeF(this.Width, this.Height);
+                if (this.Width != 0 && this.Height != 0) // Per evitare bug su minimize della form
+                {
+                    this.ContainerControl.Left = 0;
+                    this.ContainerControl.Top = 0;
+                    this.ContainerControl.Size = new SizeF(this.Width, this.Height);
+                }
             }
         }
 

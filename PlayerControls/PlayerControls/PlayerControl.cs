@@ -236,16 +236,23 @@ namespace UnusefulPlayer.PlayerControls
             g.Restore(s);
         }
 
-        public Bitmap ToBitmap()
+        public Bitmap ToBitmap(Rectangle clipRectangle)
         {
-            Bitmap b = new Bitmap((int)Math.Ceiling(this.Size.Width), (int)Math.Ceiling(this.Size.Height));
+            Bitmap b = new Bitmap(clipRectangle.Width, clipRectangle.Height);
             var g = Graphics.FromImage(b);
             using (g)
             {
+                g.TranslateTransform(-clipRectangle.X, -clipRectangle.Y);
+                g.SetClip(clipRectangle, System.Drawing.Drawing2D.CombineMode.Intersect);
                 //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
                 this.OnPaint(g);
             }
             return b;
+        }
+
+        public Bitmap ToBitmap()
+        {
+            return ToBitmap(new Rectangle(0, 0, (int)Math.Ceiling(this.Size.Width), (int)Math.Ceiling(this.Size.Height)));
         }
 
         /// <summary>
@@ -332,12 +339,19 @@ namespace UnusefulPlayer.PlayerControls
         // Lavora nelle coordinate del controllo
         public virtual bool IsInside(PointF p)
         {
-            // FIXME Opzione per permettere di escludere le parti trasparenti! http://bobpowell.net/region_from_bitmap.aspx
-            var inRectangle = new RectangleF(new PointF(), this.size).Contains(p);
-            /*if (inRectangle)
+            bool inRectangle = new RectangleF(new PointF(), this.size).Contains(p);
+            if (inRectangle)
             {
-                var b = this.to
-            }*/
+                // Esclude le parti trasparenti (invece le accetta se siamo in modalità design)
+                if (!this.ParentView.DesignSkinMode)
+                {
+                    int x = (int)Math.Round(p.X, 0, MidpointRounding.AwayFromZero);
+                    int y = (int)Math.Round(p.Y, 0, MidpointRounding.AwayFromZero);
+                    Bitmap b = this.ToBitmap(new Rectangle(x, y, 1, 1));
+                    Color pixel = b.GetPixel(0, 0);
+                    inRectangle = pixel.A > 0;
+                }
+            }
             return inRectangle;
         }
         

@@ -8,7 +8,6 @@ namespace UnusefulPlayer
 {
     public class PlayerViewDesigner : PlayerView
     {
-        public new bool DesignSkinMode { get { return true; } }
         public bool DebugShowPaints { get; set; }
 
         // Variabili helper per il dragging in design mode
