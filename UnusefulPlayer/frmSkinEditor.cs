@@ -12,6 +12,9 @@ namespace UnusefulPlayer
 {
     public partial class frmSkinEditor : Form
     {
+        PlayerViewDesigner playerView;
+        string filename = null;
+
         public frmSkinEditor()
         {
             InitializeComponent();
@@ -36,25 +39,45 @@ namespace UnusefulPlayer
             
             listView1.ItemDrag += listView1_ItemDrag;
 
-            playerView1.ContainerControl.Size = playerView1.Size;
-            
-            playerView1.SelectionChanged += playerView1_SelectionChanged;
-            playerView1.SelectedObjectPropertyChanged += playerView1_SelectedObjectPropertyChanged;
-            playerView1.DesignerControlsTreeChanged += playerView1_DesignerControlsTreeChanged;
-
-            playerView1.BlockInputEvents = true;
+            InitializePlayerView();
 
             listView1_Resize(listView1, new EventArgs());
             cmbControls.DisplayMember = "DisplayName";
+        }
+
+        private void InitializePlayerView()
+        {
+            if (panel2.Controls.Contains(playerView))
+                panel2.Controls.Remove(playerView);
+
+            cmbControls.Items.Clear();
+            propertyGrid1.SelectedObject = null;
+
+            playerView = new PlayerViewDesigner() {
+                AllowDrop = true,
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
+                BlockInputEvents = true,
+                DebugShowPaints = btnShowPaints.Checked,
+                Location = new Point(3, 3),
+                Size = new Size(panel2.Size.Width - 8, panel2.Size.Height - 8)
+            };
+
+            panel2.Controls.Add(playerView);
+
+            playerView.ContainerControl.Size = playerView.Size;
+
+            playerView.SelectionChanged += playerView1_SelectionChanged;
+            playerView.SelectedObjectPropertyChanged += playerView1_SelectedObjectPropertyChanged;
+            playerView.DesignerControlsTreeChanged += playerView1_DesignerControlsTreeChanged;
         }
 
         void playerView1_DesignerControlsTreeChanged(object sender, EventArgs e)
         {
             cmbControls.Items.Clear();
 
-            if (playerView1.ContainerControl != null)
+            if (playerView.ContainerControl != null)
             {
-                cmbControls.Items.AddRange(playerView1.ContainerControl.GetAllChildren().ToArray());
+                cmbControls.Items.AddRange(playerView.ContainerControl.GetAllChildren().ToArray());
             }
         }
 
@@ -65,8 +88,8 @@ namespace UnusefulPlayer
 
         void playerView1_SelectionChanged(object sender, EventArgs e)
         {
-            propertyGrid1.SelectedObject = playerView1.SelectedControl;
-            cmbControls.SelectedItem = playerView1.SelectedControl;
+            propertyGrid1.SelectedObject = playerView.SelectedControl;
+            cmbControls.SelectedItem = playerView.SelectedControl;
         }
 
         void listView1_ItemDrag(object sender, ItemDragEventArgs e)
@@ -78,8 +101,10 @@ namespace UnusefulPlayer
 
         private void saveToolStripButton_Click(object sender, EventArgs e)
         {
-            if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                this.playerView1.SaveSkin(saveDialog.FileName);
+            if (filename == null)
+                saveAsToolStripButton_Click(sender, e);
+            else
+                this.playerView.SaveSkin(filename);
         }
 
         private void listView1_Resize(object sender, EventArgs e)
@@ -89,27 +114,74 @@ namespace UnusefulPlayer
 
         private void cmbControls_SelectedIndexChanged(object sender, EventArgs e)
         {
-            playerView1.SelectedControl = (PlayerControls.PlayerControl)cmbControls.SelectedItem;
+            playerView.SelectedControl = (PlayerControls.PlayerControl)cmbControls.SelectedItem;
         }
 
         private void openToolStripButton_Click(object sender, EventArgs e)
         {
             if (openDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                playerView1.LoadSkin(openDialog.FileName);
+                playerView.LoadSkin(openDialog.FileName);
+                filename = openDialog.FileName;
             }
         }
 
         private void btnShowPaints_CheckStateChanged(object sender, EventArgs e)
         {
-            playerView1.DebugShowPaints = btnShowPaints.Checked;
-            playerView1.Invalidate();
+            playerView.DebugShowPaints = btnShowPaints.Checked;
+            playerView.Invalidate();
         }
 
         private void btnPreview_Click(object sender, EventArgs e)
         {
-            var f = new frmSkinPreview(playerView1.GetSkin());
+            var f = new frmSkinPreview(playerView.GetSkin());
             f.ShowDialog();
+        }
+
+        private bool AskUserToSaveChanges()
+        {
+            var answ = MessageBox.Show("Save changes?", "Skin editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            if (answ == System.Windows.Forms.DialogResult.Yes)
+            {
+                if (filename == null)
+                {
+                    if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        this.playerView.SaveSkin(saveDialog.FileName);
+                        this.filename = saveDialog.FileName;
+                        return true;
+                    }
+                    else return false;
+                }
+                else
+                {
+                    this.playerView.SaveSkin(filename);
+                    return true;
+                }
+
+            }
+            else if (answ == System.Windows.Forms.DialogResult.No)
+                return true;
+            else
+                return false;
+        }
+
+        private void newToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (AskUserToSaveChanges())
+            {
+                filename = null;
+                InitializePlayerView();
+            }
+        }
+
+        private void saveAsToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (saveDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.playerView.SaveSkin(saveDialog.FileName);
+                filename = saveDialog.FileName;
+            }
         }
 
     }

@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace UnusefulPlayer
 {
-    public class Animator : IDisposable
+    public class Animator
     {
         Timer tmr = new Timer();
         List<Animation> animations = new List<Animation>();
@@ -100,7 +100,7 @@ namespace UnusefulPlayer
             /// Se 1, l'animazione va alla metà della frequenza del timer, ecc.</param>
             public Animation(int frameInterval, int numberOfFrames, NinePatch from, NinePatch to, Action invalidate)
             {
-                if (numberOfFrames <= 0) throw new ArgumentException("numberOfFrames deve essere > 0");
+                if (numberOfFrames <= 0) throw new ArgumentException("numberOfFrames should be > 0");
                 this.frameInterval = frameInterval;
                 this.numberOfFrames = numberOfFrames;
                 this.from = from;
@@ -130,7 +130,7 @@ namespace UnusefulPlayer
 
             public void Start(float startPoint)
             {
-                if (startPoint < 0 || startPoint > 1) throw new ArgumentException("startPoint deve essere compreso tra 0 e 1");
+                if (startPoint < 0 || startPoint > 1) throw new ArgumentException("startPoint should be between 0 and 1");
                 frameCount = (int)(startPoint * numberOfFrames);
 
                 running = true;
@@ -198,11 +198,6 @@ namespace UnusefulPlayer
                     }
                 }
             }
-        }
-
-        void IDisposable.Dispose()
-        {
-            tmr.Dispose();
         }
     }
 }

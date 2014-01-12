@@ -447,7 +447,6 @@ namespace UnusefulPlayer
                     this.SelectedControl = null;
                 }
 
-                System.Diagnostics.Debug.Print("#" + this.ContainerControl.Controls.Count.ToString());
                 var dropInfo = ControlDropAllowed(this.PointToClient(new Point(e.X, e.Y)), false);
                 if (dropInfo != null)
                 {
