@@ -69,12 +69,29 @@ namespace UnusefulPlayer
 
             playerView.ContainerControl.Size = playerView.Size;
 
-            playerView.SelectionChanged += playerView1_SelectionChanged;
-            playerView.SelectedObjectPropertyChanged += playerView1_SelectedObjectPropertyChanged;
-            playerView.DesignerControlsTreeChanged += playerView1_DesignerControlsTreeChanged;
+            playerView.SelectionChanged += playerView_SelectionChanged;
+            playerView.SelectedObjectPropertyChanged += playerView_SelectedObjectPropertyChanged;
+            playerView.DesignerControlsTreeChanged += playerView_DesignerControlsTreeChanged;
+            playerView.KeyDown += playerView_KeyDown;
         }
 
-        void playerView1_DesignerControlsTreeChanged(object sender, EventArgs e)
+        void playerView_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control && e.KeyCode == Keys.C)
+            {
+                copyToolStripButton_Click(this, new EventArgs());
+            }
+            else if (e.Control && e.KeyCode == Keys.X)
+            {
+                cutToolStripButton_Click(this, new EventArgs());
+            }
+            else if (e.Control && e.KeyCode == Keys.V)
+            {
+                pasteToolStripButton_Click(this, new EventArgs());
+            }
+        }
+
+        void playerView_DesignerControlsTreeChanged(object sender, EventArgs e)
         {
             cmbControls.Items.Clear();
 
@@ -84,12 +101,12 @@ namespace UnusefulPlayer
             }
         }
 
-        void playerView1_SelectedObjectPropertyChanged(object sender, EventArgs e)
+        void playerView_SelectedObjectPropertyChanged(object sender, EventArgs e)
         {
             propertyGrid1.Refresh();
         }
 
-        void playerView1_SelectionChanged(object sender, EventArgs e)
+        void playerView_SelectionChanged(object sender, EventArgs e)
         {
             propertyGrid1.SelectedObject = playerView.SelectedControl;
             cmbControls.SelectedItem = playerView.SelectedControl;
@@ -146,6 +163,9 @@ namespace UnusefulPlayer
 
         private bool AskUserToSaveChanges()
         {
+            if(filename == null && (this.playerView.ContainerControl == null || this.playerView.ContainerControl.Controls.Count == 0))
+                return true;
+
             var answ = MessageBox.Show("Save changes?", "Skin editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             if (answ == System.Windows.Forms.DialogResult.Yes)
             {
@@ -197,13 +217,16 @@ namespace UnusefulPlayer
 
         private void copyToolStripButton_Click(object sender, EventArgs e)
         {
-            PlayerControls.PlayerControl copy = (PlayerControls.PlayerControl)Activator.CreateInstance(
-                playerView.SelectedControl.GetType(),
-                new object[] { playerView.SelectedControl.Semantic });
-            copy.ApplyProperties(playerView.SelectedControl);
-            copy.Parent = null;
+            if (playerView.SelectedControl != null)
+            {
+                PlayerControls.PlayerControl copy = (PlayerControls.PlayerControl)Activator.CreateInstance(
+                    playerView.SelectedControl.GetType(),
+                    new object[] { playerView.SelectedControl.Semantic });
+                copy.ApplyProperties(playerView.SelectedControl);
+                copy.Parent = null;
 
-            copiedControl = copy;
+                copiedControl = copy;
+            }
         }
 
         private void pasteToolStripButton_Click(object sender, EventArgs e)
@@ -214,7 +237,34 @@ namespace UnusefulPlayer
                     copiedControl.GetType(),
                     new object[] { copiedControl.Semantic });
                 copy.ApplyProperties(copiedControl);
-                copy.Parent = playerView.ContainerControl;
+
+                if (playerView.SelectedControl == null)
+                {
+                    copy.Parent = playerView.ContainerControl;
+                }
+                else
+                {
+                    if (playerView.SelectedControl is PlayerControls.Container)
+                    {
+                        copy.Parent = (PlayerControls.Container)playerView.SelectedControl;
+                    } else
+                    {
+                        copy.Parent = playerView.SelectedControl.Parent;
+                    }
+                }
+
+                copy.Location = new PointF(copy.Location.X + 10, copy.Location.Y + 10);
+                playerView.SelectedControl = copy;
+            }
+        }
+
+        private void cutToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (playerView.SelectedControl != null)
+            {
+                copiedControl = playerView.SelectedControl;
+                playerView.SelectedControl = copiedControl.Parent;
+                copiedControl.Parent = null;
             }
         }
 

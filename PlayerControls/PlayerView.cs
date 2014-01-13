@@ -36,7 +36,7 @@ namespace UnusefulPlayer
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         }
 
-        public bool DesignSkinMode { get { return typeof(PlayerViewDesigner).IsAssignableFrom(this.GetType()); } }
+        public bool DesignSkinMode { get { return this is PlayerViewDesigner; } }
 
         public Container ContainerControl
         {

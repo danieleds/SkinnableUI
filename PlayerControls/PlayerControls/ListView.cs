@@ -12,8 +12,11 @@ namespace UnusefulPlayer.PlayerControls
     public class ListView : PlayerControl
     {
         float curViewPosition = 0;
-        int? curOverPosition = null;
+        ListViewRow curOverRow = null;
         float? paintedColumnsTotalWidth = null;
+        List<ListViewRow> selectedRows = new List<ListViewRow>();
+        long lastMouseDownSelectionMsec = 0;
+        Point lastMouseDownSelectionPt = new Point();
 
         public ListView(SemanticType c) : base(c)
         {
@@ -145,12 +148,25 @@ namespace UnusefulPlayer.PlayerControls
             {
                 ListViewRow item = items[i];
 
+                bool over = curOverRow == item;
+                bool selected = selectedRows.Contains(item);
+
                 Brush bg = Brushes.Transparent;
                 Pen border = Pens.Transparent;
 
-                if (curOverPosition.HasValue && curOverPosition.Value == i)
+                if (over && selected)
+                {
+                    bg = Brushes.LightBlue;
+                    border = Pens.LightBlue;
+                }
+                else if (over)
                 {
                     bg = Brushes.AliceBlue;
+                    border = Pens.LightBlue;
+                }
+                else if (selected)
+                {
+                    bg = Brushes.LightBlue;
                     border = Pens.LightBlue;
                 }
 
@@ -199,7 +215,7 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        private int? getPositionByCoordinates(float x, float y)
+        public ListViewRow HitTest(float x, float y)
         {
             if (this.items.Count == 0)
                 return null;
@@ -220,7 +236,7 @@ namespace UnusefulPlayer.PlayerControls
             if (pos >= this.items.Count)
                 return null;
             else
-                return pos;
+                return this.items[pos];
         }
 
         public override void OnResize(EventArgs e)
@@ -234,7 +250,26 @@ namespace UnusefulPlayer.PlayerControls
             base.OnMouseDown(e);
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                //this.pressed = true;
+                ListViewRow item = HitTest(e.X, e.Y);
+
+                // FIXME Implementare multiselect con CTRL / SHIFT
+                this.selectedRows.Clear();
+                if (item != null)
+                    this.selectedRows.Add(item);
+
+                if ((DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond - lastMouseDownSelectionMsec) <= System.Windows.Forms.SystemInformation.DoubleClickTime)
+                {
+                    Size dbsz = System.Windows.Forms.SystemInformation.DoubleClickSize;
+                    if (Math.Abs(lastMouseDownSelectionPt.X - e.X) <= dbsz.Width && Math.Abs(lastMouseDownSelectionPt.Y - e.Y) <= dbsz.Height)
+                    {
+                        // E' stato fatto doppio click
+                        System.Windows.Forms.MessageBox.Show(":)");
+                    }
+                }
+
+                lastMouseDownSelectionMsec = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+                lastMouseDownSelectionPt = e.Location;
+
                 this.Invalidate();
             }
         }
@@ -252,7 +287,7 @@ namespace UnusefulPlayer.PlayerControls
         public override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            this.curOverPosition = getPositionByCoordinates(e.X, e.Y);
+            this.curOverRow = HitTest(e.X, e.Y);
             this.Invalidate();
         }
 
@@ -267,7 +302,7 @@ namespace UnusefulPlayer.PlayerControls
         {
             base.OnMouseLeave(e);
             //this.enter = false;
-            this.curOverPosition = null;
+            this.curOverRow = null;
             this.Invalidate();
         }
 

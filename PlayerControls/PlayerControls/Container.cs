@@ -27,6 +27,11 @@ namespace UnusefulPlayer.PlayerControls
         PlayerControl lastEnterControl = null;
         private SizeF sizeBeforeResize;
 
+        long lastDoubleClickMsec = 0;
+        Point lastDoubleClickPt = new Point();
+        PlayerControl lastDoubleClickCtl = null;
+        bool suppressNextClick = false;
+
         public Container(SemanticType c) : base(c)
         {
             this.Size = new SizeF(150, 100);
@@ -195,6 +200,23 @@ namespace UnusefulPlayer.PlayerControls
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
                 ctl.OnMouseDown(e2);
             }
+            
+            // Gestione doppio click
+            if ((DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond - lastDoubleClickMsec) <= System.Windows.Forms.SystemInformation.DoubleClickTime)
+            {
+                Size dbsz = System.Windows.Forms.SystemInformation.DoubleClickSize;
+                if (Math.Abs(lastDoubleClickPt.X - e.X) <= dbsz.Width && Math.Abs(lastDoubleClickPt.Y - e.Y) <= dbsz.Height)
+                {
+                    suppressNextClick = true;
+                    if (ctl == null)
+                        base.OnMouseDoubleClick(new MouseEventArgs(e.Button, e.Clicks + 1, e.X, e.Y, e.Delta));
+                    else
+                        ctl.OnMouseDoubleClick(new MouseEventArgs(e.Button, e.Clicks + 1, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta));
+                }
+            }
+            lastDoubleClickMsec = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+            lastDoubleClickPt = e.Location;
+            lastDoubleClickCtl = ctl;
         }
 
         public override void OnMouseMove(MouseEventArgs e)
@@ -282,16 +304,30 @@ namespace UnusefulPlayer.PlayerControls
             base.OnMouseUp(e);
 
             PlayerControl ctl = controls.FirstOrDefault(c => c.Capture || c.HitTest(e.Location));
-            if (ctl != null)
+
+            if (ctl == null)
+            {
+                // Gestione click
+                if (!this.suppressNextClick)
+                {
+                    var capture = this.Capture;
+                    var hit = this.IsInside(e.Location);
+
+                    if (e.Button == MouseButtons.Left && capture && hit)
+                        this.OnClick(new EventArgs());
+                }
+            }
+            else
             {
                 var capture = ctl.Capture;
                 var hit = ctl.HitTest(e.Location);
 
+                // Gestione click
+                if (e.Button == MouseButtons.Left && capture && hit && !this.suppressNextClick)
+                    ctl.OnClick(new EventArgs());
+
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
                 ctl.OnMouseUp(e2);
-
-                if (e.Button == MouseButtons.Left && capture && hit)
-                    ctl.OnClick(new EventArgs()); // FIXME Solo l'elemento più annidato deve ricevere l'onClick??
 
                 if (capture && !hit)
                 {
@@ -306,6 +342,8 @@ namespace UnusefulPlayer.PlayerControls
                     }
                 }
             }
+
+            this.suppressNextClick = false;
         }
 
         public override void OnMouseWheel(MouseEventArgs e)

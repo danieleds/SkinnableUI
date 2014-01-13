@@ -87,6 +87,9 @@ namespace UnusefulPlayer.PlayerControls
         public delegate void ClickEventHandler(object sender, EventArgs e);
         public event ClickEventHandler Click;
 
+        public delegate void MouseDoubleClickEventHandler(object sender, MouseEventArgs e);
+        public event MouseDoubleClickEventHandler MouseDoubleClick;
+
         public delegate void MouseEnterEventHandler(object sender, EventArgs e);
         public event MouseEnterEventHandler MouseEnter;
 
@@ -102,7 +105,7 @@ namespace UnusefulPlayer.PlayerControls
         [Browsable(false)]
         public PlayerView ParentView { get; set; }
 
-        public Container parent = null;
+        private Container parent = null;
         [Browsable(false)]
         public Container Parent
         {
@@ -400,6 +403,11 @@ namespace UnusefulPlayer.PlayerControls
         public virtual void OnClick(EventArgs e)
         {
             if (Click != null) Click(this, e);
+        }
+
+        public virtual void OnMouseDoubleClick(MouseEventArgs e)
+        {
+            if (MouseDoubleClick != null) MouseDoubleClick(this, e);
         }
 
         public virtual void OnMouseEnter(EventArgs e)
