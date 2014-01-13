@@ -8,6 +8,7 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Xml;
 using ExtensionMethods;
+using System.Reflection;
 
 namespace UnusefulPlayer.PlayerControls
 {
@@ -86,8 +87,8 @@ namespace UnusefulPlayer.PlayerControls
         public delegate void ClickEventHandler(object sender, EventArgs e);
         public event ClickEventHandler Click;
 
-        public delegate void MouseHoverEventHandler(object sender, EventArgs e);
-        public event MouseHoverEventHandler MouseHover;
+        public delegate void MouseEnterEventHandler(object sender, EventArgs e);
+        public event MouseEnterEventHandler MouseEnter;
 
         public delegate void MouseLeaveEventHandler(object sender, EventArgs e);
         public event MouseLeaveEventHandler MouseLeave;
@@ -185,12 +186,11 @@ namespace UnusefulPlayer.PlayerControls
                 var oldsize = this.size;
                 this.size = value;
                 this.InvalidateParent(new RectangleF(this.Left, this.Top, Math.Max(this.size.Width, oldsize.Width), Math.Max(this.size.Height, oldsize.Height)));
-                //this.InvalidateParent();
                 OnResize(new EventArgs()); // FIXME Generare l'evento anche alla creazione del controllo?
             }
         }
 
-        private SemanticType semantic; // FIXME: A cosa lo inizializziamo??
+        private SemanticType semantic;
         [Browsable(false)]
         public SemanticType Semantic
         {
@@ -330,6 +330,26 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadFont(element, "font", s => this.Font = s);
         }
 
+        /// <summary>
+        /// Applica all'oggetto corrente tutte le proprietà in comune con "source".
+        /// </summary>
+        /// <param name="source"></param>
+        public virtual void ApplyProperties(PlayerControl source)
+        {
+            var destinationProperties = from ownProp in this.GetType().GetProperties()
+                                        let srcProp = source.GetType().GetProperty(ownProp.Name)
+                                        where ownProp.CanWrite
+                                        && srcProp != null 
+                                        && srcProp.CanRead
+                                        select ownProp;
+
+            foreach (PropertyInfo destinationPi in destinationProperties)
+            {
+                PropertyInfo sourcePi = source.GetType().GetProperty(destinationPi.Name);
+                destinationPi.SetValue(this, sourcePi.GetValue(source, null), null);
+            } 
+        }
+
         // Lavora nelle coordinate globali
         public bool HitTest(PointF p)
         {
@@ -382,9 +402,9 @@ namespace UnusefulPlayer.PlayerControls
             if (Click != null) Click(this, e);
         }
 
-        public virtual void OnMouseHover(EventArgs e)
+        public virtual void OnMouseEnter(EventArgs e)
         {
-            if (MouseHover != null) MouseHover(this, e);
+            if (MouseEnter != null) MouseEnter(this, e);
         }
 
         public virtual void OnMouseLeave(EventArgs e)

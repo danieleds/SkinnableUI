@@ -16,7 +16,7 @@ namespace UnusefulPlayer.PlayerControls
             this.Size = new SizeF(120, 12);
         }
         private bool pressed;
-        private bool hover;
+        private bool over;
 
         public delegate void ValueChangedEventHandler(object sender, EventArgs e);
         public event ValueChangedEventHandler ValueChanged;
@@ -56,17 +56,17 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        private NinePatch indicatorHover9P;
+        private NinePatch indicatorOver9P;
         [DefaultValue(null)]
-        public Bitmap IndicatorHover9P
+        public Bitmap IndicatorOver9P
         {
-            get { return indicatorHover9P != null ? indicatorHover9P.Image : null; }
+            get { return indicatorOver9P != null ? indicatorOver9P.Image : null; }
             set
             {
                 if (value == null)
-                    this.indicatorHover9P = null;
+                    this.indicatorOver9P = null;
                 else
-                    this.indicatorHover9P = new NinePatch(value);
+                    this.indicatorOver9P = new NinePatch(value);
                 this.Invalidate();
             }
         }
@@ -178,11 +178,11 @@ namespace UnusefulPlayer.PlayerControls
                 else
                     drawDefaultIndicator(g, indicator_box);
             }
-            else if(hover)
+            else if(over)
             {
-                if (indicatorHover9P != null)
+                if (indicatorOver9P != null)
                 {
-                    indicatorHover9P.Paint(g, indicator_box);
+                    indicatorOver9P.Paint(g, indicator_box);
                 }
                 else
                     drawDefaultIndicator(g, indicator_box);
@@ -259,17 +259,17 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        public override void OnMouseHover(EventArgs e)
+        public override void OnMouseEnter(EventArgs e)
         {
-            base.OnMouseHover(e);
-            this.hover = true;
+            base.OnMouseEnter(e);
+            this.over = true;
             this.Invalidate();
         }
 
         public override void OnMouseLeave(EventArgs e)
         {
             base.OnMouseLeave(e);
-            this.hover = false;
+            this.over = false;
             this.Invalidate();
         }
 
@@ -283,7 +283,7 @@ namespace UnusefulPlayer.PlayerControls
 
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
             SerializationHelper.SetNinePatch(this.indicatorNormal9P, "indicatorNormal9P", resources, node);
-            SerializationHelper.SetNinePatch(this.indicatorHover9P, "indicatorHover9P", resources, node);
+            SerializationHelper.SetNinePatch(this.indicatorOver9P, "indicatorOver9P", resources, node);
             SerializationHelper.SetNinePatch(this.indicatorPressed9P, "indicatorPressed9P", resources, node);
             SerializationHelper.SetNinePatch(this.indicatorBar9P, "indicatorBar9P", resources, node);
 
@@ -298,7 +298,7 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadInteger(element, "value", s => this.Value = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "indicatorNormal9P", resources, s => this.IndicatorNormal9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "indicatorHover9P", resources, s => this.IndicatorHover9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "indicatorOver9P", resources, s => this.IndicatorOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "indicatorPressed9P", resources, s => this.IndicatorPressed9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "indicatorBar9P", resources, s => this.IndicatorBar9P = s);
         }

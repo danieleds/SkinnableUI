@@ -15,6 +15,8 @@ namespace UnusefulPlayer
         PlayerViewDesigner playerView;
         string filename = null;
 
+        PlayerControls.PlayerControl copiedControl = null;
+
         public frmSkinEditor()
         {
             InitializeComponent();
@@ -58,6 +60,7 @@ namespace UnusefulPlayer
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
                 BlockInputEvents = true,
                 DebugShowPaints = btnShowPaints.Checked,
+                DebugShowRuler = rulerToolStripButton.Checked,
                 Location = new Point(3, 3),
                 Size = new Size(panel2.Size.Width - 8, panel2.Size.Height - 8)
             };
@@ -181,6 +184,34 @@ namespace UnusefulPlayer
             {
                 this.playerView.SaveSkin(saveDialog.FileName);
                 filename = saveDialog.FileName;
+            }
+        }
+
+        private void rulerToolStripButton_CheckStateChanged(object sender, EventArgs e)
+        {
+            playerView.DebugShowRuler = rulerToolStripButton.Checked;
+        }
+
+        private void copyToolStripButton_Click(object sender, EventArgs e)
+        {
+            PlayerControls.PlayerControl copy = (PlayerControls.PlayerControl)Activator.CreateInstance(
+                playerView.SelectedControl.GetType(),
+                new object[] { playerView.SelectedControl.Semantic });
+            copy.ApplyProperties(playerView.SelectedControl);
+            copy.Parent = null;
+
+            copiedControl = copy;
+        }
+
+        private void pasteToolStripButton_Click(object sender, EventArgs e)
+        {
+            if (copiedControl != null)
+            {
+                PlayerControls.PlayerControl copy = (PlayerControls.PlayerControl)Activator.CreateInstance(
+                    copiedControl.GetType(),
+                    new object[] { copiedControl.Semantic });
+                copy.ApplyProperties(copiedControl);
+                copy.Parent = playerView.ContainerControl;
             }
         }
 

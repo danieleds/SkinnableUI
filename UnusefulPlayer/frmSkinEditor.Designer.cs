@@ -45,14 +45,16 @@
             this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.saveAsToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator = new System.Windows.Forms.ToolStripSeparator();
             this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.btnShowPaints = new System.Windows.Forms.ToolStripButton();
+            this.rulerToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnPreview = new System.Windows.Forms.ToolStripButton();
-            this.saveAsToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.rightPanel.SuspendLayout();
             this.leftPanel.SuspendLayout();
             this.panel1.SuspendLayout();
@@ -198,6 +200,8 @@
             this.pasteToolStripButton,
             this.toolStripSeparator1,
             this.btnShowPaints,
+            this.rulerToolStripButton,
+            this.toolStripSeparator2,
             this.btnPreview});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
@@ -235,6 +239,16 @@
             this.saveToolStripButton.Text = "&Save";
             this.saveToolStripButton.Click += new System.EventHandler(this.saveToolStripButton_Click);
             // 
+            // saveAsToolStripButton
+            // 
+            this.saveAsToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.saveAsToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveAsToolStripButton.Image")));
+            this.saveAsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.saveAsToolStripButton.Name = "saveAsToolStripButton";
+            this.saveAsToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.saveAsToolStripButton.Text = "Save as...";
+            this.saveAsToolStripButton.Click += new System.EventHandler(this.saveAsToolStripButton_Click);
+            // 
             // toolStripSeparator
             // 
             this.toolStripSeparator.Name = "toolStripSeparator";
@@ -257,6 +271,7 @@
             this.copyToolStripButton.Name = "copyToolStripButton";
             this.copyToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.copyToolStripButton.Text = "&Copy";
+            this.copyToolStripButton.Click += new System.EventHandler(this.copyToolStripButton_Click);
             // 
             // pasteToolStripButton
             // 
@@ -266,6 +281,7 @@
             this.pasteToolStripButton.Name = "pasteToolStripButton";
             this.pasteToolStripButton.Size = new System.Drawing.Size(23, 22);
             this.pasteToolStripButton.Text = "&Paste";
+            this.pasteToolStripButton.Click += new System.EventHandler(this.pasteToolStripButton_Click);
             // 
             // toolStripSeparator1
             // 
@@ -283,6 +299,22 @@
             this.btnShowPaints.Text = "Show paints";
             this.btnShowPaints.CheckStateChanged += new System.EventHandler(this.btnShowPaints_CheckStateChanged);
             // 
+            // rulerToolStripButton
+            // 
+            this.rulerToolStripButton.CheckOnClick = true;
+            this.rulerToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.rulerToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("rulerToolStripButton.Image")));
+            this.rulerToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.rulerToolStripButton.Name = "rulerToolStripButton";
+            this.rulerToolStripButton.Size = new System.Drawing.Size(23, 22);
+            this.rulerToolStripButton.Text = "Show ruler on resize";
+            this.rulerToolStripButton.CheckStateChanged += new System.EventHandler(this.rulerToolStripButton_CheckStateChanged);
+            // 
+            // toolStripSeparator2
+            // 
+            this.toolStripSeparator2.Name = "toolStripSeparator2";
+            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+            // 
             // btnPreview
             // 
             this.btnPreview.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -292,16 +324,6 @@
             this.btnPreview.Size = new System.Drawing.Size(23, 22);
             this.btnPreview.Text = "Preview";
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
-            // 
-            // saveAsToolStripButton
-            // 
-            this.saveAsToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
-            this.saveAsToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("saveAsToolStripButton.Image")));
-            this.saveAsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.saveAsToolStripButton.Name = "saveAsToolStripButton";
-            this.saveAsToolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.saveAsToolStripButton.Text = "Save as...";
-            this.saveAsToolStripButton.Click += new System.EventHandler(this.saveAsToolStripButton_Click);
             // 
             // frmSkinEditor
             // 
@@ -353,6 +375,8 @@
         private System.Windows.Forms.ToolStripButton btnShowPaints;
         private System.Windows.Forms.ToolStripButton btnPreview;
         private System.Windows.Forms.ToolStripButton saveAsToolStripButton;
+        private System.Windows.Forms.ToolStripButton rulerToolStripButton;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
     }
 }
 

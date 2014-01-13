@@ -24,7 +24,7 @@ namespace UnusefulPlayer.PlayerControls
         public delegate void ControlRemovedEventHandler(object sender, PlayerControlEventArgs e);
         public event ControlRemovedEventHandler ControlRemoved;
 
-        PlayerControl lastHoverControl = null;
+        PlayerControl lastEnterControl = null;
         private SizeF sizeBeforeResize;
 
         public Container(SemanticType c) : base(c)
@@ -74,8 +74,8 @@ namespace UnusefulPlayer.PlayerControls
             this.controls.Remove(c);
             c.ParentView = null;
             c.Parent = null;
-            if (lastHoverControl == c)
-                lastHoverControl = null;
+            if (lastEnterControl == c)
+                lastEnterControl = null;
             this.Invalidate();
             if (ControlAdded != null) ControlRemoved(this, new PlayerControlEventArgs(c));
         }
@@ -209,13 +209,13 @@ namespace UnusefulPlayer.PlayerControls
                 ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
                 if (ctl != null)
                 {
-                    if (lastHoverControl != ctl)
+                    if (lastEnterControl != ctl)
                     {
-                        // Lanciamo mouseLeave / mouseHover sul vecchio / nuovo controllo sopra il quale ci troviamo.
-                        if (lastHoverControl != null)
-                            lastHoverControl.OnMouseLeave(new EventArgs());
-                        lastHoverControl = ctl;
-                        ctl.OnMouseHover(new EventArgs());
+                        // Lanciamo mouseLeave / mouseEnter sul vecchio / nuovo controllo sopra il quale ci troviamo.
+                        if (lastEnterControl != null)
+                            lastEnterControl.OnMouseLeave(new EventArgs());
+                        lastEnterControl = ctl;
+                        ctl.OnMouseEnter(new EventArgs());
                     }
 
                     MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
@@ -224,11 +224,11 @@ namespace UnusefulPlayer.PlayerControls
                 else
                 {
                     // Non ci troviamo sopra a nessun controllo: se qualcuno dei nostri
-                    // controlli aveva il mouseHover, gli chiamiamo mouseLeave.
-                    if (lastHoverControl != null)
+                    // controlli aveva il mouseEnter, gli chiamiamo mouseLeave.
+                    if (lastEnterControl != null)
                     {
-                        lastHoverControl.OnMouseLeave(new EventArgs());
-                        lastHoverControl = null;
+                        lastEnterControl.OnMouseLeave(new EventArgs());
+                        lastEnterControl = null;
                     }
                 }
             }
@@ -247,13 +247,13 @@ namespace UnusefulPlayer.PlayerControls
                 if (hit)
                 {
                     someoneHit = true;
-                    if (lastHoverControl != ctl)
+                    if (lastEnterControl != ctl)
                     {
-                        // Lanciamo mouseLeave / mouseHover sul vecchio / nuovo controllo sopra il quale ci troviamo.
-                        if (lastHoverControl != null)
-                            lastHoverControl.OnMouseLeave(new EventArgs());
-                        lastHoverControl = ctl;
-                        ctl.OnMouseHover(new EventArgs());
+                        // Lanciamo mouseLeave / mouseEnter sul vecchio / nuovo controllo sopra il quale ci troviamo.
+                        if (lastEnterControl != null)
+                            lastEnterControl.OnMouseLeave(new EventArgs());
+                        lastEnterControl = ctl;
+                        ctl.OnMouseEnter(new EventArgs());
                     }
                 }
 
@@ -268,11 +268,11 @@ namespace UnusefulPlayer.PlayerControls
             if (!someoneHit)
             {
                 // Non ci troviamo sopra a nessun controllo: se qualcuno dei nostri
-                // controlli aveva il mouseHover, gli chiamiamo mouseLeave.
-                if (lastHoverControl != null)
+                // controlli aveva il mouseEnter, gli chiamiamo mouseLeave.
+                if (lastEnterControl != null)
                 {
-                    lastHoverControl.OnMouseLeave(new EventArgs());
-                    lastHoverControl = null;
+                    lastEnterControl.OnMouseLeave(new EventArgs());
+                    lastEnterControl = null;
                 }
             }*/
         }
@@ -296,13 +296,13 @@ namespace UnusefulPlayer.PlayerControls
                 if (capture && !hit)
                 {
                     // Il capturing è finito e ora ci ritroviamo su un controllo diverso... lanciamo
-                    // gli eventi MouseLeave / MouseHover
+                    // gli eventi MouseLeave / MouseEnter
                     ctl.OnMouseLeave(new EventArgs());
-                    PlayerControl hoverctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
-                    if (hoverctl != null)
+                    PlayerControl enterctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
+                    if (enterctl != null)
                     {
-                        lastHoverControl = hoverctl;
-                        hoverctl.OnMouseHover(new EventArgs());
+                        lastEnterControl = enterctl;
+                        enterctl.OnMouseEnter(new EventArgs());
                     }
                 }
             }

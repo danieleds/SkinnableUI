@@ -12,6 +12,7 @@ namespace UnusefulPlayer.PlayerControls
     public class ListView : PlayerControl
     {
         float curViewPosition = 0;
+        int? curOverPosition = null;
 
         public ListView(SemanticType c) : base(c)
         {
@@ -141,10 +142,19 @@ namespace UnusefulPlayer.PlayerControls
 
             for (int i = 0; i < items.Count; i++)
             {
-                var item = items[i];
+                ListViewRow item = items[i];
 
-                g.FillRectangle(Brushes.AliceBlue, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
-                g.DrawRectangle(Pens.LightBlue, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
+                Brush bg = Brushes.Transparent;
+                Pen border = Pens.Transparent;
+
+                if (curOverPosition.HasValue && curOverPosition.Value == i)
+                {
+                    bg = Brushes.AliceBlue;
+                    border = Pens.LightBlue;
+                }
+
+                g.FillRectangle(bg, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
+                g.DrawRectangle(border, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
 
                 float width_sum = 0;
                 for (int j = 0; j < columns.Count; j++)
@@ -212,17 +222,24 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        public override void OnMouseHover(EventArgs e)
+        public override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
-            base.OnMouseHover(e);
-            //this.hover = true;
+            base.OnMouseMove(e);
+        }
+
+        public override void OnMouseEnter(EventArgs e)
+        {
+            base.OnMouseEnter(e);
+            //this.enter = true;
+            
             this.Invalidate();
         }
 
         public override void OnMouseLeave(EventArgs e)
         {
             base.OnMouseLeave(e);
-            //this.hover = false;
+            //this.enter = false;
+            this.curOverPosition = null;
             this.Invalidate();
         }
 

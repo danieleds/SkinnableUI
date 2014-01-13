@@ -17,7 +17,7 @@ namespace UnusefulPlayer.PlayerControls
         }
 
         private bool pressed;
-        private bool hover;
+        private bool over;
 
         protected NinePatch backgroundNormal9P;
         [DefaultValue(null)]
@@ -34,17 +34,17 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        protected NinePatch backgroundHover9P;
+        protected NinePatch backgroundOver9P;
         [DefaultValue(null)]
-        public Bitmap BackgroundHover9P
+        public Bitmap BackgroundOver9P
         {
-            get { return backgroundHover9P != null ? backgroundHover9P.Image : null; }
+            get { return backgroundOver9P != null ? backgroundOver9P.Image : null; }
             set
             {
                 if (value == null)
-                    this.backgroundHover9P = null;
+                    this.backgroundOver9P = null;
                 else
-                    this.backgroundHover9P = new NinePatch(value);
+                    this.backgroundOver9P = new NinePatch(value);
                 this.Invalidate();
             }
         }
@@ -82,12 +82,12 @@ namespace UnusefulPlayer.PlayerControls
                 else
                     drawDefaultButton(g);
             }
-            else if(hover)
+            else if(over)
             {
-                if (backgroundHover9P != null)
+                if (backgroundOver9P != null)
                 {
-                    contentBox = backgroundHover9P.GetContentBox(this.Size);
-                    backgroundHover9P.Paint(g, this.Size);
+                    contentBox = backgroundOver9P.GetContentBox(this.Size);
+                    backgroundOver9P.Paint(g, this.Size);
                 }
                 else
                     drawDefaultButton(g);
@@ -133,15 +133,15 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        //Animator.Animation animHover, animLeave;
-        public override void OnMouseHover(EventArgs e)
+        //Animator.Animation animOver, animLeave;
+        public override void OnMouseEnter(EventArgs e)
         {
-            base.OnMouseHover(e);
-            this.hover = true;
+            base.OnMouseEnter(e);
+            this.over = true;
 
-            /*animHover = this.GetAnimator().Attach(50, 400, this.backgroundNormal9P, this.backgroundHover9P, this.Invalidate);
-            animHover.Start();
-            animHover.Finish += (sender, ev) => this.GetAnimator().Detach(animHover);*/
+            /*animOver = this.GetAnimator().Attach(50, 400, this.backgroundNormal9P, this.backgroundOver9P, this.Invalidate);
+            animOver.Start();
+            animOver.Finish += (sender, ev) => this.GetAnimator().Detach(animOver);*/
             
             this.Invalidate();
         }
@@ -149,13 +149,13 @@ namespace UnusefulPlayer.PlayerControls
         public override void OnMouseLeave(EventArgs e)
         {
             base.OnMouseLeave(e);
-            this.hover = false;
+            this.over = false;
 
-            /*var p = animHover.Stop();
-            animHover.ClearImage();
-            animLeave = this.GetAnimator().Attach(50, 400, this.backgroundHover9P, this.backgroundNormal9P, this.Invalidate);
+            /*var p = animOver.Stop();
+            animOver.ClearImage();
+            animLeave = this.GetAnimator().Attach(50, 400, this.backgroundOver9P, this.backgroundNormal9P, this.Invalidate);
             animLeave.Start(1-p);
-            this.GetAnimator().Detach(animHover);
+            this.GetAnimator().Detach(animOver);
             animLeave.Finish += (sender, ev) => this.GetAnimator().Detach(animLeave);*/
 
             this.Invalidate();
@@ -167,7 +167,7 @@ namespace UnusefulPlayer.PlayerControls
             node.SetAttribute("text", this.Text);
 
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundHover9P, "backgroundHover9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundOver9P, "backgroundOver9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundPressed9P, "backgroundPressed9P", resources, node);
 
             return node;
@@ -178,7 +178,7 @@ namespace UnusefulPlayer.PlayerControls
             base.FromXmlElement(element, resources);
             SerializationHelper.LoadString(element, "text", s => this.Text = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundHover9P", resources, s => this.BackgroundHover9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundOver9P", resources, s => this.BackgroundOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundPressed9P", resources, s => this.BackgroundPressed9P = s);
         }
 

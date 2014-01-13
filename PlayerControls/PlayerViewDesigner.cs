@@ -3,12 +3,17 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using UnusefulPlayer.PlayerControls;
+using ExtensionMethods;
 
 namespace UnusefulPlayer
 {
     public class PlayerViewDesigner : PlayerView
     {
         public bool DebugShowPaints { get; set; }
+        public bool DebugShowRuler { get; set; }
+
+        // dimensioni resize handles
+        const int HANDLE_W = 6, HANDLE_H = 6;
 
         // Variabili helper per il dragging in design mode
         PlayerControl draggingControl;
@@ -75,7 +80,9 @@ namespace UnusefulPlayer
                         selectedControl.Resize += selectedControl_MetaControlsNeedRepaint;
                         selectedControl.Move += selectedControl_MetaControlsNeedRepaint;
                     }
+
                     this.Invalidate();
+                    
                     if (SelectionChanged != null) SelectionChanged(this, new EventArgs());
                 }
             }
@@ -181,6 +188,9 @@ namespace UnusefulPlayer
             if (selectedControl != null)
                 drawSelectionMetacontrols(e.Graphics);
 
+            if (DebugShowRuler && resizingControl != null)
+                drawResizingMeasure(e.Graphics);
+
             if (draggingControl != null)
             {
                 e.Graphics.DrawImageUnscaled(this.draggingBitmap, this.draggingPosition.X - (int)this.draggingOffset.X, this.draggingPosition.Y - (int)this.draggingOffset.Y);
@@ -193,43 +203,53 @@ namespace UnusefulPlayer
             }
         }
 
+        RectangleF[] getResizeHandlesRectangles(PointF controlLocation, SizeF controlSize)
+        {
+            RectangleF[] resizeHandles = {
+                    new RectangleF(controlLocation.X - HANDLE_W, controlLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlLocation.X + controlSize.Width - 1, controlLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
+
+                    new RectangleF(controlLocation.X - HANDLE_W, controlLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
+                    new RectangleF(controlLocation.X + controlSize.Width - 1, controlLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
+
+                    new RectangleF(controlLocation.X - HANDLE_W, controlLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlLocation.X + controlSize.Width - 1, controlLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H)
+                };
+
+            return resizeHandles;
+        }
+
+        /// <summary>
+        /// Restituisce il rettangolo che inscrive tutti i resize handles.
+        /// </summary>
+        /// <param name="resizeHandles"></param>
+        /// <returns></returns>
+        /*RectangleF getResizeHandlesOuterRectangle(RectangleF[] resizeHandles)
+        {
+            var topLeftHnd = resizeHandles[0];
+            var bottomRightHnd = resizeHandles[7];
+            return new RectangleF(
+                topLeftHnd.X,
+                topLeftHnd.Y,
+                bottomRightHnd.X + bottomRightHnd.Width,
+                bottomRightHnd.Height + bottomRightHnd.Width
+            );
+        }*/
+
         private void drawSelectionMetacontrols(Graphics g)
         {
             if (selectedControl != null && selectedControl != this.ContainerControl)
             {
                 var selectedControlPos = selectedControl.GetAbsoluteLocation();
 
-                const int handleW = 6, handleH = 6;
-
-                RectangleF[] resizeHandles = {
-                    new RectangleF(selectedControlPos.X - handleW, selectedControlPos.Y - handleH, handleW, handleH),
-                    new RectangleF(selectedControlPos.X + (selectedControl.Size.Width / 2) - (handleW / 2), selectedControlPos.Y - handleH, handleW, handleH),
-                    new RectangleF(selectedControlPos.X + selectedControl.Size.Width - 1, selectedControlPos.Y - handleH, handleW, handleH),
-
-                    new RectangleF(selectedControlPos.X - handleW, selectedControlPos.Y + (selectedControl.Size.Height / 2) - (handleH / 2), handleW, handleH),
-                    new RectangleF(selectedControlPos.X + selectedControl.Size.Width - 1, selectedControlPos.Y + (selectedControl.Size.Height / 2) - (handleH / 2), handleW, handleH),
-
-                    new RectangleF(selectedControlPos.X - handleW, selectedControlPos.Y + selectedControl.Size.Height - 1, handleW, handleH),
-                    new RectangleF(selectedControlPos.X + (selectedControl.Size.Width / 2) - (handleW / 2), selectedControlPos.Y + selectedControl.Size.Height - 1, handleW, handleH),
-                    new RectangleF(selectedControlPos.X + selectedControl.Size.Width - 1, selectedControlPos.Y + selectedControl.Size.Height - 1, handleW, handleH)
-                };
-
-                /*var topLeftHnd = resizeHandles[0];
-                var bottomRightHnd = resizeHandles[7];
-
-                if (!(e.ClipRectangle.Contains(topLeftHnd.RoundUp()) && e.ClipRectangle.Contains(bottomRightHnd.RoundUp())))
-                {
-                    this.Invalidate(new Rectangle(
-                        (int)Math.Floor(topLeftHnd.X),
-                        (int)Math.Floor(topLeftHnd.Y),
-                        (int)Math.Ceiling(bottomRightHnd.X + bottomRightHnd.Width),
-                        (int)Math.Ceiling(bottomRightHnd.Height + bottomRightHnd.Width)));
-                }*/
+                RectangleF[] resizeHandles = getResizeHandlesRectangles(selectedControlPos, selectedControl.Size);
 
                 // Linee tratteggiate
                 Pen selectionPen = new Pen(Color.Black);
                 selectionPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
-                g.DrawRectangle(selectionPen, selectedControlPos.X - (handleW / 2), selectedControlPos.Y - (handleH / 2), selectedControl.Size.Width + handleW - 1, selectedControl.Size.Height + handleH - 1);
+                g.DrawRectangle(selectionPen, selectedControlPos.X - (HANDLE_W / 2), selectedControlPos.Y - (HANDLE_H / 2), selectedControl.Size.Width + HANDLE_W - 1, selectedControl.Size.Height + HANDLE_H - 1);
 
                 // Handles
                 foreach (RectangleF handle in resizeHandles)
@@ -238,18 +258,29 @@ namespace UnusefulPlayer
                     g.DrawRectangle(Pens.Black, handle.X, handle.Y, handle.Width, handle.Height);
                 }
             }
-
-            /*if (resizingControl != null)
-            {
-                var loc = resizingControl.GetAbsoluteLocation();
-                drawResizingMeasure(g, loc, resizingControl.Size, Direction.Up);
-                drawResizingMeasure(g, loc, resizingControl.Size, Direction.Left);
-                drawResizingMeasure(g, loc, resizingControl.Size, Direction.Down);
-                drawResizingMeasure(g, loc, resizingControl.Size, Direction.Right);
-            }*/
         }
 
-        private void drawResizingMeasure(Graphics g, PointF controlAbsoluteLocation, SizeF controlSize, Direction direction)
+        private void drawResizingMeasure(Graphics g)
+        {
+            if (resizingControl != null)
+            {
+                var loc = resizingControl.GetAbsoluteLocation();
+
+                bool drawUp = (resizingDirection & Direction.Up) != Direction.Up;
+                bool drawLeft = (resizingDirection & Direction.Left) != Direction.Left;
+                bool drawDown = (resizingDirection & Direction.Down) != Direction.Down;
+                bool drawRight = (resizingDirection & Direction.Right) != Direction.Right;
+                if (drawLeft && drawRight) drawRight = false;
+                if (drawUp && drawDown) drawDown = false;
+
+                if (drawUp) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Up);
+                if (drawLeft) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Left);
+                if (drawDown) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Down);
+                if (drawRight) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Right);
+            }
+        }
+
+        private void drawSingleResizingMeasure(Graphics g, PointF controlAbsoluteLocation, SizeF controlSize, Direction direction)
         {
             var loc = controlAbsoluteLocation;
             var size = controlSize;
@@ -281,15 +312,16 @@ namespace UnusefulPlayer
             else if (direction == Direction.Right)
                 g.TranslateTransform(size.Height + strSize.Height + textVerticalShift, 0, System.Drawing.Drawing2D.MatrixOrder.Append);
 
-            var barHeight = strSize.Height + textVerticalShift;
+            float barHeight = strSize.Height + textVerticalShift;
             g.DrawLine(Pens.Blue, loc.X, loc.Y, loc.X, loc.Y - barHeight);
             g.DrawLine(Pens.Blue, loc.X + size.Width, loc.Y, loc.X + size.Width, loc.Y - barHeight);
 
-            var realTextVerticalShift = (direction == Direction.Down || direction == Direction.Right) ? 0 : textVerticalShift;
+            int realTextVerticalShift = (direction == Direction.Down || direction == Direction.Right) ? 0 : textVerticalShift;
 
             if (strSize.Width + textLateralMargin + 15 < size.Width)
             {
-                var strPos = new PointF(loc.X + size.Width / 2 - strSize.Width / 2, loc.Y - strSize.Height - realTextVerticalShift);
+                // Non c'è spazio a disposizione: spostiamo il testo più all'esterno
+                PointF strPos = new PointF(loc.X + size.Width / 2 - strSize.Width / 2, loc.Y - strSize.Height - realTextVerticalShift);
 
                 g.DrawLine(Pens.Blue, loc.X, loc.Y - strSize.Height / 2 - realTextVerticalShift, strPos.X - textLateralMargin, loc.Y - strSize.Height / 2 - realTextVerticalShift);
                 g.DrawLine(Pens.Blue, strPos.X + strSize.Width + textLateralMargin, loc.Y - strSize.Height / 2 - realTextVerticalShift, loc.X + size.Width, loc.Y - strSize.Height / 2 - realTextVerticalShift);
@@ -298,7 +330,11 @@ namespace UnusefulPlayer
             }
             else
             {
-                var strPos = new PointF(loc.X + size.Width / 2 - strSize.Width / 2, loc.Y - 2 * strSize.Height - realTextVerticalShift);
+                float inverseShift = 0;
+                if (direction == Direction.Down || direction == Direction.Right)
+                    inverseShift = 2 * strSize.Height;
+
+                PointF strPos = new PointF(loc.X + size.Width / 2 - strSize.Width / 2, loc.Y - 2 * strSize.Height - realTextVerticalShift + inverseShift);
 
                 g.DrawLine(Pens.Blue, loc.X, loc.Y - strSize.Height / 2 - realTextVerticalShift, loc.X + size.Width, loc.Y - strSize.Height / 2 - realTextVerticalShift);
 
@@ -523,9 +559,6 @@ namespace UnusefulPlayer
                     this.dragStartPosition = e.Location;
                     this.draggingOffset.X = e.X - hitInfo.Item1;
                     this.draggingOffset.Y = e.Y - hitInfo.Item2;
-
-
-                    //this.Cursor = Cursors.SizeAll;
                 }
                 else if (hitInfo != null && hitInfo.Item3 == this.containerControl)
                 {
@@ -553,7 +586,6 @@ namespace UnusefulPlayer
                     this.draggingControl.Parent.RemovePlayerControl(this.draggingControl);
                     this.SelectedControl = null;
 
-                    System.Diagnostics.Debug.Print("->" + this.ContainerControl.Controls.Count.ToString());
                     this.DoDragDrop(new DataObject(typeof(PlayerControl).FullName, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
 
                 }
@@ -582,17 +614,6 @@ namespace UnusefulPlayer
                         actionSet = false;
                 }
 
-                // Controlliamo se siamo sopra a un controllo spostabile
-                /*if (!actionSet)
-                {
-                    var hitInfo = RecursiveHitTest(e.X, e.Y);
-                    if (hitInfo != null && hitInfo.Item3 != this.containerControl)
-                    {
-                        this.Cursor = Cursors.SizeAll;
-                        actionSet = true;
-                    }
-                }*/
-
                 if (!actionSet)
                     this.Cursor = Cursors.Default;
             }
@@ -600,7 +621,6 @@ namespace UnusefulPlayer
             if (resizingControl != null)
             {
                 const int minWidth = 11, minHeight = 11;
-                // FIXME Spostarlo dal mousemove! E' costoso! Usare soluzione simile a absParentPos (vedi sopra)
                 var resizingCtrlPos = resizingControl.GetAbsoluteLocation();
 
                 if ((resizingDirection & Direction.Down) == Direction.Down)

@@ -17,7 +17,7 @@ namespace UnusefulPlayer.PlayerControls
         }
 
         private bool pressed;
-        private bool hover;
+        private bool over;
 
         public delegate void CheckedChangedEventHandler(object sender, EventArgs e);
         public event CheckedChangedEventHandler CheckedChanged;
@@ -39,12 +39,12 @@ namespace UnusefulPlayer.PlayerControls
             set { set9P(value, v => this.backgroundNormal9P = v); }
         }
 
-        protected NinePatch backgroundHover9P;
+        protected NinePatch backgroundOver9P;
         [DefaultValue(null)]
-        public Bitmap BackgroundHover9P
+        public Bitmap BackgroundOver9P
         {
-            get { return backgroundHover9P != null ? backgroundHover9P.Image : null; }
-            set { set9P(value, v => this.backgroundHover9P = v); }
+            get { return backgroundOver9P != null ? backgroundOver9P.Image : null; }
+            set { set9P(value, v => this.backgroundOver9P = v); }
         }
 
         protected NinePatch backgroundPressed9P;
@@ -63,12 +63,12 @@ namespace UnusefulPlayer.PlayerControls
             set { set9P(value, v => this.backgroundCheckedNormal9P = v); }
         }
 
-        protected NinePatch backgroundCheckedHover9P;
+        protected NinePatch backgroundCheckedOver9P;
         [DefaultValue(null)]
-        public Bitmap BackgroundCheckedHover9P
+        public Bitmap BackgroundCheckedOver9P
         {
-            get { return backgroundCheckedHover9P != null ? backgroundCheckedHover9P.Image : null; }
-            set { set9P(value, v => this.backgroundCheckedHover9P = v); }
+            get { return backgroundCheckedOver9P != null ? backgroundCheckedOver9P.Image : null; }
+            set { set9P(value, v => this.backgroundCheckedOver9P = v); }
         }
 
         protected NinePatch backgroundCheckedPressed9P;
@@ -106,8 +106,8 @@ namespace UnusefulPlayer.PlayerControls
             var patch =
                 this.pressed ?
                     this.checked_ ? backgroundCheckedPressed9P : backgroundPressed9P
-                : this.hover ?
-                    this.checked_ ? backgroundCheckedHover9P : backgroundHover9P
+                : this.over ?
+                    this.checked_ ? backgroundCheckedOver9P : backgroundOver9P
                 :
                     this.checked_ ? backgroundCheckedNormal9P : backgroundNormal9P;
 
@@ -153,17 +153,17 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        public override void OnMouseHover(EventArgs e)
+        public override void OnMouseEnter(EventArgs e)
         {
-            base.OnMouseHover(e);
-            this.hover = true;
+            base.OnMouseEnter(e);
+            this.over = true;
             this.Invalidate();
         }
 
         public override void OnMouseLeave(EventArgs e)
         {
             base.OnMouseLeave(e);
-            this.hover = false;
+            this.over = false;
             this.Invalidate();
         }
 
@@ -181,10 +181,10 @@ namespace UnusefulPlayer.PlayerControls
             node.SetAttribute("checked", System.Xml.XmlConvert.ToString(this.Checked));
 
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundHover9P, "backgroundHover9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundOver9P, "backgroundOver9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundPressed9P, "backgroundPressed9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundCheckedNormal9P, "backgroundCheckedNormal9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundCheckedHover9P, "backgroundCheckedHover9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundCheckedOver9P, "backgroundCheckedOver9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundCheckedPressed9P, "backgroundCheckedPressed9P", resources, node);
 
             return node;
@@ -197,10 +197,10 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadString(element, "checkedText", s => this.CheckedText = s);
             SerializationHelper.LoadBoolean(element, "checked", s => this.Checked = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundHover9P", resources, s => this.BackgroundHover9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundOver9P", resources, s => this.BackgroundOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundPressed9P", resources, s => this.BackgroundPressed9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundCheckedNormal9P", resources, s => this.BackgroundCheckedNormal9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundCheckedHover9P", resources, s => this.BackgroundCheckedHover9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundCheckedOver9P", resources, s => this.BackgroundCheckedOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundCheckedPressed9P", resources, s => this.BackgroundCheckedPressed9P = s);
         }
 
