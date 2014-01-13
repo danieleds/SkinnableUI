@@ -13,6 +13,7 @@ namespace UnusefulPlayer.PlayerControls
     {
         float curViewPosition = 0;
         int? curOverPosition = null;
+        float? paintedColumnsTotalWidth = null;
 
         public ListView(SemanticType c) : base(c)
         {
@@ -177,6 +178,8 @@ namespace UnusefulPlayer.PlayerControls
 
                     width_sum += col.Width;
                 }
+
+                this.paintedColumnsTotalWidth = width_sum;
             }
 
             g.Restore(t);
@@ -196,9 +199,12 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        private int? getPositionByCoordinate(float y)
+        private int? getPositionByCoordinates(float x, float y)
         {
             if (this.items.Count == 0)
+                return null;
+
+            if (!paintedColumnsTotalWidth.HasValue || paintedColumnsTotalWidth.Value == 0 || x > paintedColumnsTotalWidth.Value)
                 return null;
 
             var rowHeight = GetRowHeight();
@@ -246,8 +252,7 @@ namespace UnusefulPlayer.PlayerControls
         public override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            this.curOverPosition = getPositionByCoordinate(e.Y);
-            System.Diagnostics.Debug.WriteLine(curOverPosition.HasValue);
+            this.curOverPosition = getPositionByCoordinates(e.X, e.Y);
             this.Invalidate();
         }
 
