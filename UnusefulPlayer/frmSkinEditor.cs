@@ -122,10 +122,13 @@ namespace UnusefulPlayer
 
         private void openToolStripButton_Click(object sender, EventArgs e)
         {
-            if (openDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (AskUserToSaveChanges())
             {
-                playerView.LoadSkin(openDialog.FileName);
-                filename = openDialog.FileName;
+                if (openDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    playerView.LoadSkin(openDialog.FileName);
+                    filename = openDialog.FileName;
+                }
             }
         }
 
