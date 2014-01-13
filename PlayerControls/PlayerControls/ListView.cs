@@ -196,6 +196,27 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        private int? getPositionByCoordinate(float y)
+        {
+            if (this.items.Count == 0)
+                return null;
+
+            var rowHeight = GetRowHeight();
+
+            if (rowHeight == 0)
+                return null;
+
+            y -= GetHeaderHeight();
+            if (y < 0)
+                return null;
+
+            int pos = (int)((curViewPosition + y) / rowHeight);
+            if (pos >= this.items.Count)
+                return null;
+            else
+                return pos;
+        }
+
         public override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -225,14 +246,16 @@ namespace UnusefulPlayer.PlayerControls
         public override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             base.OnMouseMove(e);
+            this.curOverPosition = getPositionByCoordinate(e.Y);
+            System.Diagnostics.Debug.WriteLine(curOverPosition.HasValue);
+            this.Invalidate();
         }
 
         public override void OnMouseEnter(EventArgs e)
         {
             base.OnMouseEnter(e);
             //this.enter = true;
-            
-            this.Invalidate();
+            //this.Invalidate();
         }
 
         public override void OnMouseLeave(EventArgs e)
