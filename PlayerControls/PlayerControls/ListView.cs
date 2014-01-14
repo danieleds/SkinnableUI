@@ -48,6 +48,96 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        protected NinePatch backgroundHeaderBar9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundHeaderBar9P
+        {
+            get { return backgroundHeaderBar9P != null ? backgroundHeaderBar9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundHeaderBar9P = null;
+                else
+                    this.backgroundHeaderBar9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
+        protected NinePatch backgroundColumnHeader9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundColumnHeader9P
+        {
+            get { return backgroundColumnHeader9P != null ? backgroundColumnHeader9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundColumnHeader9P = null;
+                else
+                    this.backgroundColumnHeader9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
+        protected NinePatch backgroundRowOver9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundRowOver9P
+        {
+            get { return backgroundRowOver9P != null ? backgroundRowOver9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundRowOver9P = null;
+                else
+                    this.backgroundRowOver9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
+        protected NinePatch backgroundRowSelected9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundRowSelected9P
+        {
+            get { return backgroundRowSelected9P != null ? backgroundRowSelected9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundRowSelected9P = null;
+                else
+                    this.backgroundRowSelected9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
+        protected NinePatch backgroundRowSelectedOver9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundRowSelectedOver9P
+        {
+            get { return backgroundRowSelectedOver9P != null ? backgroundRowSelectedOver9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundRowSelectedOver9P = null;
+                else
+                    this.backgroundRowSelectedOver9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
+        protected NinePatch backgroundRowNormal9P;
+        [DefaultValue(null)]
+        public Bitmap BackgroundRowNormal9P
+        {
+            get { return backgroundRowNormal9P != null ? backgroundRowNormal9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.backgroundRowNormal9P = null;
+                else
+                    this.backgroundRowNormal9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
         private static Bitmap tmpBmp = new Bitmap(1, 1);
         private float GetHeaderHeight()
         {
@@ -92,46 +182,63 @@ namespace UnusefulPlayer.PlayerControls
 
         protected override void OnPaint(System.Drawing.Graphics g)
         {
-            var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);
+            //var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);
 
-            if (backgroundNormal9P != null)
-            {
-                contentBox = backgroundNormal9P.GetContentBox(this.Size);
-                backgroundNormal9P.Paint(g, this.Size);
-            }
-            else
-                drawDefaultBackground(g);
-
-            drawDefaultItems(g);
+            drawBackground(g);
+            drawItems(g);
             drawScrollbar(g);
         }
 
-        private void drawDefaultBackground(Graphics g)
+        private void drawBackground(Graphics g)
         {
             var headerHeight = GetHeaderHeight();
-            g.FillRectangle(Brushes.White, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
 
-            g.FillRectangle(SystemBrushes.ButtonFace, 1, 0, this.Size.Width - 2, headerHeight+1);
+            if(backgroundNormal9P != null)
+                backgroundNormal9P.Paint(g, this.Size);
+            else
+                g.FillRectangle(Brushes.White, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+
+            if(backgroundHeaderBar9P != null)
+                backgroundHeaderBar9P.Paint(g, new RectangleF(0, 0, this.Size.Width - 1, headerHeight));
+            else
+                g.FillRectangle(SystemBrushes.ButtonFace, 1, 0, this.Size.Width - 2, headerHeight+1);
+
             float width_sum = 0;
             for (int i = 0; i < columns.Count; i++)
             {
                 var col = columns[i];
-                g.FillRectangle(SystemBrushes.ButtonFace, width_sum, 0, col.Width, headerHeight);
-                g.DrawRectangle(SystemPens.ButtonShadow, width_sum, 0, col.Width, headerHeight);
-
                 var s = g.Save();
-                g.SetClip(new RectangleF(width_sum, 0, col.Width - 3, headerHeight), System.Drawing.Drawing2D.CombineMode.Intersect);
                 var strSize = g.MeasureString(columns[i].Title, this.Font);
-                g.DrawString(col.Title, this.Font, Brushes.Black, width_sum + 5, headerHeight / 2 - strSize.Height / 2 + 1);
+
+                if (backgroundColumnHeader9P != null)
+                {
+                    var rect = new RectangleF(width_sum, 0, col.Width, headerHeight);
+                    backgroundColumnHeader9P.Paint(g, rect);
+
+                    RectangleF contentbox = backgroundColumnHeader9P.GetContentBox(rect.Size);
+                    RectangleF textBox = new RectangleF(rect.X + contentbox.X, rect.Y + contentbox.Y, contentbox.Width, contentbox.Height);
+                    g.SetClip(textBox, System.Drawing.Drawing2D.CombineMode.Intersect);
+                    g.DrawString(col.Title, this.Font, Brushes.Black, textBox.X, textBox.Y + textBox.Height / 2 - strSize.Height / 2 + 1);
+                }
+                else
+                {
+                    g.FillRectangle(SystemBrushes.ButtonFace, width_sum, 0, col.Width, headerHeight);
+                    g.DrawRectangle(SystemPens.ButtonShadow, width_sum, 0, col.Width, headerHeight);
+
+                    g.SetClip(new RectangleF(width_sum, 0, col.Width - 3, headerHeight), System.Drawing.Drawing2D.CombineMode.Intersect);
+                    g.DrawString(col.Title, this.Font, Brushes.Black, width_sum + 5, headerHeight / 2 - strSize.Height / 2 + 1);
+                }
+
                 g.Restore(s);
 
                 width_sum += col.Width;
             }
 
-            g.DrawRectangle(SystemPens.ButtonShadow, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+            if (backgroundNormal9P == null)
+                g.DrawRectangle(SystemPens.ButtonShadow, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
         }
 
-        private void drawDefaultItems(Graphics g)
+        private void drawItems(Graphics g)
         {
             var headerHeight = GetHeaderHeight();
             var rowHeight = GetRowHeight();
@@ -151,25 +258,34 @@ namespace UnusefulPlayer.PlayerControls
 
                 Brush bg = Brushes.Transparent;
                 Pen border = Pens.Transparent;
+                NinePatch patch = backgroundRowNormal9P;
 
                 if (over && selected)
                 {
                     bg = Brushes.LightBlue;
                     border = Pens.LightBlue;
+                    patch = backgroundRowSelectedOver9P;
                 }
                 else if (over)
                 {
                     bg = Brushes.AliceBlue;
                     border = Pens.LightBlue;
+                    patch = backgroundRowOver9P;
                 }
                 else if (selected)
                 {
                     bg = Brushes.LightBlue;
                     border = Pens.LightBlue;
+                    patch = backgroundRowSelected9P;
                 }
 
-                g.FillRectangle(bg, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
-                g.DrawRectangle(border, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
+                if (patch != null)
+                    patch.Paint(g, new RectangleF(1, 0 + rowHeight * i, totWidth - 1, rowHeight));
+                else
+                {
+                    g.FillRectangle(bg, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
+                    g.DrawRectangle(border, 1, 0 + rowHeight * i, totWidth - 1, rowHeight);
+                }
 
                 float width_sum = 0;
                 for (int j = 0; j < columns.Count; j++)
@@ -177,7 +293,7 @@ namespace UnusefulPlayer.PlayerControls
                     var col = columns[j];
 
                     var s = g.Save();
-                    g.SetClip(new RectangleF(width_sum, (rowHeight * i) + 1, col.Width - 3, rowHeight - 2), System.Drawing.Drawing2D.CombineMode.Intersect);
+                    
                     var content = "";
                     if (j < item.Values.Count)
                     {
@@ -187,7 +303,20 @@ namespace UnusefulPlayer.PlayerControls
                             content = "";
                     }
                     var strSize = g.MeasureString(content, this.Font);
-                    g.DrawString(content, this.Font, Brushes.Black, width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
+
+                    if (patch != null)
+                    {
+                        RectangleF contentbox = patch.GetContentBox(new SizeF(col.Width, rowHeight));
+                        RectangleF textBox = new RectangleF(width_sum + contentbox.X, (rowHeight * i) + contentbox.Y, contentbox.Width, contentbox.Height);
+                        g.SetClip(textBox, System.Drawing.Drawing2D.CombineMode.Intersect);
+                        g.DrawString(content, this.Font, Brushes.Black, textBox.X, textBox.Y + (textBox.Height / 2 - strSize.Height / 2 + 1));
+                    }
+                    else
+                    {
+                        g.SetClip(new RectangleF(width_sum, (rowHeight * i) + 1, col.Width - 3, rowHeight - 2), System.Drawing.Drawing2D.CombineMode.Intersect);
+                        g.DrawString(content, this.Font, Brushes.Black, width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
+                    }
+
                     g.Restore(s);
 
                     width_sum += col.Width;

@@ -54,6 +54,9 @@
             this.rulerToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnPreview = new System.Windows.Forms.ToolStripButton();
+            this.btnBringBackward = new System.Windows.Forms.ToolStripButton();
+            this.btnBringForward = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.rightPanel.SuspendLayout();
             this.leftPanel.SuspendLayout();
             this.toolStrip1.SuspendLayout();
@@ -187,6 +190,9 @@
             this.copyToolStripButton,
             this.pasteToolStripButton,
             this.toolStripSeparator1,
+            this.btnBringForward,
+            this.btnBringBackward,
+            this.toolStripSeparator3,
             this.btnShowPaints,
             this.rulerToolStripButton,
             this.toolStripSeparator2,
@@ -314,6 +320,31 @@
             this.btnPreview.Text = "Preview";
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             // 
+            // btnBringBackward
+            // 
+            this.btnBringBackward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnBringBackward.Image = ((System.Drawing.Image)(resources.GetObject("btnBringBackward.Image")));
+            this.btnBringBackward.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBringBackward.Name = "btnBringBackward";
+            this.btnBringBackward.Size = new System.Drawing.Size(23, 22);
+            this.btnBringBackward.Text = "Send to Back";
+            this.btnBringBackward.Click += new System.EventHandler(this.btnBringBackward_Click);
+            // 
+            // btnBringForward
+            // 
+            this.btnBringForward.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.btnBringForward.Image = ((System.Drawing.Image)(resources.GetObject("btnBringForward.Image")));
+            this.btnBringForward.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnBringForward.Name = "btnBringForward";
+            this.btnBringForward.Size = new System.Drawing.Size(23, 22);
+            this.btnBringForward.Text = "Bring to Front";
+            this.btnBringForward.Click += new System.EventHandler(this.btnBringForward_Click);
+            // 
+            // toolStripSeparator3
+            // 
+            this.toolStripSeparator3.Name = "toolStripSeparator3";
+            this.toolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            // 
             // frmSkinEditor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -364,6 +395,9 @@
         private System.Windows.Forms.ToolStripButton saveAsToolStripButton;
         private System.Windows.Forms.ToolStripButton rulerToolStripButton;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+        private System.Windows.Forms.ToolStripButton btnBringForward;
+        private System.Windows.Forms.ToolStripButton btnBringBackward;
+        private System.Windows.Forms.ToolStripSeparator toolStripSeparator3;
     }
 }
 

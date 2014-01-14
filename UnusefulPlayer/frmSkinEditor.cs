@@ -276,5 +276,27 @@ namespace UnusefulPlayer
             }
         }
 
+        private void btnBringForward_Click(object sender, EventArgs e)
+        {
+            if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
+            {
+                PlayerControls.PlayerControl ctl = playerView.SelectedControl;
+                PlayerControls.Container parent = ctl.Parent;
+                parent.Controls.Remove(ctl);
+                parent.Controls.AddFirst(ctl);
+            }
+        }
+
+        private void btnBringBackward_Click(object sender, EventArgs e)
+        {
+            if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
+            {
+                PlayerControls.PlayerControl ctl = playerView.SelectedControl;
+                PlayerControls.Container parent = ctl.Parent;
+                parent.Controls.Remove(ctl);
+                parent.Controls.AddLast(ctl);
+            }
+        }
+
     }
 }

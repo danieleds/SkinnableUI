@@ -651,10 +651,6 @@ namespace UnusefulPlayer
                     {
                         PlayerControl ctl = hitInfo.Item3;
                         this.SelectedControl = ctl;
-                        // Spostiamo il controllo in primo piano
-                        ctl.Parent.Controls.Remove(ctl);
-                        ctl.Parent.Controls.AddFirst(ctl);
-
 
                         this.dragStarting = true;
                         this.dragStartPosition = e.Location;
