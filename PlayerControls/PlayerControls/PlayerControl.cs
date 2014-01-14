@@ -188,8 +188,11 @@ namespace UnusefulPlayer.PlayerControls
             {
                 var oldsize = this.size;
                 this.size = value;
-                this.InvalidateParent(new RectangleF(this.Left, this.Top, Math.Max(this.size.Width, oldsize.Width), Math.Max(this.size.Height, oldsize.Height)));
-                OnResize(new EventArgs()); // FIXME Generare l'evento anche alla creazione del controllo?
+                if (oldsize.Width != size.Width || oldsize.Height != size.Height)
+                {
+                    this.InvalidateParent(new RectangleF(this.Left, this.Top, Math.Max(this.size.Width, oldsize.Width), Math.Max(this.size.Height, oldsize.Height)));
+                    OnResize(new EventArgs()); // FIXME Generare l'evento anche alla creazione del controllo?
+                }
             }
         }
 

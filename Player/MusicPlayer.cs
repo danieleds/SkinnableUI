@@ -21,6 +21,8 @@ namespace Player
         List<PlayerControls.ToggleButton> playPause = new List<PlayerControls.ToggleButton>();
         List<PlayerControls.Button> stop = new List<PlayerControls.Button>();
         List<PlayerControls.TrackBar> songProgress = new List<PlayerControls.TrackBar>();
+        List<PlayerControls.Button> back = new List<PlayerControls.Button>();
+        List<PlayerControls.Button> forward = new List<PlayerControls.Button>();
 
         List<PlayerControls.Label> title = new List<PlayerControls.Label>();
         List<PlayerControls.Label> artist = new List<PlayerControls.Label>();
@@ -38,8 +40,7 @@ namespace Player
 
         Timer tmr = new Timer { Interval = 100 };
 
-        List<String> songPaths = new List<string>();
-        int currentSong = -1;
+        PlayerControls.ListView.ListViewRow currentSong;
 
         public MusicPlayer()
         {
@@ -55,9 +56,12 @@ namespace Player
 
         void tmr_Tick(object sender, EventArgs e)
         {
-            songProgress.ForEach(item => item.Value = (int)mp3Reader.CurrentTime.TotalMilliseconds);
-            currentTime.ForEach(item => item.Text = FormatTime(mp3Reader.CurrentTime, mp3Reader.TotalTime));
-            remainingTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime - mp3Reader.CurrentTime, mp3Reader.TotalTime));
+            if (mp3Reader != null)
+            {
+                songProgress.ForEach(item => item.Value = (int)mp3Reader.CurrentTime.TotalMilliseconds);
+                currentTime.ForEach(item => item.Text = FormatTime(mp3Reader.CurrentTime, mp3Reader.TotalTime));
+                remainingTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime - mp3Reader.CurrentTime, mp3Reader.TotalTime));
+            }
         }
 
         string FormatTime(TimeSpan time, TimeSpan totalTime)
@@ -75,7 +79,7 @@ namespace Player
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 foreach (var file in files)
                 {
-                    songPaths.Add(file);
+                    //songPaths.Add(file);
                     var filename = System.IO.Path.GetFileName(file);
 
                     TagLib.File f = null;
@@ -100,7 +104,10 @@ namespace Player
                         else
                         {
                             row.Values.Add(file);
+                            row.Values.Add("");
+                            row.Values.Add("");
                         }
+                        row.Values.Add(file);
                         playlist.Items.Add(row);
                     }
                 }
@@ -113,35 +120,23 @@ namespace Player
             if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 playerView1.LoadSkin(fd.FileName);
+                this.ClientSize = playerView1.Size;
                 playerView1.Width -= 1;
                 playerView1.Width += 1;
+                playerView1.Dock = DockStyle.Fill;
                 AttachEvents();
 
-
-                var path = @"aaa.mp3";
-                mp3Reader = new Mp3FileReader(path);
-                waveOut.Init(mp3Reader);
-                
-                songProgress.ForEach(item => item.Maximum = (int)mp3Reader.TotalTime.TotalMilliseconds);
-                currentTime.ForEach(item => item.Text = FormatTime(mp3Reader.CurrentTime, mp3Reader.TotalTime));
-                totalTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime, mp3Reader.TotalTime));
-                remainingTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime - mp3Reader.CurrentTime, mp3Reader.TotalTime));
                 playlist.ForEach(item => item.Items.Clear());
 
-                TagLib.File f = TagLib.File.Create(path);
-                title.ForEach(item => item.Text = f.Tag.Title);
-                artist.ForEach(item => item.Text = f.Tag.JoinedPerformers.Trim() != "" ? f.Tag.JoinedPerformers : f.Tag.JoinedAlbumArtists);
-                album.ForEach(item => item.Text = f.Tag.Album);
-                year.ForEach(item => item.Text = f.Tag.Year.ToString());
-                //f.Tag.Pictures[0].
+                LoadSong(null);
                 
                 tmr.Start();
 
-                /*this.WindowState = FormWindowState.Normal;
+                this.WindowState = FormWindowState.Normal;
                 this.TopMost = true;
                 this.Focus();
                 this.BringToFront();
-                this.TopMost = false;*/
+                this.TopMost = false;
             }
             else
             {
@@ -171,6 +166,7 @@ namespace Player
         private void AttachEvents()
         {
             //ResetUI();
+            playerView1.Resize += (sender, e) => this.ClientSize = playerView1.Size;
 
             var ctrls = this.playerView1.ContainerControl.GetAllChildren();
             foreach (var item in ctrls)
@@ -182,6 +178,8 @@ namespace Player
             pause = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Pause);
             playPause = GetControls<PlayerControls.ToggleButton>(PlayerControls.PlayerControl.SemanticType.PlayPause);
             stop = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Stop);
+            back = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Back);
+            forward = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Forward);
             songProgress = GetControls<PlayerControls.TrackBar>(PlayerControls.PlayerControl.SemanticType.SongProgress);
             title = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Title);
             artist = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Artist);
@@ -196,21 +194,120 @@ namespace Player
             pause.ForEach(c => c.Click += pause_Click);
             playPause.ForEach(c => c.CheckedChanged += playPause_CheckedChanged);
             stop.ForEach(c => c.Click += stop_Click);
+            back.ForEach(c => c.Click += back_Click);
+            forward.ForEach(c => c.Click += forward_Click);
             songProgress.ForEach(c => c.UserChangedValue += songProgress_UserChangedValue);
+            playlist.ForEach(c => c.MouseDoubleClick += playlist_MouseDoubleClick);
+
+        }
+
+        void LoadSong(string path)
+        {
+            songProgress.ForEach(item => item.Value = 0);
+
+            if (path == null)
+            {
+                currentTime.ForEach(item => item.Text = "--:--");
+                totalTime.ForEach(item => item.Text = "--:--");
+                remainingTime.ForEach(item => item.Text = "--:--");
+
+                title.ForEach(item => item.Text = "");
+                artist.ForEach(item => item.Text = "");
+                album.ForEach(item => item.Text = "");
+                year.ForEach(item => item.Text = "");
+
+                playPause.ForEach(c => c.Checked = false);
+            }
+            else
+            {
+                if (mp3Reader != null)
+                {
+                    mp3Reader.Dispose();
+                }
+
+                mp3Reader = new Mp3FileReader(path);
+                waveOut.Init(mp3Reader);
+
+                songProgress.ForEach(item => item.Maximum = (int)mp3Reader.TotalTime.TotalMilliseconds);
+                currentTime.ForEach(item => item.Text = FormatTime(mp3Reader.CurrentTime, mp3Reader.TotalTime));
+                totalTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime, mp3Reader.TotalTime));
+                remainingTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime - mp3Reader.CurrentTime, mp3Reader.TotalTime));
+
+                TagLib.File f = TagLib.File.Create(path);
+                title.ForEach(item => item.Text = f.Tag.Title);
+                artist.ForEach(item => item.Text = f.Tag.JoinedPerformers.Trim() != "" ? f.Tag.JoinedPerformers : f.Tag.JoinedAlbumArtists);
+                album.ForEach(item => item.Text = f.Tag.Album);
+                year.ForEach(item => item.Text = f.Tag.Year.ToString());
+                //f.Tag.Pictures[0].
+
+                playPause.ForEach(c => c.Checked = true);
+                waveOut.Play();
+            }
+        }
+
+        void playlist_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var lstv = (PlayerControls.ListView)sender;
+            var row = lstv.RowHitTest(e.X, e.Y);
+            if (row != null)
+            {
+                currentSong = row;
+                LoadSong(row.Values[3].ToString());
+            }
         }
 
         void stop_Click(object sender, EventArgs e)
         {
             playPause.ForEach(item => item.Checked = false);
             waveOut.Stop();
-            mp3Reader.Seek(0, System.IO.SeekOrigin.Begin);
+            if (mp3Reader != null)
+            {
+                mp3Reader.Seek(0, System.IO.SeekOrigin.Begin);
+            }
+        }
+
+        void back_Click(object sender, EventArgs e)
+        {
+            var pl = playlist.FirstOrDefault();
+            if (pl != null)
+            {
+                for (int i = 0; i < pl.Items.Count; i++)
+                {
+                    if (pl.Items[i] == currentSong) {
+                        currentSong = pl.Items[MathMod(i-1, pl.Items.Count)];
+                        LoadSong(currentSong.Values[3].ToString());
+                        break;
+                    }
+                }
+            }
+        }
+
+        static int MathMod(int a, int b) {
+            return (Math.Abs(a * b) + a) % b;
+        }
+
+        void forward_Click(object sender, EventArgs e)
+        {
+            var pl = playlist.FirstOrDefault();
+            if (pl != null)
+            {
+                for (int i = 0; i < pl.Items.Count; i++)
+                {
+                    if (pl.Items[i] == currentSong)
+                    {
+                        currentSong = pl.Items[(i + 1) % pl.Items.Count];
+                        LoadSong(currentSong.Values[3].ToString());
+                        break;
+                    }
+                }
+            }
         }
 
         void playPause_CheckedChanged(object sender, EventArgs e)
         {
             var ctl = (PlayerControls.ToggleButton)sender;
             if (ctl.Checked)
-                waveOut.Play();
+                if (mp3Reader != null) waveOut.Play();
             else
                 waveOut.Pause();
         }
@@ -222,13 +319,16 @@ namespace Player
 
         void songProgress_UserChangedValue(object sender, EventArgs e)
         {
-            var tb = (PlayerControls.TrackBar)sender;
-            mp3Reader.CurrentTime = new TimeSpan(0, 0, 0, 0, tb.Value);
+            if (mp3Reader != null)
+            {
+                var tb = (PlayerControls.TrackBar)sender;
+                mp3Reader.CurrentTime = new TimeSpan(0, 0, 0, 0, tb.Value);
+            }
         }
 
         void play_Click(object sender, EventArgs e)
         {
-            waveOut.Play();
+            if (mp3Reader != null) waveOut.Play();
         }
 
         private void playerView1_DragEnter(object sender, DragEventArgs e)

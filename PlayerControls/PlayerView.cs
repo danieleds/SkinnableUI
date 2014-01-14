@@ -45,8 +45,16 @@ namespace UnusefulPlayer
             {
                 this.containerControl = value;
                 if (this.containerControl != null)
+                {
                     containerControl.ParentView = this;
+                    containerControl.Resize += containerControl_Resize;
+                }
             }
+        }
+
+        void containerControl_Resize(object sender, EventArgs e)
+        {
+            this.Size = new Size((int)containerControl.Size.Width, (int)containerControl.Size.Height);
         }
 
         public Skin GetSkin()

@@ -15,8 +15,6 @@ namespace UnusefulPlayer.PlayerControls
         ListViewRow curOverRow = null;
         float? paintedColumnsTotalWidth = null;
         List<ListViewRow> selectedRows = new List<ListViewRow>();
-        long lastMouseDownSelectionMsec = 0;
-        Point lastMouseDownSelectionPt = new Point();
 
         public ListView(SemanticType c) : base(c)
         {
@@ -215,7 +213,7 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        public ListViewRow HitTest(float x, float y)
+        public ListViewRow RowHitTest(float x, float y)
         {
             if (this.items.Count == 0)
                 return null;
@@ -250,25 +248,12 @@ namespace UnusefulPlayer.PlayerControls
             base.OnMouseDown(e);
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                ListViewRow item = HitTest(e.X, e.Y);
+                ListViewRow item = RowHitTest(e.X, e.Y);
 
                 // FIXME Implementare multiselect con CTRL / SHIFT
                 this.selectedRows.Clear();
                 if (item != null)
                     this.selectedRows.Add(item);
-
-                if ((DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond - lastMouseDownSelectionMsec) <= System.Windows.Forms.SystemInformation.DoubleClickTime)
-                {
-                    Size dbsz = System.Windows.Forms.SystemInformation.DoubleClickSize;
-                    if (Math.Abs(lastMouseDownSelectionPt.X - e.X) <= dbsz.Width && Math.Abs(lastMouseDownSelectionPt.Y - e.Y) <= dbsz.Height)
-                    {
-                        // E' stato fatto doppio click
-                        System.Windows.Forms.MessageBox.Show(":)");
-                    }
-                }
-
-                lastMouseDownSelectionMsec = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
-                lastMouseDownSelectionPt = e.Location;
 
                 this.Invalidate();
             }
@@ -287,7 +272,7 @@ namespace UnusefulPlayer.PlayerControls
         public override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
             base.OnMouseMove(e);
-            this.curOverRow = HitTest(e.X, e.Y);
+            this.curOverRow = RowHitTest(e.X, e.Y);
             this.Invalidate();
         }
 

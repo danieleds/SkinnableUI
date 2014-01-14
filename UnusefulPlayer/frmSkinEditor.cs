@@ -55,6 +55,8 @@ namespace UnusefulPlayer
             cmbControls.Items.Clear();
             propertyGrid1.SelectedObject = null;
 
+            panel2.Size = new Size(400, 358);
+
             playerView = new PlayerViewDesigner() {
                 AllowDrop = true,
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
@@ -73,6 +75,12 @@ namespace UnusefulPlayer
             playerView.SelectedObjectPropertyChanged += playerView_SelectedObjectPropertyChanged;
             playerView.DesignerControlsTreeChanged += playerView_DesignerControlsTreeChanged;
             playerView.KeyDown += playerView_KeyDown;
+            playerView.Resize += playerView_Resize;
+        }
+
+        void playerView_Resize(object sender, EventArgs e)
+        {
+            panel2.Size = new Size(playerView.Size.Width + 8, playerView.Size.Height + 8);
         }
 
         void playerView_KeyDown(object sender, KeyEventArgs e)
