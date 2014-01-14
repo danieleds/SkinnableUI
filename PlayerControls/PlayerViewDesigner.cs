@@ -25,6 +25,15 @@ namespace UnusefulPlayer
         bool dragStarting = false; // true se è stato fatto un MouseDown e stiamo aspettando un delta di spostamento sufficiente.
         Point dragStartPosition; // Posizione del MouseDown iniziale (coordinate relative alla finestra). Ha senso solo se draggingControl != null.
 
+        struct ControlRectangleInfo
+        {
+            public PlayerControl control;
+            public SizeF size;
+            public PointF location;
+        }
+
+        ControlRectangleInfo selectedControlOldRect = new ControlRectangleInfo();
+
         PlayerControl resizingControl;
         Direction resizingDirection;
 
@@ -74,6 +83,8 @@ namespace UnusefulPlayer
                     {
                         selectedControl.Resize -= selectedControl_MetaControlsNeedRepaint;
                         selectedControl.Move -= selectedControl_MetaControlsNeedRepaint;
+
+                        selectedControl_MetaControlsNeedRepaint(selectedControl, new EventArgs());
                     }
 
                     selectedControl = value;
@@ -82,9 +93,9 @@ namespace UnusefulPlayer
                     {
                         selectedControl.Resize += selectedControl_MetaControlsNeedRepaint;
                         selectedControl.Move += selectedControl_MetaControlsNeedRepaint;
-                    }
 
-                    this.Invalidate();
+                        selectedControl_MetaControlsNeedRepaint(selectedControl, new EventArgs());
+                    }
                     
                     if (SelectionChanged != null) SelectionChanged(this, new EventArgs());
                 }
@@ -94,14 +105,37 @@ namespace UnusefulPlayer
         /// <summary>
         /// Event handler che viene chiamato quando è necessario ridisegnare i metacontrolli
         /// (ad esempio, i resize handle).
-        /// Una situazione in cui viene chiamato è, ad esempio, quando si ridimensiona
-        /// o si sposta il controllo selezionato.
+        /// Viene chiamato quando il controllo selezionato viene ridimensionato o spostato, o al
+        /// MouseUp dopo un ridimensionamento (per nascondere i righelli).
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         void selectedControl_MetaControlsNeedRepaint(object sender, EventArgs e)
         {
             this.Invalidate();
+            /*
+            // FIXME Il clipping funziona, ma non considera i righelli (che vengono tagliati fuori)...
+            // questa è una mancanza (da fixare) di getMetaControlsOuterRectangle().
+            // Per ora risolviamo invalidando tutto, correggere non ne vale la pena (bisognerebbe
+            // effettuare misurazioni del testo, calcolare rotazioni, ecc). Il problema comunque non
+            // è grave visto che è limitato al designer, e al momento non causa problemi di performance.
+             
+            Rectangle clip;
+
+            // Repaint della vecchia posizione/dimensione del controllo (non necessariamente il solito controllo attualmente selezionato)
+            clip = getMetaControlsOuterRectangle(getResizeHandlesRectangles(
+                selectedControlOldRect.location, selectedControlOldRect.size)).RoundUp();
+            this.Invalidate(clip);
+
+            // Repaint della nuova posizione/dimensione del controllo
+            var absloc = selectedControl.GetAbsoluteLocation();
+            clip = getMetaControlsOuterRectangle(getResizeHandlesRectangles(
+                absloc, selectedControl.Size)).RoundUp();
+            this.Invalidate(clip);
+
+            selectedControlOldRect.location = absloc;
+            selectedControlOldRect.size = selectedControl.Size;
+            */
         }
 
         /// <summary>
@@ -244,21 +278,23 @@ namespace UnusefulPlayer
         }
 
         /// <summary>
-        /// Restituisce il rettangolo che inscrive tutti i resize handles.
+        /// Restituisce il rettangolo che inscrive tutti i metacontrolli (resize handles, righelli).
         /// </summary>
-        /// <param name="resizeHandles"></param>
         /// <returns></returns>
-        /*RectangleF getResizeHandlesOuterRectangle(RectangleF[] resizeHandles)
+        RectangleF getMetaControlsOuterRectangle(PointF controlAbsoluteLocation, SizeF controlSize)
         {
+            var resizeHandles = getResizeHandlesRectangles(controlAbsoluteLocation, controlSize);
+
             var topLeftHnd = resizeHandles[0];
             var bottomRightHnd = resizeHandles[7];
+            // FIXME Includere righelli!!!
             return new RectangleF(
                 topLeftHnd.X,
                 topLeftHnd.Y,
-                bottomRightHnd.X + bottomRightHnd.Width,
-                bottomRightHnd.Height + bottomRightHnd.Width
+                bottomRightHnd.X + bottomRightHnd.Width - topLeftHnd.X + 1,
+                bottomRightHnd.Y + bottomRightHnd.Height - topLeftHnd.Y + 1
             );
-        }*/
+        }
 
         private System.Drawing.Drawing2D.GraphicsPath getWindowDecorationsPath()
         {
@@ -287,7 +323,7 @@ namespace UnusefulPlayer
 
         private void drawSelectionMetacontrols(Graphics g)
         {
-            if (selectedControl != null/* && selectedControl != this.ContainerControl*/)
+            if (selectedControl != null)
             {
                 var selectedControlPos = selectedControl.GetAbsoluteLocation();
 
@@ -439,8 +475,10 @@ namespace UnusefulPlayer
                             e.Effect = DragDropEffects.Scroll; // Usiamo Scroll per rappresentare il fatto che stiamo spostando all'interno dello stesso contenitore originale.
                         var oldDraggingPosition = this.draggingPosition;
                         this.draggingPosition = this.PointToClient(new Point(e.X, e.Y));
-                        if (this.draggingPosition != oldDraggingPosition)
-                            this.Invalidate();
+                        if (this.draggingPosition != oldDraggingPosition) {
+                            this.Invalidate(new RectangleF(oldDraggingPosition.X - draggingOffset.X, oldDraggingPosition.Y - draggingOffset.Y, draggingControl.Size.Width, draggingControl.Size.Height).RoundUp());
+                            this.Invalidate(new RectangleF(draggingPosition.X - draggingOffset.X, draggingPosition.Y - draggingOffset.Y, draggingControl.Size.Width, draggingControl.Size.Height).RoundUp());
+                        }
                     }
                     else
                     {
@@ -724,7 +762,7 @@ namespace UnusefulPlayer
             if (resizingControl != null)
             {
                 resizingControl = null;
-                this.Invalidate();
+                selectedControl_MetaControlsNeedRepaint(selectedControl, new EventArgs());
                 if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
         }

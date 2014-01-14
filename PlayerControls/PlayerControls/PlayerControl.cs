@@ -161,19 +161,29 @@ namespace UnusefulPlayer.PlayerControls
         public PointF Location
         {
             get { return this.location; }
-            set { this.location = value; this.InvalidateParent(); OnMove(new EventArgs()); }
+            set
+            {
+                var oldlocation = this.location;
+                this.location = value;
+                if (oldlocation.X != location.X || oldlocation.Y != location.Y)
+                {
+                    this.InvalidateParent(new RectangleF(oldlocation, size));
+                    this.InvalidateParent(new RectangleF(location, size));
+                    OnMove(new EventArgs());
+                }
+            }
         }
 
         public float Top
         {
             get { return this.location.Y; }
-            set { this.location.Y = value; this.InvalidateParent(); OnMove(new EventArgs()); }
+            set { this.Location = new PointF(this.location.X, value); }
         }
 
         public float Left
         {
             get { return this.location.X; }
-            set { this.location.X = value; this.InvalidateParent(); OnMove(new EventArgs()); }
+            set { this.Location = new PointF(value, this.location.Y); }
         }
 
         [DefaultValue(AnchorStyles.Top | AnchorStyles.Left)]
@@ -190,7 +200,8 @@ namespace UnusefulPlayer.PlayerControls
                 this.size = value;
                 if (oldsize.Width != size.Width || oldsize.Height != size.Height)
                 {
-                    this.InvalidateParent(new RectangleF(this.Left, this.Top, Math.Max(this.size.Width, oldsize.Width), Math.Max(this.size.Height, oldsize.Height)));
+                    this.InvalidateParent(new RectangleF(this.location, oldsize));
+                    this.InvalidateParent(new RectangleF(this.location, size));
                     OnResize(new EventArgs()); // FIXME Generare l'evento anche alla creazione del controllo?
                 }
             }
