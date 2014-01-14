@@ -52,9 +52,14 @@ namespace UnusefulPlayer
             }
         }
 
+        bool dockContainerControl = false;
+
         void containerControl_Resize(object sender, EventArgs e)
         {
-            this.Size = new Size((int)containerControl.Size.Width, (int)containerControl.Size.Height);
+            if (dockContainerControl)
+            {
+                this.Size = new Size((int)containerControl.Size.Width, (int)containerControl.Size.Height);
+            }
         }
 
         public Skin GetSkin()
@@ -117,13 +122,16 @@ namespace UnusefulPlayer
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            if (this.ContainerControl != null)
+            if (dockContainerControl)
             {
-                if (this.Width != 0 && this.Height != 0) // Per evitare bug su minimize della form
+                if (this.ContainerControl != null)
                 {
-                    this.ContainerControl.Left = 0;
-                    this.ContainerControl.Top = 0;
-                    this.ContainerControl.Size = new SizeF(this.Width, this.Height);
+                    if (this.Width != 0 && this.Height != 0) // Per evitare bug su minimize della form
+                    {
+                        this.ContainerControl.Left = 0;
+                        this.ContainerControl.Top = 0;
+                        this.ContainerControl.Size = new SizeF(this.Width, this.Height);
+                    }
                 }
             }
         }

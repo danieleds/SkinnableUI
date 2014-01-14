@@ -11,6 +11,7 @@ namespace UnusefulPlayer
     {
         public bool DebugShowPaints { get; set; }
         public bool DebugShowRuler { get; set; }
+        public bool DrawWindowDecorations { get; set; }
 
         // dimensioni resize handles
         const int HANDLE_W = 6, HANDLE_H = 6;
@@ -57,6 +58,8 @@ namespace UnusefulPlayer
         public PlayerViewDesigner()
         {
             DebugShowPaints = false;
+            DebugShowRuler = false;
+            DrawWindowDecorations = false;
         }
 
         private PlayerControl selectedControl;
@@ -109,6 +112,22 @@ namespace UnusefulPlayer
         /// <returns></returns>
         private Direction WhatResizeHandle(PlayerControl c, PointF p)
         {
+            /*RectangleF[] resizeHandles = getResizeHandlesRectangles(c.GetAbsoluteLocation(), c.Size);
+            var match = (from h in resizeHandles
+                        where p.X >= h.Location.X && p.X <= h.Location.X + h.Width
+                        && p.Y >= h.Location.Y && p.Y <= h.Location.Y + h.Height
+                        select h).FirstOrDefault();
+
+            if (match == resizeHandles[0]) return Direction.Up | Direction.Left;
+            else if (match == resizeHandles[1]) return Direction.Up;
+            else if (match == resizeHandles[2]) return Direction.Up | Direction.Right;
+            else if (match == resizeHandles[3]) return Direction.Left;
+            else if (match == resizeHandles[4]) return Direction.Right;
+            else if (match == resizeHandles[5]) return Direction.Down | Direction.Left;
+            else if (match == resizeHandles[6]) return Direction.Down;
+            else if (match == resizeHandles[7]) return Direction.Down | Direction.Right;
+            else return Direction.None;*/
+
             Direction dir = Direction.None;
             var loc = c.GetAbsoluteLocation();
             if (loc.X + c.Size.Width - 5 <= p.X && p.X <= loc.X + c.Size.Width + 5
@@ -146,7 +165,7 @@ namespace UnusefulPlayer
 
             var closerContainer = this.containerControl;
             PlayerControl finalHit = this.containerControl;
-            float absX = 0, absY = 0;
+            float absX = closerContainer.Left, absY = closerContainer.Top;
             do
             {
                 var shiftedLocation = new PointF(x - absX, y - absY);
@@ -184,6 +203,9 @@ namespace UnusefulPlayer
         {
             base.OnPaint(e);
 
+            if (DrawWindowDecorations)
+                drawWindowDecorations(e.Graphics);
+            
             // Disegna il rettangolo di selezione
             if (selectedControl != null)
                 drawSelectionMetacontrols(e.Graphics);
@@ -203,19 +225,19 @@ namespace UnusefulPlayer
             }
         }
 
-        RectangleF[] getResizeHandlesRectangles(PointF controlLocation, SizeF controlSize)
+        RectangleF[] getResizeHandlesRectangles(PointF controlAbsoluteLocation, SizeF controlSize)
         {
             RectangleF[] resizeHandles = {
-                    new RectangleF(controlLocation.X - HANDLE_W, controlLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlLocation.X + controlSize.Width - 1, controlLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlAbsoluteLocation.X - HANDLE_W, controlAbsoluteLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlAbsoluteLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlAbsoluteLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlAbsoluteLocation.X + controlSize.Width - 1, controlAbsoluteLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
 
-                    new RectangleF(controlLocation.X - HANDLE_W, controlLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
-                    new RectangleF(controlLocation.X + controlSize.Width - 1, controlLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
+                    new RectangleF(controlAbsoluteLocation.X - HANDLE_W, controlAbsoluteLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
+                    new RectangleF(controlAbsoluteLocation.X + controlSize.Width - 1, controlAbsoluteLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
 
-                    new RectangleF(controlLocation.X - HANDLE_W, controlLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlLocation.X + controlSize.Width - 1, controlLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H)
+                    new RectangleF(controlAbsoluteLocation.X - HANDLE_W, controlAbsoluteLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlAbsoluteLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlAbsoluteLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
+                    new RectangleF(controlAbsoluteLocation.X + controlSize.Width - 1, controlAbsoluteLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H)
                 };
 
             return resizeHandles;
@@ -238,9 +260,34 @@ namespace UnusefulPlayer
             );
         }*/
 
+        private System.Drawing.Drawing2D.GraphicsPath getWindowDecorationsPath()
+        {
+            RectangleF clientArea = new RectangleF(this.containerControl.Location, this.containerControl.Size);
+            float titleHeight = 25;
+            float border = 5;
+
+            var gp = new System.Drawing.Drawing2D.GraphicsPath();
+            gp.AddRectangle(new RectangleF(clientArea.X - 1, clientArea.Y - 1, clientArea.Width + 1, clientArea.Height + 1));
+            gp.AddRectangle(new RectangleF(clientArea.X - border - 1, clientArea.Y - titleHeight - 1, clientArea.Width + 2*border + 1, clientArea.Height + titleHeight + border + 1));
+
+            return gp;
+        }
+
+        private void drawWindowDecorations(Graphics g)
+        {
+            if(this.containerControl != null) {
+                var brushBack = new SolidBrush(Color.FromArgb(255, 95, 186, 207));
+                var penBorder = new Pen(Color.FromArgb(255, 79, 150, 170));
+
+                var path = getWindowDecorationsPath();
+                g.FillPath(brushBack, path);
+                g.DrawPath(penBorder, path);
+            }
+        }
+
         private void drawSelectionMetacontrols(Graphics g)
         {
-            if (selectedControl != null && selectedControl != this.ContainerControl)
+            if (selectedControl != null/* && selectedControl != this.ContainerControl*/)
             {
                 var selectedControlPos = selectedControl.GetAbsoluteLocation();
 
@@ -252,7 +299,11 @@ namespace UnusefulPlayer
                 g.DrawRectangle(selectionPen, selectedControlPos.X - (HANDLE_W / 2), selectedControlPos.Y - (HANDLE_H / 2), selectedControl.Size.Width + HANDLE_W - 1, selectedControl.Size.Height + HANDLE_H - 1);
 
                 // Handles
-                foreach (RectangleF handle in resizeHandles)
+                RectangleF[] handlesToDraw = resizeHandles;
+                if (selectedControl == this.ContainerControl)
+                    handlesToDraw = new RectangleF[] { resizeHandles[4], resizeHandles[6], resizeHandles[7] };
+
+                foreach (RectangleF handle in handlesToDraw)
                 {
                     g.FillRectangle(Brushes.White, handle);
                     g.DrawRectangle(Pens.Black, handle.X, handle.Y, handle.Width, handle.Height);
@@ -532,37 +583,50 @@ namespace UnusefulPlayer
             base.OnMouseDown(e);
 
             // Gestione resize handle
-            if (selectedControl != null && selectedControl != this.containerControl)
+            if (selectedControl != null)
             {
                 Direction resizeDir = WhatResizeHandle(selectedControl, e.Location);
                 if (resizeDir != Direction.None)
                 {
-                    this.resizingControl = selectedControl;
-                    this.resizingDirection = resizeDir;
+                    if (selectedControl != this.containerControl ||
+                        ((resizeDir & Direction.Left) != Direction.Left // containerControl non può ridimensionarsi a sx
+                        && (resizeDir & Direction.Up) != Direction.Up)) // containerControl non può ridimensionarsi in alto
+                    {
+                        this.resizingControl = selectedControl;
+                        this.resizingDirection = resizeDir;
+                    }
                 }
             }
 
             // Gestione selezione e dragging (se non è stato cliccato un resize handle)
             if (resizingControl == null)
             {
-                var hitInfo = RecursiveHitTest(e.X, e.Y);
-                if (hitInfo != null && hitInfo.Item3 != this.containerControl)
+                if (DrawWindowDecorations && getWindowDecorationsPath().IsVisible(e.Location))
                 {
-                    PlayerControl ctl = hitInfo.Item3;
-                    this.SelectedControl = ctl;
-                    // Spostiamo il controllo in primo piano
-                    ctl.Parent.Controls.Remove(ctl);
-                    ctl.Parent.Controls.AddFirst(ctl);
-
-
-                    this.dragStarting = true;
-                    this.dragStartPosition = e.Location;
-                    this.draggingOffset.X = e.X - hitInfo.Item1;
-                    this.draggingOffset.Y = e.Y - hitInfo.Item2;
-                }
-                else if (hitInfo != null && hitInfo.Item3 == this.containerControl)
-                {
+                    // E' stata cliccata la decorazione della finestra
                     this.SelectedControl = this.containerControl;
+                }
+                else
+                {
+                    var hitInfo = RecursiveHitTest(e.X, e.Y);
+                    if (hitInfo != null && hitInfo.Item3 != this.containerControl)
+                    {
+                        PlayerControl ctl = hitInfo.Item3;
+                        this.SelectedControl = ctl;
+                        // Spostiamo il controllo in primo piano
+                        ctl.Parent.Controls.Remove(ctl);
+                        ctl.Parent.Controls.AddFirst(ctl);
+
+
+                        this.dragStarting = true;
+                        this.dragStartPosition = e.Location;
+                        this.draggingOffset.X = e.X - hitInfo.Item1;
+                        this.draggingOffset.Y = e.Y - hitInfo.Item2;
+                    }
+                    else if (hitInfo != null && hitInfo.Item3 == this.containerControl)
+                    {
+                        this.SelectedControl = this.containerControl;
+                    }
                 }
             }
         }
@@ -598,17 +662,18 @@ namespace UnusefulPlayer
                 bool actionSet = false;
 
                 // Controlliamo se siamo sopra a un resize handle
-                if (selectedControl != null && selectedControl != this.containerControl)
+                if (selectedControl != null)
                 {
+                    var cc = selectedControl == this.containerControl;
                     Direction resizeDir = WhatResizeHandle(selectedControl, e.Location);
                     actionSet = true;
-                    if (resizeDir == Direction.Left || resizeDir == Direction.Right)
+                    if ((resizeDir == Direction.Left && !cc) || resizeDir == Direction.Right)
                         this.Cursor = Cursors.SizeWE;
-                    else if (resizeDir == Direction.Up || resizeDir == Direction.Down)
+                    else if ((resizeDir == Direction.Up && !cc) || resizeDir == Direction.Down)
                         this.Cursor = Cursors.SizeNS;
-                    else if (resizeDir == (Direction.Up | Direction.Right) || resizeDir == (Direction.Down | Direction.Left))
+                    else if ((resizeDir == (Direction.Up | Direction.Right) && !cc) || (resizeDir == (Direction.Down | Direction.Left) && !cc))
                         this.Cursor = Cursors.SizeNESW;
-                    else if (resizeDir == (Direction.Up | Direction.Left) || resizeDir == (Direction.Down | Direction.Right))
+                    else if ((resizeDir == (Direction.Up | Direction.Left) && !cc) || resizeDir == (Direction.Down | Direction.Right))
                         this.Cursor = Cursors.SizeNWSE;
                     else
                         actionSet = false;

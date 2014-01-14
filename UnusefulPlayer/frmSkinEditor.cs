@@ -28,6 +28,8 @@ namespace UnusefulPlayer
         SaveFileDialog saveDialog = new SaveFileDialog();
         OpenFileDialog openDialog = new OpenFileDialog();
 
+        Point defaultContainerLocation = new Point(30, 50);
+
         private void Form1_Load(object sender, EventArgs e)
         {
             // Riempiamo la listview con tutti i controlli disponibili
@@ -49,13 +51,11 @@ namespace UnusefulPlayer
 
         private void InitializePlayerView()
         {
-            if (panel2.Controls.Contains(playerView))
-                panel2.Controls.Remove(playerView);
+            if (panelSurface.Controls.Contains(playerView))
+                panelSurface.Controls.Remove(playerView);
 
             cmbControls.Items.Clear();
             propertyGrid1.SelectedObject = null;
-
-            panel2.Size = new Size(400, 358);
 
             playerView = new PlayerViewDesigner() {
                 AllowDrop = true,
@@ -63,24 +63,21 @@ namespace UnusefulPlayer
                 BlockInputEvents = true,
                 DebugShowPaints = btnShowPaints.Checked,
                 DebugShowRuler = rulerToolStripButton.Checked,
-                Location = new Point(3, 3),
-                Size = new Size(panel2.Size.Width - 8, panel2.Size.Height - 8)
+                DrawWindowDecorations = true,
+                Dock = DockStyle.Fill
             };
 
-            panel2.Controls.Add(playerView);
+            panelSurface.Controls.Add(playerView);
 
-            playerView.ContainerControl.Size = playerView.Size;
+            playerView.ContainerControl.Location = defaultContainerLocation;
+            playerView.ContainerControl.Size = new Size(400, 320);
 
             playerView.SelectionChanged += playerView_SelectionChanged;
             playerView.SelectedObjectPropertyChanged += playerView_SelectedObjectPropertyChanged;
             playerView.DesignerControlsTreeChanged += playerView_DesignerControlsTreeChanged;
             playerView.KeyDown += playerView_KeyDown;
-            playerView.Resize += playerView_Resize;
-        }
 
-        void playerView_Resize(object sender, EventArgs e)
-        {
-            panel2.Size = new Size(playerView.Size.Width + 8, playerView.Size.Height + 8);
+            playerView_DesignerControlsTreeChanged(playerView, new EventArgs());
         }
 
         void playerView_KeyDown(object sender, KeyEventArgs e)
@@ -153,6 +150,8 @@ namespace UnusefulPlayer
                 {
                     playerView.LoadSkin(openDialog.FileName);
                     filename = openDialog.FileName;
+
+                    playerView.ContainerControl.Location = defaultContainerLocation;
                 }
             }
         }

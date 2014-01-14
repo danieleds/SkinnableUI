@@ -142,12 +142,12 @@ namespace UnusefulPlayer.PlayerControls
         {
             float lx = 0, ly = 0;
             var c = this;
-            while (c.Parent != null)
+            do
             {
                 lx += c.location.X;
                 ly += c.location.Y;
                 c = c.Parent;
-            }
+            } while (c != null);
 
             return new PointF(lx, ly);
         }
