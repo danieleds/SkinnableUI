@@ -24,9 +24,16 @@ namespace UnusefulPlayer
 
         public bool BlockInputEvents { get; set; }
 
+        /// <summary>
+        /// TRUE se containerControl deve essere ancorato al playerView (una sorta di Dock=Fill).
+        /// Il valore false è usato per esempio nel designer.
+        /// </summary>
+        public bool DockContainerControl { get; set; }
+
         public PlayerView()
         {
             BlockInputEvents = false;
+            DockContainerControl = true;
 
             var cc = new Container(PlayerControl.SemanticType.Container);
             cc.Top = 0;
@@ -52,11 +59,9 @@ namespace UnusefulPlayer
             }
         }
 
-        bool dockContainerControl = false;
-
         void containerControl_Resize(object sender, EventArgs e)
         {
-            if (dockContainerControl)
+            if (DockContainerControl)
             {
                 this.Size = new Size((int)containerControl.Size.Width, (int)containerControl.Size.Height);
             }
@@ -94,6 +99,9 @@ namespace UnusefulPlayer
             this.ContainerControl = new Container(PlayerControl.SemanticType.Container);
             this.ContainerControl.ParentView = this;
             this.ContainerControl.FromXmlElement((System.Xml.XmlElement)theme.ChildNodes[0], resources);
+
+            this.ContainerControl.Location = new PointF();
+            this.Size = new Size((int)this.containerControl.Size.Width, (int)this.containerControl.Size.Height);
         }
 
         public void LoadSkin(string fileName)
@@ -122,7 +130,7 @@ namespace UnusefulPlayer
         protected override void OnResize(EventArgs e)
         {
             base.OnResize(e);
-            if (dockContainerControl)
+            if (DockContainerControl)
             {
                 if (this.ContainerControl != null)
                 {

@@ -157,7 +157,7 @@ namespace UnusefulPlayer.PlayerControls
                 drawDefaultBackground(g);
 
 
-            var cx_pos = (float)this.value * contentBox.Width / (float)(this.maximum - this.minimum);
+            float cx_pos = (float)this.value * contentBox.Width / (float)(this.maximum - this.minimum);
             var indicator_bar_box = new RectangleF(contentBox.X, contentBox.Y, cx_pos, contentBox.Height);
 
             // Disegno barra indicatore
@@ -167,8 +167,8 @@ namespace UnusefulPlayer.PlayerControls
             }
 
             // Disegno indicatore
-            var indicator_width = indicatorNormal9P != null ? indicatorNormal9P.Image.Width-2 : DEFAULT_INDICATOR_WIDTH;
-            var indicator_box = new RectangleF(contentBox.X + cx_pos - (((float)indicator_width) / 2), contentBox.Y, indicator_width-1, contentBox.Height);
+            float indicator_width = indicatorNormal9P != null ? indicatorNormal9P.Image.Width-2 : DEFAULT_INDICATOR_WIDTH;
+            var indicator_box = new RectangleF(contentBox.X + cx_pos - (indicator_width / 2f), contentBox.Y, indicator_width-1, contentBox.Height);
             if (pressed)
             {
                 if (indicatorPressed9P != null)
@@ -199,6 +199,7 @@ namespace UnusefulPlayer.PlayerControls
 
             //g.DrawRectangle(Pens.Red, contentBox.X, contentBox.Y, contentBox.Width, contentBox.Height);
             //g.DrawRectangle(Pens.Blue, indicator_bar_box.X, indicator_bar_box.Y, indicator_bar_box.Width, indicator_bar_box.Height);
+            //g.DrawRectangle(Pens.Blue, indicator_box.X, indicator_box.Y, indicator_box.Width-1, indicator_box.Height);
             //g.DrawLine(Pens.Red, contentBox.X + cx_pos, 0, contentBox.X + cx_pos, this.Size.Height);
         }
 

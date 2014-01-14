@@ -113,11 +113,16 @@ namespace UnusefulPlayer
         /// <param name="size">Dimensione con cui disegnare l'immagine.</param>
         public void Paint(Graphics g, SizeF size)
         {
+            var t = g.Save();
+
             // Per evitare problemi sul taglio dei pixel, impostiamo PixelOffsetMode e InterpolationMode.
             //   http://stackoverflow.com/questions/14070311/why-is-graphics-drawimage-cropping-part-of-my-image
             //   http://stackoverflow.com/questions/10099687/im-experiencing-unexpected-results-from-graphics-drawimage
             g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
+
+            // Per lo stesso motivo di prima (taglio dei pixel) facciamo il clip leggermente più in alto a sx.
+            g.SetClip(new RectangleF(-0.5f, -0.5f, size.Width, size.Height), System.Drawing.Drawing2D.CombineMode.Intersect);
 
             float y = 0;
             for (int yi = 0; yi < yLines.Count; yi++)
@@ -141,6 +146,7 @@ namespace UnusefulPlayer
                         destRect.Width = xLines[xi].Item3;
                     else
                         destRect.Width = xLines[xi].Item3 * (size.Width - totalFixedX) / (image.Width - 2 - totalFixedX);
+
                     x += destRect.Width;
 
                     destRect.Height = curLineHeight;
@@ -148,8 +154,8 @@ namespace UnusefulPlayer
                     // Per lo stesso motivo di prima (taglio dei pixel) spostiamo i rettangoli sorgente e destinazione
                     // di -0.5px in alto e a sinistra.
                     g.DrawImage(this.image, new RectangleF(destRect.X - 0.5f, destRect.Y - 0.5f, destRect.Width, destRect.Height),
-                       new RectangleF(xLines[xi].Item1 - 0.5f, yLines[yi].Item1 - 0.5f, xLines[xi].Item3, yLines[yi].Item3),
-                       GraphicsUnit.Pixel);
+                        new RectangleF(xLines[xi].Item1 - 0.5f, yLines[yi].Item1 - 0.5f, xLines[xi].Item3, yLines[yi].Item3),
+                        GraphicsUnit.Pixel);
 
                     /*g.DrawImage(this.image, destRect,
                         new RectangleF(xLines[xi].Item1, yLines[yi].Item1, xLines[xi].Item3, yLines[yi].Item3),
@@ -158,6 +164,8 @@ namespace UnusefulPlayer
 
                 y += curLineHeight;
             }
+
+            g.Restore(t);
         }
 
         public RectangleF GetContentBox(SizeF size)

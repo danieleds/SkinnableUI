@@ -34,10 +34,10 @@
             // playerView1
             // 
             this.playerView1.BlockInputEvents = false;
-            this.playerView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.playerView1.DockContainerControl = true;
             this.playerView1.Location = new System.Drawing.Point(0, 0);
             this.playerView1.Name = "playerView1";
-            this.playerView1.Size = new System.Drawing.Size(402, 229);
+            this.playerView1.Size = new System.Drawing.Size(145, 95);
             this.playerView1.TabIndex = 0;
             // 
             // frmSkinPreview

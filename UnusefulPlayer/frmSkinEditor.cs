@@ -61,6 +61,7 @@ namespace UnusefulPlayer
                 AllowDrop = true,
                 Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
                 BlockInputEvents = true,
+                DockContainerControl = false,
                 DebugShowPaints = btnShowPaints.Checked,
                 DebugShowRuler = rulerToolStripButton.Checked,
                 DrawWindowDecorations = true,

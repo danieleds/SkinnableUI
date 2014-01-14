@@ -20,9 +20,12 @@ namespace UnusefulPlayer
 
         private void frmSkinPreview_Load(object sender, EventArgs e)
         {
+            this.ClientSize = playerView1.Size;
             // Ora che il form ha una dimensione, genera l'evento Resize
             playerView1.Width = playerView1.Width - 1;
             playerView1.Width = playerView1.Width + 1;
+            playerView1.Dock = DockStyle.Fill;
+            playerView1.Resize += (sender2, e2) => this.ClientSize = playerView1.Size;
         }
     }
 }

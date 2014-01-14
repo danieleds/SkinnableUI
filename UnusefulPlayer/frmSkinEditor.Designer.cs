@@ -65,9 +65,9 @@
             this.rightPanel.Controls.Add(this.cmbControls);
             this.rightPanel.Controls.Add(this.label2);
             this.rightPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.rightPanel.Location = new System.Drawing.Point(693, 25);
+            this.rightPanel.Location = new System.Drawing.Point(709, 25);
             this.rightPanel.Name = "rightPanel";
-            this.rightPanel.Size = new System.Drawing.Size(216, 410);
+            this.rightPanel.Size = new System.Drawing.Size(216, 450);
             this.rightPanel.TabIndex = 1;
             // 
             // propertyGrid1
@@ -75,7 +75,7 @@
             this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.propertyGrid1.Location = new System.Drawing.Point(0, 45);
             this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(216, 365);
+            this.propertyGrid1.Size = new System.Drawing.Size(216, 405);
             this.propertyGrid1.TabIndex = 5;
             // 
             // cmbControls
@@ -122,7 +122,7 @@
             this.leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
             this.leftPanel.Location = new System.Drawing.Point(0, 25);
             this.leftPanel.Name = "leftPanel";
-            this.leftPanel.Size = new System.Drawing.Size(200, 410);
+            this.leftPanel.Size = new System.Drawing.Size(200, 450);
             this.leftPanel.TabIndex = 4;
             // 
             // listView1
@@ -138,7 +138,7 @@
             this.listView1.Location = new System.Drawing.Point(0, 24);
             this.listView1.MultiSelect = false;
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(200, 386);
+            this.listView1.Size = new System.Drawing.Size(200, 426);
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
@@ -153,7 +153,7 @@
             this.splitter1.BackColor = System.Drawing.SystemColors.ControlDark;
             this.splitter1.Location = new System.Drawing.Point(200, 25);
             this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 410);
+            this.splitter1.Size = new System.Drawing.Size(3, 450);
             this.splitter1.TabIndex = 5;
             this.splitter1.TabStop = false;
             // 
@@ -161,9 +161,9 @@
             // 
             this.splitter2.BackColor = System.Drawing.SystemColors.ControlDark;
             this.splitter2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.splitter2.Location = new System.Drawing.Point(690, 25);
+            this.splitter2.Location = new System.Drawing.Point(706, 25);
             this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(3, 410);
+            this.splitter2.Size = new System.Drawing.Size(3, 450);
             this.splitter2.TabIndex = 6;
             this.splitter2.TabStop = false;
             // 
@@ -172,7 +172,7 @@
             this.panelSurface.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelSurface.Location = new System.Drawing.Point(203, 25);
             this.panelSurface.Name = "panelSurface";
-            this.panelSurface.Size = new System.Drawing.Size(487, 410);
+            this.panelSurface.Size = new System.Drawing.Size(503, 450);
             this.panelSurface.TabIndex = 7;
             // 
             // toolStrip1
@@ -193,7 +193,7 @@
             this.btnPreview});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(909, 25);
+            this.toolStrip1.Size = new System.Drawing.Size(925, 25);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -318,7 +318,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(909, 435);
+            this.ClientSize = new System.Drawing.Size(925, 475);
             this.Controls.Add(this.panelSurface);
             this.Controls.Add(this.splitter2);
             this.Controls.Add(this.splitter1);
