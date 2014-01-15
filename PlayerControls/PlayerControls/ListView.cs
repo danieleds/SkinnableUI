@@ -138,13 +138,28 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        private Font headerFont = SystemFonts.DefaultFont;
+        public Font HeaderFont
+        {
+            get { return headerFont; }
+            set { headerFont = (value == null ? SystemFonts.DefaultFont : value); this.Invalidate(); }
+        }
+
+        private Color headerForeColor = Color.Black;
+        [DefaultValue(typeof(Color), "0x000000")]
+        public Color HeaderForeColor
+        {
+            get { return headerForeColor; }
+            set { headerForeColor = value; this.Invalidate(); }
+        }
+
         private static Bitmap tmpBmp = new Bitmap(1, 1);
         private float GetHeaderHeight()
         {
             SizeF result;
             using (var g = Graphics.FromImage(tmpBmp))
             {
-                result = g.MeasureString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,_!|", this.Font);
+                result = g.MeasureString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz,_!|", this.headerFont);
             }
 
             return result.Height * 1.5f;
@@ -208,7 +223,7 @@ namespace UnusefulPlayer.PlayerControls
             {
                 var col = columns[i];
                 var s = g.Save();
-                var strSize = g.MeasureString(columns[i].Title, this.Font);
+                var strSize = g.MeasureString(columns[i].Title, this.headerFont);
 
                 if (backgroundColumnHeader9P != null)
                 {
@@ -218,7 +233,7 @@ namespace UnusefulPlayer.PlayerControls
                     RectangleF contentbox = backgroundColumnHeader9P.GetContentBox(rect.Size);
                     RectangleF textBox = new RectangleF(rect.X + contentbox.X, rect.Y + contentbox.Y, contentbox.Width, contentbox.Height);
                     g.SetClip(textBox, System.Drawing.Drawing2D.CombineMode.Intersect);
-                    g.DrawString(col.Title, this.Font, Brushes.Black, textBox.X, textBox.Y + textBox.Height / 2 - strSize.Height / 2 + 1);
+                    g.DrawString(col.Title, this.headerFont, new SolidBrush(this.headerForeColor), textBox.X, textBox.Y + textBox.Height / 2 - strSize.Height / 2 + 1);
                 }
                 else
                 {
@@ -226,7 +241,7 @@ namespace UnusefulPlayer.PlayerControls
                     g.DrawRectangle(SystemPens.ButtonShadow, width_sum, 0, col.Width, headerHeight);
 
                     g.SetClip(new RectangleF(width_sum, 0, col.Width - 3, headerHeight), System.Drawing.Drawing2D.CombineMode.Intersect);
-                    g.DrawString(col.Title, this.Font, Brushes.Black, width_sum + 5, headerHeight / 2 - strSize.Height / 2 + 1);
+                    g.DrawString(col.Title, this.headerFont, new SolidBrush(this.headerForeColor), width_sum + 5, headerHeight / 2 - strSize.Height / 2 + 1);
                 }
 
                 g.Restore(s);
@@ -309,12 +324,12 @@ namespace UnusefulPlayer.PlayerControls
                         RectangleF contentbox = patch.GetContentBox(new SizeF(col.Width, rowHeight));
                         RectangleF textBox = new RectangleF(width_sum + contentbox.X, (rowHeight * i) + contentbox.Y, contentbox.Width, contentbox.Height);
                         g.SetClip(textBox, System.Drawing.Drawing2D.CombineMode.Intersect);
-                        g.DrawString(content, this.Font, Brushes.Black, textBox.X, textBox.Y + (textBox.Height / 2 - strSize.Height / 2 + 1));
+                        g.DrawString(content, this.Font, new SolidBrush(this.ForeColor), textBox.X, textBox.Y + (textBox.Height / 2 - strSize.Height / 2 + 1));
                     }
                     else
                     {
                         g.SetClip(new RectangleF(width_sum, (rowHeight * i) + 1, col.Width - 3, rowHeight - 2), System.Drawing.Drawing2D.CombineMode.Intersect);
-                        g.DrawString(content, this.Font, Brushes.Black, width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
+                        g.DrawString(content, this.Font, new SolidBrush(this.ForeColor), width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
                     }
 
                     g.Restore(s);
@@ -494,6 +509,15 @@ namespace UnusefulPlayer.PlayerControls
             node.AppendChild(rowsChild);
 
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundHeaderBar9P, "backgroundHeaderBar9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundColumnHeader9P, "backgroundColumnHeader9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundRowOver9P, "backgroundRowOver9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundRowSelected9P, "backgroundRowSelected9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundRowSelected9P, "backgroundRowSelected9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundRowNormal9P, "backgroundRowNormal9P", resources, node);
+
+            node.SetAttribute("headerFont", new FontConverter().ConvertToInvariantString(this.headerFont));
+            node.SetAttribute("headerForeColor", string.Format("#{0:x6}", this.headerForeColor.ToArgb()));
 
             return node;
         }
@@ -529,6 +553,15 @@ namespace UnusefulPlayer.PlayerControls
             }
 
             SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundHeaderBar9P", resources, s => this.BackgroundHeaderBar9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundColumnHeader9P", resources, s => this.BackgroundColumnHeader9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundRowOver9P", resources, s => this.BackgroundRowOver9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundRowSelected9P", resources, s => this.BackgroundRowSelected9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundRowSelected9P", resources, s => this.BackgroundRowSelected9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundRowNormal9P", resources, s => this.BackgroundRowNormal9P = s);
+
+            SerializationHelper.LoadFont(element, "headerFont", s => this.HeaderFont = s);
+            SerializationHelper.LoadColor(element, "headerForeColor", s => this.HeaderForeColor = s);
         }
 
     }

@@ -381,12 +381,7 @@ namespace UnusefulPlayer.PlayerControls
 
             foreach (System.Xml.XmlElement child in element.ChildNodes)
             {
-                var ctype = (PlayerControls.PlayerControl.SemanticType)Enum.Parse(typeof(PlayerControls.PlayerControl.SemanticType), child.Name);
-
-                PlayerControls.PlayerControl.SemanticTypeMeta info =
-                    PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(ctype);
-
-                PlayerControls.PlayerControl c = (PlayerControls.PlayerControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
+                PlayerControls.PlayerControl c = SerializationHelper.GetPlayerControlInstanceFromTagName(child.Name);
                 this.AddPlayerControl(c);
                 c.FromXmlElement(child, resources);
             }

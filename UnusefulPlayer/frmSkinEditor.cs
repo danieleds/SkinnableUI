@@ -15,8 +15,6 @@ namespace UnusefulPlayer
         PlayerViewDesigner playerView;
         string filename = null;
 
-        PlayerControls.PlayerControl copiedControl = null;
-
         public frmSkinEditor()
         {
             InitializeComponent();
@@ -29,6 +27,8 @@ namespace UnusefulPlayer
         OpenFileDialog openDialog = new OpenFileDialog();
 
         Point defaultContainerLocation = new Point(30, 50);
+
+        private const string CLIPBOARD_PLAYERCONTROL_FORMAT = "skinPlayerControl";
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -227,24 +227,49 @@ namespace UnusefulPlayer
         {
             if (playerView.SelectedControl != null)
             {
-                PlayerControls.PlayerControl copy = (PlayerControls.PlayerControl)Activator.CreateInstance(
-                    playerView.SelectedControl.GetType(),
-                    new object[] { playerView.SelectedControl.Semantic });
-                copy.ApplyProperties(playerView.SelectedControl);
-                copy.Parent = null;
+                var resources = new Dictionary<string, System.IO.MemoryStream>();
+                var doc = new System.Xml.XmlDocument();
+                doc.AppendChild(playerView.SelectedControl.GetXmlElement(doc, resources));
 
-                copiedControl = copy;
+                var clipb = new SerializationHelper.ClipboardPlayerControl();
+                clipb.XmlDocument = doc;
+                clipb.Resources = resources;
+                Clipboard.SetDataObject(new DataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, clipb), true);
+                IsSerializable(clipb);
+            }
+        }
+
+        private static bool IsSerializable(object obj)
+        {
+            System.IO.MemoryStream mem = new System.IO.MemoryStream();
+            var bin = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
+            try
+            {
+                bin.Serialize(mem, obj);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Your object cannot be serialized." +
+                                 " The reason is: " + ex.ToString());
+                return false;
             }
         }
 
         private void pasteToolStripButton_Click(object sender, EventArgs e)
         {
-            if (copiedControl != null)
+            if (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROL_FORMAT))
             {
-                PlayerControls.PlayerControl copy = (PlayerControls.PlayerControl)Activator.CreateInstance(
-                    copiedControl.GetType(),
-                    new object[] { copiedControl.Semantic });
-                copy.ApplyProperties(copiedControl);
+                var clipb = (SerializationHelper.ClipboardPlayerControl)Clipboard.GetDataObject().GetData(CLIPBOARD_PLAYERCONTROL_FORMAT);
+
+                System.Xml.XmlDocument copy_xml = clipb.XmlDocument;
+                Dictionary<string, System.IO.MemoryStream> copy_resources = clipb.Resources;
+
+                var controlElement = copy_xml.ChildNodes[1];
+
+                PlayerControls.PlayerControl copy = SerializationHelper.GetPlayerControlInstanceFromTagName(controlElement.Name);
+                copy.ParentView = playerView;
+                copy.FromXmlElement((System.Xml.XmlElement)controlElement, copy_resources);
 
                 if (playerView.SelectedControl == null)
                 {
@@ -270,9 +295,9 @@ namespace UnusefulPlayer
         {
             if (playerView.SelectedControl != null)
             {
-                copiedControl = playerView.SelectedControl;
-                playerView.SelectedControl = copiedControl.Parent;
-                copiedControl.Parent = null;
+                copyToolStripButton_Click(cutToolStripButton, new EventArgs());
+                playerView.SelectedControl.Parent = null;
+                playerView.SelectedControl = null;
             }
         }
 

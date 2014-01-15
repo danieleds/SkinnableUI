@@ -31,6 +31,17 @@ namespace UnusefulPlayer
             }
         }
 
+        public static PlayerControls.PlayerControl GetPlayerControlInstanceFromTagName(String tag)
+        {
+            var ctype = (PlayerControls.PlayerControl.SemanticType)Enum.Parse(typeof(PlayerControls.PlayerControl.SemanticType), tag);
+
+            PlayerControls.PlayerControl.SemanticTypeMeta info =
+                    PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(ctype);
+
+            PlayerControls.PlayerControl c = (PlayerControls.PlayerControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
+            return c;
+        }
+
         public static Skin OpenSkinPackage(string fileName)
         {
             var resources = new Dictionary<string, MemoryStream>();
@@ -157,6 +168,33 @@ namespace UnusefulPlayer
             }
 
             return true;
+        }
+
+        [Serializable]
+        public class ClipboardPlayerControl
+        {
+            private string doc;
+            public Dictionary<string, System.IO.MemoryStream> Resources {get; set;}
+
+            public System.Xml.XmlDocument XmlDocument
+            {
+                get
+                {
+                    XmlDocument d = new XmlDocument();
+                    d.LoadXml(doc);
+                    return d;
+                }
+                set
+                {
+                    using (var stringWriter = new StringWriter())
+                    using (var xmlTextWriter = XmlWriter.Create(stringWriter))
+                    {
+                        value.WriteTo(xmlTextWriter);
+                        xmlTextWriter.Flush();
+                        doc = stringWriter.GetStringBuilder().ToString();
+                    }
+                }
+            }
         }
     }
 }
