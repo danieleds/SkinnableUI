@@ -183,6 +183,13 @@ namespace UnusefulPlayer.PlayerControls
             {
                 c.InternalPaint(g);
             }
+
+            if (this.ParentView != null && this.ParentView.DesignSkinMode)
+            {
+                Pen p = new Pen(Color.Gray);
+                p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
+                g.DrawRectangle(p, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+            }
         }
 
         private void drawDefaultContainer(Graphics g)

@@ -7,6 +7,7 @@ using System.Xml;
 using System.IO.Packaging;
 using System.IO;
 using System.IO.Compression;
+using System.Drawing;
 
 namespace UnusefulPlayer
 {
@@ -135,6 +136,31 @@ namespace UnusefulPlayer
 
                 if (duplicateKey == null)
                 { 
+                    String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
+                    resources.Add(filename, m);
+                    node.SetAttribute(nodeName, filename);
+                }
+                else
+                {
+                    node.SetAttribute(nodeName, duplicateKey);
+                }
+            }
+        }
+
+        public static void SetImage(Image image, string nodeName, Dictionary<string, System.IO.MemoryStream> resources, System.Xml.XmlElement node)
+        {
+            if (image != null)
+            {
+                System.IO.MemoryStream m = new System.IO.MemoryStream();
+                image.Save(m, System.Drawing.Imaging.ImageFormat.Png);
+
+                String duplicateKey = (from r in resources
+                                       where StreamsAreEqual(r.Value, m)
+                                       select r.Key)
+                                       .DefaultIfEmpty(null).FirstOrDefault();
+
+                if (duplicateKey == null)
+                {
                     String filename = SerializationHelper.PKG_RES_PREFIX + resources.Count + ".png";
                     resources.Add(filename, m);
                     node.SetAttribute(nodeName, filename);

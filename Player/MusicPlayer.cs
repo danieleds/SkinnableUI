@@ -35,6 +35,8 @@ namespace Player
 
         List<PlayerControls.ListView> playlist = new List<PlayerControls.ListView>();
 
+        List<PlayerControls.PictureBox> albumArt = new List<PlayerControls.PictureBox>();
+
         Mp3FileReader mp3Reader;
         WaveOut waveOut;
 
@@ -189,6 +191,7 @@ namespace Player
             totalTime = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.TotalTime);
             remainingTime = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.RemainingTime);
             playlist = GetControls<PlayerControls.ListView>(PlayerControls.PlayerControl.SemanticType.Playlist);
+            albumArt = GetControls<PlayerControls.PictureBox>(PlayerControls.PlayerControl.SemanticType.AlbumArt);
 
             play.ForEach(c => c.Click += play_Click);
             pause.ForEach(c => c.Click += pause_Click);
@@ -215,6 +218,7 @@ namespace Player
                 artist.ForEach(item => item.Text = "");
                 album.ForEach(item => item.Text = "");
                 year.ForEach(item => item.Text = "");
+                albumArt.ForEach(c => c.Image = null);
 
                 playPause.ForEach(c => c.Checked = false);
             }
@@ -238,7 +242,16 @@ namespace Player
                 artist.ForEach(item => item.Text = f.Tag.JoinedPerformers.Trim() != "" ? f.Tag.JoinedPerformers : f.Tag.JoinedAlbumArtists);
                 album.ForEach(item => item.Text = f.Tag.Album);
                 year.ForEach(item => item.Text = f.Tag.Year.ToString());
-                //f.Tag.Pictures[0].
+                if (f.Tag.Pictures.Length > 0)
+                {
+                    var bin = (byte[])(f.Tag.Pictures[0].Data.Data);
+                    var img = Image.FromStream(new System.IO.MemoryStream(bin)); //.GetThumbnailImage(100, 100, null, IntPtr.Zero);
+                    albumArt.ForEach(item => item.Image = img);
+                }
+                else
+                {
+                    albumArt.ForEach(item => item.Image = null);
+                }
 
                 playPause.ForEach(c => c.Checked = true);
                 waveOut.Play();

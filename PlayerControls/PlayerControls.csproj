@@ -47,6 +47,7 @@
     <Compile Include="NinePatch.cs" />
     <Compile Include="PlayerControls\Button.cs" />
     <Compile Include="PlayerControls\Container.cs" />
+    <Compile Include="PlayerControls\PictureBox.cs" />
     <Compile Include="PlayerControls\Label.cs" />
     <Compile Include="PlayerControls\ListView.cs" />
     <Compile Include="PlayerControls\PlayerControl.cs" />
