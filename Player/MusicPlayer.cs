@@ -130,7 +130,7 @@ namespace Player
 
                 playlist.ForEach(item => item.Items.Clear());
 
-                LoadSong(null);
+                LoadSong(null, null);
                 
                 tmr.Start();
 
@@ -204,8 +204,9 @@ namespace Player
 
         }
 
-        void LoadSong(string path)
+        void LoadSong(string path, PlayerControls.ListView.ListViewRow row)
         {
+            playlist.ForEach(c => c.ActiveRow = row);
             songProgress.ForEach(item => item.Value = 0);
 
             if (path == null)
@@ -265,7 +266,7 @@ namespace Player
             if (row != null)
             {
                 currentSong = row;
-                LoadSong(row.Values[3].ToString());
+                LoadSong(row.Values[3].ToString(), row);
             }
         }
 
@@ -288,7 +289,7 @@ namespace Player
                 {
                     if (pl.Items[i] == currentSong) {
                         currentSong = pl.Items[MathMod(i-1, pl.Items.Count)];
-                        LoadSong(currentSong.Values[3].ToString());
+                        LoadSong(currentSong.Values[3].ToString(), currentSong);
                         break;
                     }
                 }
@@ -309,7 +310,7 @@ namespace Player
                     if (pl.Items[i] == currentSong)
                     {
                         currentSong = pl.Items[(i + 1) % pl.Items.Count];
-                        LoadSong(currentSong.Values[3].ToString());
+                        LoadSong(currentSong.Values[3].ToString(), currentSong);
                         break;
                     }
                 }

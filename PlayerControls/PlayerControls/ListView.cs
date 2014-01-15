@@ -30,6 +30,9 @@ namespace UnusefulPlayer.PlayerControls
 
         void items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            if (activeRow != null && !this.items.Contains(activeRow))
+                activeRow = null;
+
             this.Invalidate();
         }
 
@@ -168,6 +171,29 @@ namespace UnusefulPlayer.PlayerControls
             set { headerForeColor = value; this.Invalidate(); }
         }
 
+        private Font activeRowFont = SystemFonts.DefaultFont;
+        public Font ActiveRowFont
+        {
+            get { return activeRowFont; }
+            set { activeRowFont = (value == null ? SystemFonts.DefaultFont : value); this.Invalidate(); }
+        }
+
+        private Color activeRowForeColor = Color.Black;
+        [DefaultValue(typeof(Color), "0x000000")]
+        public Color ActiveRowForeColor
+        {
+            get { return activeRowForeColor; }
+            set { activeRowForeColor = value; this.Invalidate(); }
+        }
+
+        private ListViewRow activeRow;
+        [Browsable(false)]
+        public ListViewRow ActiveRow
+        {
+            get { return activeRow; }
+            set { activeRow = value; this.Invalidate(); }
+        }
+
         private static Bitmap tmpBmp = new Bitmap(1, 1);
         private float GetHeaderHeight()
         {
@@ -286,9 +312,9 @@ namespace UnusefulPlayer.PlayerControls
                 bool over = curOverRow == item;
                 bool selected = selectedRows.Contains(item);
 
-                Brush bg = Brushes.Transparent;
-                Pen border = Pens.Transparent;
-                NinePatch patch = backgroundRowNormal9P;
+                Brush bg;
+                Pen border;
+                NinePatch patch = null;
 
                 if (over && selected)
                 {
@@ -307,6 +333,12 @@ namespace UnusefulPlayer.PlayerControls
                     bg = Brushes.LightBlue;
                     border = Pens.LightBlue;
                     patch = backgroundRowSelected9P;
+                }
+                else
+                {
+                    bg = Brushes.Transparent;
+                    border = Pens.Transparent;
+                    patch = backgroundRowNormal9P;
                 }
 
                 if (patch != null)
@@ -332,19 +364,21 @@ namespace UnusefulPlayer.PlayerControls
                         else
                             content = "";
                     }
-                    var strSize = g.MeasureString(content, this.Font);
+                    var strFont = this.activeRow == item ? this.activeRowFont : this.Font;
+                    var strBrush = new SolidBrush(this.activeRow == item ? this.activeRowForeColor : this.ForeColor);
+                    var strSize = g.MeasureString(content, strFont);
 
                     if (patch != null)
                     {
                         RectangleF contentbox = patch.GetContentBox(new SizeF(col.Width, rowHeight));
                         RectangleF textBox = new RectangleF(width_sum + contentbox.X, (rowHeight * i) + contentbox.Y, contentbox.Width, contentbox.Height);
                         g.SetClip(textBox, System.Drawing.Drawing2D.CombineMode.Intersect);
-                        g.DrawString(content, this.Font, new SolidBrush(this.ForeColor), textBox.X, textBox.Y + (textBox.Height / 2 - strSize.Height / 2 + 1));
+                        g.DrawString(content, strFont, strBrush, textBox.X, textBox.Y + (textBox.Height / 2 - strSize.Height / 2 + 1));
                     }
                     else
                     {
                         g.SetClip(new RectangleF(width_sum, (rowHeight * i) + 1, col.Width - 3, rowHeight - 2), System.Drawing.Drawing2D.CombineMode.Intersect);
-                        g.DrawString(content, this.Font, new SolidBrush(this.ForeColor), width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
+                        g.DrawString(content, strFont, strBrush, width_sum + 5, (rowHeight * i) + (rowHeight / 2 - strSize.Height / 2 + 1));
                     }
 
                     g.Restore(s);
@@ -537,12 +571,18 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.SetNinePatch(this.backgroundColumnHeader9P, "backgroundColumnHeader9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundRowOver9P, "backgroundRowOver9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundRowSelected9P, "backgroundRowSelected9P", resources, node);
-            SerializationHelper.SetNinePatch(this.backgroundRowSelected9P, "backgroundRowSelected9P", resources, node);
+            SerializationHelper.SetNinePatch(this.backgroundRowSelectedOver9P, "backgroundRowSelectedOver9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundRowNormal9P, "backgroundRowNormal9P", resources, node);
             SerializationHelper.SetNinePatch(this.scrollbarNormal9P, "scrollbarNormal9P", resources, node);
 
             node.SetAttribute("headerFont", new FontConverter().ConvertToInvariantString(this.headerFont));
             node.SetAttribute("headerForeColor", string.Format("#{0:x6}", this.headerForeColor.ToArgb()));
+            node.SetAttribute("activeRowFont", new FontConverter().ConvertToInvariantString(this.activeRowFont));
+            node.SetAttribute("activeRowForeColor", string.Format("#{0:x6}", this.activeRowForeColor.ToArgb()));
+            /*if(this.items.Contains(activeRow))
+                node.SetAttribute("activeRow", System.Xml.XmlConvert.ToString(this.items.IndexOf(activeRow)));
+            else
+                node.SetAttribute("activeRow", System.Xml.XmlConvert.ToString(-1));*/
 
             return node;
         }
@@ -582,12 +622,16 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadBitmapFromResources(element, "backgroundColumnHeader9P", resources, s => this.BackgroundColumnHeader9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundRowOver9P", resources, s => this.BackgroundRowOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundRowSelected9P", resources, s => this.BackgroundRowSelected9P = s);
-            SerializationHelper.LoadBitmapFromResources(element, "backgroundRowSelected9P", resources, s => this.BackgroundRowSelected9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "backgroundRowSelectedOver9P", resources, s => this.BackgroundRowSelectedOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundRowNormal9P", resources, s => this.BackgroundRowNormal9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "scrollbarNormal9P", resources, s => this.ScrollbarNormal9P = s);
 
             SerializationHelper.LoadFont(element, "headerFont", s => this.HeaderFont = s);
             SerializationHelper.LoadColor(element, "headerForeColor", s => this.HeaderForeColor = s);
+            SerializationHelper.LoadFont(element, "activeRowFont", s => this.ActiveRowFont = s);
+            SerializationHelper.LoadColor(element, "activeRowForeColor", s => this.ActiveRowForeColor = s);
+            //SerializationHelper.LoadInteger(element, "activeRow", s => { if (s >= 0 && s < this.items.Count) this.ActiveRow = this.items[s]; else this.activeRow = null; });
+
         }
 
     }
