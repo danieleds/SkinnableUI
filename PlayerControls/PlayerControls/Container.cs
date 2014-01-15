@@ -310,7 +310,8 @@ namespace UnusefulPlayer.PlayerControls
         {
             base.OnMouseUp(e);
 
-            PlayerControl ctl = controls.FirstOrDefault(c => c.Capture || c.HitTest(e.Location));
+            PlayerControl ctl = controls.FirstOrDefault(c => c.Capture);
+            if(ctl == null) ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
 
             if (ctl == null)
             {
