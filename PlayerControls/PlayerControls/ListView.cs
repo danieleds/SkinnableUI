@@ -138,6 +138,21 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
+        protected NinePatch scrollbarNormal9P;
+        [DefaultValue(null)]
+        public Bitmap ScrollbarNormal9P
+        {
+            get { return scrollbarNormal9P != null ? scrollbarNormal9P.Image : null; }
+            set
+            {
+                if (value == null)
+                    this.scrollbarNormal9P = null;
+                else
+                    this.scrollbarNormal9P = new NinePatch(value);
+                this.Invalidate();
+            }
+        }
+
         private Font headerFont = SystemFonts.DefaultFont;
         public Font HeaderFont
         {
@@ -351,9 +366,18 @@ namespace UnusefulPlayer.PlayerControls
             var contentHeight = rowHeight * this.items.Count;
             if (contentHeight > viewHeight)
             {
-                var barw = 3;
-                var x = this.Size.Width - barw - 1;
-                g.FillRectangle(Brushes.Gray, x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight);
+                if (scrollbarNormal9P != null)
+                {
+                    var barw = scrollbarNormal9P.Image.Width - 2;
+                    var x = this.Size.Width - barw - 2;
+                    scrollbarNormal9P.Paint(g, new RectangleF(x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight));
+                }
+                else
+                {
+                    var barw = 3;
+                    var x = this.Size.Width - barw - 1;
+                    g.FillRectangle(Brushes.Gray, x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight);
+                }
             }
         }
 
@@ -515,6 +539,7 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.SetNinePatch(this.backgroundRowSelected9P, "backgroundRowSelected9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundRowSelected9P, "backgroundRowSelected9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundRowNormal9P, "backgroundRowNormal9P", resources, node);
+            SerializationHelper.SetNinePatch(this.scrollbarNormal9P, "scrollbarNormal9P", resources, node);
 
             node.SetAttribute("headerFont", new FontConverter().ConvertToInvariantString(this.headerFont));
             node.SetAttribute("headerForeColor", string.Format("#{0:x6}", this.headerForeColor.ToArgb()));
@@ -559,6 +584,7 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadBitmapFromResources(element, "backgroundRowSelected9P", resources, s => this.BackgroundRowSelected9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundRowSelected9P", resources, s => this.BackgroundRowSelected9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundRowNormal9P", resources, s => this.BackgroundRowNormal9P = s);
+            SerializationHelper.LoadBitmapFromResources(element, "scrollbarNormal9P", resources, s => this.ScrollbarNormal9P = s);
 
             SerializationHelper.LoadFont(element, "headerFont", s => this.HeaderFont = s);
             SerializationHelper.LoadColor(element, "headerForeColor", s => this.HeaderForeColor = s);
