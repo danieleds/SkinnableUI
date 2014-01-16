@@ -182,6 +182,15 @@ namespace UnusefulPlayer
             }
         }
 
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            base.OnMouseLeave(e);
+            if (!BlockInputEvents)
+            {
+                this.containerControl.OnMouseLeave(e);
+            }
+        }
+
         protected override void OnMouseWheel(MouseEventArgs e)
         {
             base.OnMouseWheel(e);

@@ -76,8 +76,9 @@ namespace UnusefulPlayer.PlayerControls
             {
                 if (backgroundPressed9P != null)
                 {
-                    contentBox = backgroundPressed9P.GetContentBox(this.Size);
-                    backgroundPressed9P.Paint(g, this.Size);
+                    var patch = backgroundPressed9P;
+                    contentBox = patch.GetContentBox(this.Size);
+                    patch.Paint(g, this.Size);
                 }
                 else
                     drawDefaultButton(g);
@@ -86,8 +87,9 @@ namespace UnusefulPlayer.PlayerControls
             {
                 if (backgroundOver9P != null)
                 {
-                    contentBox = backgroundOver9P.GetContentBox(this.Size);
-                    backgroundOver9P.Paint(g, this.Size);
+                    var patch = backgroundOver9P; // anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundOver9P;
+                    contentBox = patch.GetContentBox(this.Size);
+                    patch.Paint(g, this.Size);
                 }
                 else
                     drawDefaultButton(g);
@@ -96,8 +98,9 @@ namespace UnusefulPlayer.PlayerControls
             {
                 if (backgroundNormal9P != null)
                 {
-                    contentBox = backgroundNormal9P.GetContentBox(this.Size);
-                    backgroundNormal9P.Paint(g, this.Size);
+                    var patch = backgroundNormal9P; //anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundNormal9P;
+                    contentBox = patch.GetContentBox(this.Size);
+                    patch.Paint(g, this.Size);
                 }
                 else
                     drawDefaultButton(g);
@@ -133,17 +136,35 @@ namespace UnusefulPlayer.PlayerControls
             }
         }
 
-        //Animator.Animation animOver, animLeave;
+        Animator.Animation anim;
         public override void OnMouseEnter(EventArgs e)
         {
             base.OnMouseEnter(e);
             this.over = true;
 
-            /*animOver = this.GetAnimator().Attach(50, 400, this.backgroundNormal9P, this.backgroundOver9P, this.Invalidate);
-            animOver.Start();
-            animOver.Finish += (sender, ev) => this.GetAnimator().Detach(animOver);*/
+            //AnimateTo(ref anim, this.backgroundOver9P, this.backgroundNormal9P);
             
             this.Invalidate();
+        }
+
+        private void AnimateTo(ref Animator.Animation animationPlaceholder, NinePatch to, NinePatch defaultFrom)
+        {
+            float p;
+            NinePatch startFrame;
+            if (animationPlaceholder == null)
+            {
+                p = 1;
+                startFrame = defaultFrom;
+            }
+            else
+            {
+                p = animationPlaceholder.Stop();
+                startFrame = animationPlaceholder.GetCurrentFrame();
+            }
+
+            animationPlaceholder = this.GetAnimator().Attach(50, (int)(400 * p), startFrame, to, this.Invalidate);
+            animationPlaceholder.SetDetachOnFinish(true, this.GetAnimator());
+            animationPlaceholder.Start();
         }
 
         public override void OnMouseLeave(EventArgs e)
@@ -151,12 +172,7 @@ namespace UnusefulPlayer.PlayerControls
             base.OnMouseLeave(e);
             this.over = false;
 
-            /*var p = animOver.Stop();
-            animOver.ClearImage();
-            animLeave = this.GetAnimator().Attach(50, 400, this.backgroundOver9P, this.backgroundNormal9P, this.Invalidate);
-            animLeave.Start(1-p);
-            this.GetAnimator().Detach(animOver);
-            animLeave.Finish += (sender, ev) => this.GetAnimator().Detach(animLeave);*/
+            //AnimateTo(ref anim, this.backgroundNormal9P, this.backgroundOver9P);
 
             this.Invalidate();
         }

@@ -8,7 +8,6 @@ using System.Windows.Forms;
 using System.ComponentModel;
 using System.Xml;
 using ExtensionMethods;
-using System.Reflection;
 
 namespace UnusefulPlayer.PlayerControls
 {
@@ -346,26 +345,6 @@ namespace UnusefulPlayer.PlayerControls
             SerializationHelper.LoadEnum<AnchorStyles>(element, "anchor", s => this.Anchor = s);
             SerializationHelper.LoadColor(element, "forecolor", s => this.ForeColor = s);
             SerializationHelper.LoadFont(element, "font", s => this.Font = s);
-        }
-
-        /// <summary>
-        /// Applica all'oggetto corrente tutte le proprietà in comune con "source".
-        /// </summary>
-        /// <param name="source"></param>
-        public virtual void ApplyProperties(PlayerControl source)
-        {
-            var destinationProperties = from ownProp in this.GetType().GetProperties()
-                                        let srcProp = source.GetType().GetProperty(ownProp.Name)
-                                        where ownProp.CanWrite
-                                        && srcProp != null 
-                                        && srcProp.CanRead
-                                        select ownProp;
-
-            foreach (PropertyInfo destinationPi in destinationProperties)
-            {
-                PropertyInfo sourcePi = source.GetType().GetProperty(destinationPi.Name);
-                destinationPi.SetValue(this, sourcePi.GetValue(source, null), null);
-            } 
         }
 
         // Lavora nelle coordinate globali

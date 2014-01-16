@@ -367,7 +367,7 @@ namespace UnusefulPlayer.PlayerControls
                     var strFont = this.activeRow == item ? this.activeRowFont : this.Font;
                     var strBrush = new SolidBrush(this.activeRow == item ? this.activeRowForeColor : this.ForeColor);
                     var strSize = g.MeasureString(content, strFont);
-
+                    
                     if (patch != null)
                     {
                         RectangleF contentbox = patch.GetContentBox(new SizeF(col.Width, rowHeight));

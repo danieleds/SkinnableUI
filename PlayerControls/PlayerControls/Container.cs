@@ -176,8 +176,6 @@ namespace UnusefulPlayer.PlayerControls
         {
             if (backgroundNormal9P != null)
                 backgroundNormal9P.Paint(g, this.Size);
-            else
-                drawDefaultContainer(g);
             
             foreach (PlayerControl c in this.controls.Reverse())
             {
@@ -190,12 +188,6 @@ namespace UnusefulPlayer.PlayerControls
                 p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dash;
                 g.DrawRectangle(p, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
             }
-        }
-
-        private void drawDefaultContainer(Graphics g)
-        {
-            g.FillRectangle(new SolidBrush(Color.FromArgb(25, 0, 0, 0)), 0, 0, this.Size.Width - 1, this.Size.Height - 1);
-            g.DrawRectangle(Pens.White, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
         }
 
         public override void OnMouseDown(MouseEventArgs e)
@@ -352,6 +344,17 @@ namespace UnusefulPlayer.PlayerControls
             }
 
             this.suppressNextClick = false;
+        }
+
+        public override void OnMouseLeave(EventArgs e)
+        {
+            base.OnMouseLeave(e);
+
+            if (lastEnterControl != null)
+            {
+                lastEnterControl.OnMouseLeave(new EventArgs());
+                lastEnterControl = null;
+            }
         }
 
         public override void OnMouseWheel(MouseEventArgs e)

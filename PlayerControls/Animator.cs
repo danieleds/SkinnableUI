@@ -74,13 +74,13 @@ namespace UnusefulPlayer
 
         public class Animation
         {
-            int toNextFrame;
-            int frameInterval, numberOfFrames;
-            int frameCount;
+            int toNextFrame; // Istanti rimanenti per arrivare al prossimo frame
+            int frameInterval; // Numero di istanti tra un frame e l'altro
+            int numberOfFrames; // Numero totale di frame che compongono l'animazione
+            int frameCount; // Contatore frame corrente
 
-            NinePatch from, to;
+            NinePatch from, to, curFrame;
             RectangleF srcRect, destRect;
-            Bitmap originalTo;
             ColorMatrix colorMatrix;
             Action invalidate;
 
@@ -91,6 +91,13 @@ namespace UnusefulPlayer
 
             public delegate void FinishEventHandler(object sender, EventArgs e);
             public event FinishEventHandler Finish;
+
+            Animator detachOnFinish = null; // Se != null, quando l'animazione finisce allora questo Animator deve fare il detach.
+
+            public void SetDetachOnFinish(bool detachOnFinish, Animator animator)
+            {
+                this.detachOnFinish = detachOnFinish ? animator : null;
+            }
 
             /// <summary>
             /// 
@@ -107,7 +114,7 @@ namespace UnusefulPlayer
                 this.to = to;
                 this.invalidate = invalidate;
 
-                originalTo = to.Image.Clone(new RectangleF(topleft, to.Image.Size), System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+                this.curFrame = new NinePatch(from.Image.Clone(new RectangleF(topleft, from.Image.Size), System.Drawing.Imaging.PixelFormat.Format32bppArgb));
 
                 srcRect = new RectangleF(1, 1, from.Image.Size.Width - 2, from.Image.Size.Height - 2);
                 destRect = new RectangleF(1, 1, to.Image.Size.Width - 2, to.Image.Size.Height - 2);
@@ -147,13 +154,9 @@ namespace UnusefulPlayer
                 return (float)frameCount / (float)numberOfFrames;
             }
 
-            /// <summary>
-            /// Annulla eventuali effetti di animazioni parziali. Non esegue Invalidate().
-            /// </summary>
-            public void ClearImage()
+            public bool IsRunning()
             {
-                var g = Graphics.FromImage(to.Image);
-                g.DrawImageUnscaled(originalTo, 0, 0);
+                return running;
             }
 
             public void DoAnimation()
@@ -164,7 +167,7 @@ namespace UnusefulPlayer
                     {
                         frameCount++;
 
-                        var g = Graphics.FromImage(to.Image);
+                        var g = Graphics.FromImage(curFrame.Image);
                         g.DrawImage(from.Image, destRect, srcRect, GraphicsUnit.Pixel);
 
                         colorMatrix.Matrix33 = (float)frameCount / (float)numberOfFrames;
@@ -180,7 +183,7 @@ namespace UnusefulPlayer
                             new PointF(to.Image.Size.Width - 1, 1),
                             new PointF(1, to.Image.Size.Height - 1)
                         };
-                        g.DrawImage(originalTo, destPoints, destRect, GraphicsUnit.Pixel, imageAtt);
+                        g.DrawImage(to.Image, destPoints, destRect, GraphicsUnit.Pixel, imageAtt);
 
                         invalidate();
                     }
@@ -194,9 +197,18 @@ namespace UnusefulPlayer
                     if (frameCount == numberOfFrames)
                     {
                         Stop();
+
+                        if (detachOnFinish != null)
+                            detachOnFinish.Detach(this);
+
                         if (Finish != null) Finish(this, new EventArgs());
                     }
                 }
+            }
+
+            public NinePatch GetCurrentFrame()
+            {
+                return curFrame;
             }
         }
     }
