@@ -410,7 +410,7 @@ namespace UnusefulPlayer.PlayerControls
                 {
                     var barw = scrollbarNormal9P.Image.Width - 2;
                     var x = this.Size.Width - barw - 2;
-                    scrollbarNormal9P.Paint(g, new RectangleF(x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight + 1));
+                    scrollbarNormal9P.Paint(g, new RectangleF(x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight));
                 }
                 else
                 {

@@ -47,7 +47,7 @@
             this.ClientSize = new System.Drawing.Size(402, 229);
             this.Controls.Add(this.playerView1);
             this.Name = "frmSkinPreview";
-            this.Text = "frmSkinPreview";
+            this.Text = "Preview";
             this.Load += new System.EventHandler(this.frmSkinPreview_Load);
             this.ResumeLayout(false);
 

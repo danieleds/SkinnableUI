@@ -149,7 +149,16 @@ namespace UnusefulPlayer
             {
                 if (openDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    playerView.LoadSkin(openDialog.FileName);
+                    try
+                    {
+                        playerView.LoadSkin(openDialog.FileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     filename = openDialog.FileName;
 
                     playerView.ContainerControl.Location = defaultContainerLocation;
@@ -174,7 +183,7 @@ namespace UnusefulPlayer
             if(filename == null && (this.playerView.ContainerControl == null || this.playerView.ContainerControl.Controls.Count == 0))
                 return true;
 
-            var answ = MessageBox.Show("Save changes?", "Skin editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            var answ = MessageBox.Show("Do you want to save the current changes?", "Skin editor", MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
             if (answ == System.Windows.Forms.DialogResult.Yes)
             {
                 if (filename == null)
