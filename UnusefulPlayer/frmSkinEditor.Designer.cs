@@ -39,7 +39,7 @@
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.splitter1 = new System.Windows.Forms.Splitter();
             this.splitter2 = new System.Windows.Forms.Splitter();
-            this.panelSurface = new System.Windows.Forms.Panel();
+            this.panelSurface = new CustomPanel();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
@@ -378,7 +378,7 @@
         private System.Windows.Forms.PropertyGrid propertyGrid1;
         private System.Windows.Forms.Splitter splitter1;
         private System.Windows.Forms.Splitter splitter2;
-        private System.Windows.Forms.Panel panelSurface;
+        private CustomPanel panelSurface;
         private System.Windows.Forms.ListView listView1;
         private System.Windows.Forms.ToolStrip toolStrip1;
         private System.Windows.Forms.ToolStripButton newToolStripButton;
