@@ -105,8 +105,6 @@ namespace UnusefulPlayer
                 var containerControlRightmostPx = 20 + playerView.ContainerControl.Location.X + playerView.ContainerControl.Size.Width;
                 var containerControlDownmostPx = 20 + playerView.ContainerControl.Location.Y + playerView.ContainerControl.Size.Height;
 
-                System.Diagnostics.Debug.WriteLine(playerView.ContainerControl.Location.X + " + " + playerView.ContainerControl.Size.Width + " = " + containerControlRightmostPx + " <= " + panelSurface.Size.Width);
-
                 if (containerControlRightmostPx <= panelSurface.Size.Width)
                 {
                     playerView.Anchor |= AnchorStyles.Right;
