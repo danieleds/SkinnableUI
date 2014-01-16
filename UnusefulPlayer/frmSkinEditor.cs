@@ -235,24 +235,6 @@ namespace UnusefulPlayer
                 clipb.XmlDocument = doc;
                 clipb.Resources = resources;
                 Clipboard.SetDataObject(new DataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, clipb), true);
-                IsSerializable(clipb);
-            }
-        }
-
-        private static bool IsSerializable(object obj)
-        {
-            System.IO.MemoryStream mem = new System.IO.MemoryStream();
-            var bin = new System.Runtime.Serialization.Formatters.Binary.BinaryFormatter();
-            try
-            {
-                bin.Serialize(mem, obj);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Your object cannot be serialized." +
-                                 " The reason is: " + ex.ToString());
-                return false;
             }
         }
 
@@ -309,6 +291,7 @@ namespace UnusefulPlayer
                 PlayerControls.Container parent = ctl.Parent;
                 parent.Controls.Remove(ctl);
                 parent.Controls.AddFirst(ctl);
+                ctl.Invalidate();
             }
         }
 
@@ -320,6 +303,7 @@ namespace UnusefulPlayer
                 PlayerControls.Container parent = ctl.Parent;
                 parent.Controls.Remove(ctl);
                 parent.Controls.AddLast(ctl);
+                ctl.Invalidate();
             }
         }
 

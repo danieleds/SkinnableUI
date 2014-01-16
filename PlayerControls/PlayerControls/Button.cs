@@ -87,7 +87,7 @@ namespace UnusefulPlayer.PlayerControls
             {
                 if (backgroundOver9P != null)
                 {
-                    var patch = backgroundOver9P; // anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundOver9P;
+                    var patch = anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundOver9P;
                     contentBox = patch.GetContentBox(this.Size);
                     patch.Paint(g, this.Size);
                 }
@@ -98,7 +98,7 @@ namespace UnusefulPlayer.PlayerControls
             {
                 if (backgroundNormal9P != null)
                 {
-                    var patch = backgroundNormal9P; //anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundNormal9P;
+                    var patch = anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundNormal9P;
                     contentBox = patch.GetContentBox(this.Size);
                     patch.Paint(g, this.Size);
                 }
@@ -142,12 +142,24 @@ namespace UnusefulPlayer.PlayerControls
             base.OnMouseEnter(e);
             this.over = true;
 
-            //AnimateTo(ref anim, this.backgroundOver9P, this.backgroundNormal9P);
+            if (this.backgroundOver9P != null && this.backgroundNormal9P != null)
+                AnimateTo(ref anim, this.backgroundOver9P, this.backgroundNormal9P, this.GetAnimator(), 50, 400);
             
             this.Invalidate();
         }
 
-        private void AnimateTo(ref Animator.Animation animationPlaceholder, NinePatch to, NinePatch defaultFrom)
+        /// <summary>
+        /// Esegue un'animazione salvando l'oggetto in animationPlaceholder.
+        /// Una chiamata successiva di questo metodo sullo stesso animationPlaceholder
+        /// eseguirà la nuova animazione a partire dall'istante in cui era arrivata quella vecchia.
+        /// </summary>
+        /// <param name="animationPlaceholder"></param>
+        /// <param name="to"></param>
+        /// <param name="defaultFrom"></param>
+        /// <param name="animator"></param>
+        /// <param name="interval"></param>
+        /// <param name="duration"></param>
+        private void AnimateTo(ref Animator.Animation animationPlaceholder, NinePatch to, NinePatch defaultFrom, Animator animator, int interval, int duration)
         {
             float p;
             NinePatch startFrame;
@@ -162,8 +174,8 @@ namespace UnusefulPlayer.PlayerControls
                 startFrame = animationPlaceholder.GetCurrentFrame();
             }
 
-            animationPlaceholder = this.GetAnimator().Attach(50, (int)(400 * p), startFrame, to, this.Invalidate);
-            animationPlaceholder.SetDetachOnFinish(true, this.GetAnimator());
+            animationPlaceholder = animator.Attach(interval, (int)(duration * p), startFrame, to, this.Invalidate);
+            animationPlaceholder.SetDetachOnFinish(true, animator);
             animationPlaceholder.Start();
         }
 
@@ -172,7 +184,8 @@ namespace UnusefulPlayer.PlayerControls
             base.OnMouseLeave(e);
             this.over = false;
 
-            //AnimateTo(ref anim, this.backgroundNormal9P, this.backgroundOver9P);
+            if (this.backgroundNormal9P != null && this.backgroundOver9P != null)
+                AnimateTo(ref anim, this.backgroundNormal9P, this.backgroundOver9P, this.GetAnimator(), 50, 400);
 
             this.Invalidate();
         }

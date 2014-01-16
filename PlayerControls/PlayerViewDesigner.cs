@@ -16,6 +16,12 @@ namespace UnusefulPlayer
         // dimensioni resize handles
         const int HANDLE_W = 6, HANDLE_H = 6;
 
+        /// <summary>
+        /// Indica di quanto estendere l'area del rettangolo da invalidare per quando si ridisegna un controllo.
+        /// Valori più alti permettono di evitare tagli non voluti quando si sposta o si ridimensiona velocemente il controllo.
+        /// </summary>
+        const float CONTROL_CLIP_RECTANGLE_PADDING = 10;
+
         // Variabili helper per il dragging in design mode
         PlayerControl draggingControl;
         Point draggingPosition; // Posizione corrente del puntatore (coordinate relative a this). Ha senso solo se draggingControl != null.
@@ -27,9 +33,8 @@ namespace UnusefulPlayer
 
         struct ControlRectangleInfo
         {
-            public PlayerControl control;
             public SizeF size;
-            public PointF location;
+            public PointF abslocation;
         }
 
         ControlRectangleInfo selectedControlOldRect = new ControlRectangleInfo();
@@ -112,30 +117,38 @@ namespace UnusefulPlayer
         /// <param name="e"></param>
         void selectedControl_MetaControlsNeedRepaint(object sender, EventArgs e)
         {
-            this.Invalidate();
-            /*
+            if (selectedControl == this.containerControl)
+            {
+                this.Invalidate();
+                return;
+            }
+
             // FIXME Il clipping funziona, ma non considera i righelli (che vengono tagliati fuori)...
             // questa è una mancanza (da fixare) di getMetaControlsOuterRectangle().
             // Per ora risolviamo invalidando tutto, correggere non ne vale la pena (bisognerebbe
             // effettuare misurazioni del testo, calcolare rotazioni, ecc). Il problema comunque non
             // è grave visto che è limitato al designer, e al momento non causa problemi di performance.
-             
-            Rectangle clip;
 
-            // Repaint della vecchia posizione/dimensione del controllo (non necessariamente il solito controllo attualmente selezionato)
-            clip = getMetaControlsOuterRectangle(getResizeHandlesRectangles(
-                selectedControlOldRect.location, selectedControlOldRect.size)).RoundUp();
-            this.Invalidate(clip);
+            if (DebugShowRuler)
+            {
+                this.Invalidate();
+            }
+            else
+            {
+                Rectangle clip;
+                
+                // Repaint della vecchia posizione/dimensione del controllo (non necessariamente il solito controllo attualmente selezionato)
+                clip = getMetaControlsOuterRectangle(selectedControlOldRect.abslocation, selectedControlOldRect.size).RoundUp();
+                this.Invalidate(clip);
 
-            // Repaint della nuova posizione/dimensione del controllo
-            var absloc = selectedControl.GetAbsoluteLocation();
-            clip = getMetaControlsOuterRectangle(getResizeHandlesRectangles(
-                absloc, selectedControl.Size)).RoundUp();
-            this.Invalidate(clip);
+                // Repaint della nuova posizione/dimensione del controllo
+                var absloc = selectedControl.GetAbsoluteLocation();
+                clip = getMetaControlsOuterRectangle(absloc, selectedControl.Size).RoundUp();
+                this.Invalidate(clip);
 
-            selectedControlOldRect.location = absloc;
-            selectedControlOldRect.size = selectedControl.Size;
-            */
+                selectedControlOldRect.abslocation = absloc;
+                selectedControlOldRect.size = selectedControl.Size;
+            }
         }
 
         /// <summary>
@@ -293,7 +306,7 @@ namespace UnusefulPlayer
                 topLeftHnd.Y,
                 bottomRightHnd.X + bottomRightHnd.Width - topLeftHnd.X + 1,
                 bottomRightHnd.Y + bottomRightHnd.Height - topLeftHnd.Y + 1
-            );
+            ).Expand(CONTROL_CLIP_RECTANGLE_PADDING);
         }
 
         private System.Drawing.Drawing2D.GraphicsPath getWindowDecorationsPath()
@@ -476,8 +489,8 @@ namespace UnusefulPlayer
                         var oldDraggingPosition = this.draggingPosition;
                         this.draggingPosition = this.PointToClient(new Point(e.X, e.Y));
                         if (this.draggingPosition != oldDraggingPosition) {
-                            this.Invalidate(new RectangleF(oldDraggingPosition.X - draggingOffset.X, oldDraggingPosition.Y - draggingOffset.Y, draggingControl.Size.Width, draggingControl.Size.Height).RoundUp());
-                            this.Invalidate(new RectangleF(draggingPosition.X - draggingOffset.X, draggingPosition.Y - draggingOffset.Y, draggingControl.Size.Width, draggingControl.Size.Height).RoundUp());
+                            this.Invalidate(new RectangleF(oldDraggingPosition.X - draggingOffset.X, oldDraggingPosition.Y - draggingOffset.Y, draggingControl.Size.Width, draggingControl.Size.Height).Expand(CONTROL_CLIP_RECTANGLE_PADDING).RoundUp());
+                            this.Invalidate(new RectangleF(draggingPosition.X - draggingOffset.X, draggingPosition.Y - draggingOffset.Y, draggingControl.Size.Width, draggingControl.Size.Height).Expand(CONTROL_CLIP_RECTANGLE_PADDING).RoundUp());
                         }
                     }
                     else

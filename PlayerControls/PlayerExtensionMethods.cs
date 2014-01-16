@@ -18,5 +18,10 @@ namespace ExtensionMethods
         {
             return new Rectangle((int)Math.Floor(rect.X), (int)Math.Floor(rect.Y), (int)Math.Ceiling(rect.Width), (int)Math.Ceiling(rect.Height));
         }
+
+        public static RectangleF Expand(this RectangleF rect, float expand)
+        {
+            return new RectangleF(rect.X - expand, rect.Y - expand, rect.Width + expand * 2, rect.Height + expand * 2);
+        }
     }
 }
