@@ -23,5 +23,10 @@ namespace ExtensionMethods
         {
             return new RectangleF(rect.X - expand, rect.Y - expand, rect.Width + expand * 2, rect.Height + expand * 2);
         }
+
+        public static SizeF Expand(this SizeF size, float expand)
+        {
+            return new SizeF(size.Width + expand, size.Height + expand);
+        }
     }
 }

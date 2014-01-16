@@ -246,9 +246,9 @@ namespace UnusefulPlayer.PlayerControls
         public void InternalPaint(Graphics g)
         {
             var s = g.Save();
-            // FIXME Se impostiamo una posizione non intera, si rischia di perdere il bordo sx o sup del controllo...
             g.TranslateTransform(location.X, location.Y);
-            g.SetClip(new RectangleF(new PointF(), this.size), System.Drawing.Drawing2D.CombineMode.Intersect);
+            // Prendiamo mezzo px in più per lo stesso problema descritto in NinePatch.Paint()
+            g.SetClip(new RectangleF(new PointF(-0.5f, -0.5f), this.size.Expand(0.5f)), System.Drawing.Drawing2D.CombineMode.Intersect);
             this.OnPaint(g);
             g.Restore(s);
         }

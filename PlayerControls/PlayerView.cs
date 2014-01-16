@@ -148,6 +148,9 @@ namespace UnusefulPlayer
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            //e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+            //e.Graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            e.Graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
             this.containerControl.InternalPaint(e.Graphics);
             base.OnPaint(e);
         }

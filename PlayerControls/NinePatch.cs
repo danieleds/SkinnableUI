@@ -118,7 +118,7 @@ namespace UnusefulPlayer
             // Per evitare problemi sul taglio dei pixel, impostiamo PixelOffsetMode e InterpolationMode.
             //   http://stackoverflow.com/questions/14070311/why-is-graphics-drawimage-cropping-part-of-my-image
             //   http://stackoverflow.com/questions/10099687/im-experiencing-unexpected-results-from-graphics-drawimage
-            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None; // anche Default va bene, ma forziamo None per sicurezza
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
 
             // Per lo stesso motivo di prima (taglio dei pixel) facciamo il clip leggermente più in alto a sx.
