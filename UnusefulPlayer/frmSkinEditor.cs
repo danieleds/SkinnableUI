@@ -42,6 +42,7 @@ namespace UnusefulPlayer
             }
             
             listView1.ItemDrag += listView1_ItemDrag;
+            panelSurface.Resize += panelSurface_Resize;
 
             InitializePlayerView();
 
@@ -59,19 +60,21 @@ namespace UnusefulPlayer
 
             playerView = new PlayerViewDesigner() {
                 AllowDrop = true,
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top,
                 BlockInputEvents = true,
                 DockContainerControl = false,
                 DebugShowPaints = btnShowPaints.Checked,
                 DebugShowRuler = rulerToolStripButton.Checked,
                 DrawWindowDecorations = true,
-                Dock = DockStyle.Fill
+                Location = new Point(0, 0)
             };
 
             panelSurface.Controls.Add(playerView);
 
+            AdjustPlayerViewSizeForScrollbars();
+
             playerView.ContainerControl.Location = defaultContainerLocation;
             playerView.ContainerControl.Size = new Size(400, 320);
+            playerView.ContainerControl.Resize += ContainerControl_Resize;
 
             playerView.SelectionChanged += playerView_SelectionChanged;
             playerView.SelectedObjectPropertyChanged += playerView_SelectedObjectPropertyChanged;
@@ -79,6 +82,56 @@ namespace UnusefulPlayer
             playerView.KeyDown += playerView_KeyDown;
 
             playerView_DesignerControlsTreeChanged(playerView, new EventArgs());
+        }
+
+        void ContainerControl_Resize(object sender, EventArgs e)
+        {
+            AdjustPlayerViewSizeForScrollbars();
+        }
+
+        void panelSurface_Resize(object sender, EventArgs e)
+        {
+            AdjustPlayerViewSizeForScrollbars();
+        }
+
+        /// <summary>
+        /// Modifica la dimensione del PlayerView per far comparire nel panelSurface le scrollbar
+        /// al momento giusto.
+        /// </summary>
+        void AdjustPlayerViewSizeForScrollbars()
+        {
+            if (this.playerView != null)
+            {
+                var containerControlRightmostPx = 20 + playerView.ContainerControl.Location.X + playerView.ContainerControl.Size.Width;
+                var containerControlDownmostPx = 20 + playerView.ContainerControl.Location.Y + playerView.ContainerControl.Size.Height;
+
+                System.Diagnostics.Debug.WriteLine(playerView.ContainerControl.Location.X + " + " + playerView.ContainerControl.Size.Width + " = " + containerControlRightmostPx + " <= " + panelSurface.Size.Width);
+
+                if (containerControlRightmostPx <= panelSurface.Size.Width)
+                {
+                    playerView.Anchor |= AnchorStyles.Right;
+                    playerView.Width = panelSurface.Size.Width;
+                }
+                else
+                {
+                    playerView.Anchor &= AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom;
+                    playerView.Width = (int)Math.Max(panelSurface.Size.Width, containerControlRightmostPx);
+                }
+
+                if (containerControlDownmostPx <= panelSurface.Size.Height)
+                {
+                    playerView.Anchor |= AnchorStyles.Bottom;
+                    playerView.Height = panelSurface.Size.Height;
+                }
+                else
+                {
+                    playerView.Anchor &= AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
+                    playerView.Height = (int)Math.Max(panelSurface.Size.Height, containerControlDownmostPx);
+                }
+
+                // Aggiorna le scrollbar
+                panelSurface.PerformLayout();
+            }
         }
 
         void playerView_KeyDown(object sender, KeyEventArgs e)
@@ -162,6 +215,7 @@ namespace UnusefulPlayer
                     filename = openDialog.FileName;
 
                     playerView.ContainerControl.Location = defaultContainerLocation;
+                    AdjustPlayerViewSizeForScrollbars();
                 }
             }
         }

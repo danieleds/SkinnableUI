@@ -302,7 +302,6 @@ namespace UnusefulPlayer.PlayerControls
             float totWidth = this.columns.Sum(c => c.Width);
 
             var t = g.Save();
-            System.Diagnostics.Debug.WriteLine(viewHeight);
             g.SetClip(new RectangleF(1, headerHeight + 1, this.Size.Width - 2, viewHeight), System.Drawing.Drawing2D.CombineMode.Intersect);
             g.TranslateTransform(0, -curViewPosition + headerHeight + 1);
 
