@@ -298,11 +298,12 @@ namespace UnusefulPlayer.PlayerControls
         {
             var headerHeight = GetHeaderHeight();
             var rowHeight = GetRowHeight();
-            var viewHeight = this.Size.Height - headerHeight;
+            var viewHeight = getViewHeight(headerHeight);
             float totWidth = this.columns.Sum(c => c.Width);
 
             var t = g.Save();
-            g.SetClip(new RectangleF(1, headerHeight + 1, this.Size.Width - 2, viewHeight - 2), System.Drawing.Drawing2D.CombineMode.Intersect);
+            System.Diagnostics.Debug.WriteLine(viewHeight);
+            g.SetClip(new RectangleF(1, headerHeight + 1, this.Size.Width - 2, viewHeight), System.Drawing.Drawing2D.CombineMode.Intersect);
             g.TranslateTransform(0, -curViewPosition + headerHeight + 1);
 
             for (int i = 0; i < items.Count; i++)
@@ -392,11 +393,16 @@ namespace UnusefulPlayer.PlayerControls
             g.Restore(t);
         }
 
+        private float getViewHeight(float headerHeight)
+        {
+            return this.Size.Height - headerHeight - 2;
+        }
+
         private void drawScrollbar(Graphics g)
         {
             var headerHeight = GetHeaderHeight();
             var rowHeight = GetRowHeight();
-            var viewHeight = this.Size.Height - headerHeight;
+            var viewHeight = getViewHeight(headerHeight);
             var contentHeight = rowHeight * this.items.Count;
             if (contentHeight > viewHeight)
             {
@@ -404,13 +410,13 @@ namespace UnusefulPlayer.PlayerControls
                 {
                     var barw = scrollbarNormal9P.Image.Width - 2;
                     var x = this.Size.Width - barw - 2;
-                    scrollbarNormal9P.Paint(g, new RectangleF(x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight));
+                    scrollbarNormal9P.Paint(g, new RectangleF(x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight + 1));
                 }
                 else
                 {
                     var barw = 3;
                     var x = this.Size.Width - barw - 1;
-                    g.FillRectangle(Brushes.Gray, x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight);
+                    g.FillRectangle(Brushes.Gray, x, headerHeight + (curViewPosition * viewHeight / contentHeight), barw, (viewHeight * viewHeight) / contentHeight + 1);
                 }
             }
         }
@@ -515,7 +521,7 @@ namespace UnusefulPlayer.PlayerControls
                 var headerHeight = GetHeaderHeight();
                 var rowHeight = GetRowHeight();
 
-                var viewHeight = this.Size.Height - headerHeight;
+                var viewHeight = getViewHeight(headerHeight);
                 var contentHeight = rowHeight * this.items.Count;
 
                 if (contentHeight < viewHeight)
@@ -525,9 +531,9 @@ namespace UnusefulPlayer.PlayerControls
                 }
                 else
                 {
-                    if (curViewPosition > contentHeight - viewHeight)
+                    if (curViewPosition > contentHeight - viewHeight + 1)
                     {
-                        curViewPosition = contentHeight - viewHeight;
+                        curViewPosition = contentHeight - viewHeight + 1;
                         this.Invalidate();
                     }
                 }
