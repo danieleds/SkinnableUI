@@ -26,6 +26,7 @@ namespace UnusefulPlayer
         PlayerControl draggingControl;
         Point draggingPosition; // Posizione corrente del puntatore (coordinate relative a this). Ha senso solo se draggingControl != null.
         Bitmap draggingBitmap; // Ha senso solo se draggingControl != null.
+        bool showDraggingBitmap; // Se false, la bitmap che viene mostrata durante il dragging viene nascosta. Ha senso solo se draggingControl != null.
         Container draggingControlOriginalContainer; // Il Container in cui si trovava il controllo prima del dragging. Ha senso solo se draggingControl != null.
         PointF draggingOffset; // Ha senso solo se draggingControl != null o se dragStarting = true.
         bool dragStarting = false; // true se è stato fatto un MouseDown e stiamo aspettando un delta di spostamento sufficiente.
@@ -224,7 +225,7 @@ namespace UnusefulPlayer
                     absX += tmp.Left;
                     absY += tmp.Top;
                     finalHit = tmp;
-                    if (tmp.GetType() == typeof(PlayerControls.Container))
+                    if (tmp is PlayerControls.Container)
                     {
                         closerContainer = (PlayerControls.Container)tmp;
                     }
@@ -260,7 +261,7 @@ namespace UnusefulPlayer
             if (DebugShowRuler && resizingControl != null)
                 drawResizingMeasure(e.Graphics);
 
-            if (draggingControl != null)
+            if (draggingControl != null && showDraggingBitmap)
             {
                 e.Graphics.DrawImageUnscaled(this.draggingBitmap, this.draggingPosition.X - (int)this.draggingOffset.X, this.draggingPosition.Y - (int)this.draggingOffset.Y);
             }
@@ -447,6 +448,8 @@ namespace UnusefulPlayer
         protected override void OnDragEnter(DragEventArgs e)
         {
             base.OnDragEnter(e);
+
+            this.showDraggingBitmap = true;
             
             if (ControlDropAllowed(this.PointToClient(new Point(e.X, e.Y)), true) != null)
                 e.Effect = DragDropEffects.Copy;
@@ -459,7 +462,6 @@ namespace UnusefulPlayer
         protected override void OnDragOver(DragEventArgs e)
         {
             base.OnDragOver(e);
-            // FIXME Su DragLeave, nascondere il controllo draggato!! Altrimenti si ferma su un bordo e fa schifo.
 
             if (e.Data.GetDataPresent(typeof(PlayerControls.PlayerControl.SemanticType)))
             {
@@ -479,6 +481,7 @@ namespace UnusefulPlayer
                 if (draggingControl != null)
                 {
                     var info = ControlDropAllowed(this.PointToClient(new Point(e.X, e.Y)), false);
+                    this.showDraggingBitmap = info != null;
                     if (info != null)
                     {
                         var differentContainer = (info.Item3 != this.draggingControlOriginalContainer);
@@ -496,10 +499,18 @@ namespace UnusefulPlayer
                     else
                     {
                         e.Effect = DragDropEffects.None;
+                        this.Invalidate(new RectangleF(draggingPosition.X - draggingOffset.X, draggingPosition.Y - draggingOffset.Y, draggingControl.Size.Width, draggingControl.Size.Height).Expand(CONTROL_CLIP_RECTANGLE_PADDING).RoundUp());
                     }
                 }
                 else e.Effect = DragDropEffects.None;
             }
+        }
+
+        protected override void OnDragLeave(EventArgs e)
+        {
+            base.OnDragLeave(e);
+
+            this.showDraggingBitmap = false;
         }
 
         protected override void OnGiveFeedback(GiveFeedbackEventArgs e)
@@ -617,7 +628,7 @@ namespace UnusefulPlayer
             var hitInfo = RecursiveHitTest(location.X, location.Y);
             if (hitInfo != null)
             {
-                if (hitInfo.Item3.GetType() == typeof(Container))
+                if (hitInfo.Item3 is Container)
                 {
                     return new Tuple<float, float, PlayerControls.Container>(hitInfo.Item1, hitInfo.Item2, (Container)hitInfo.Item3);
                 }

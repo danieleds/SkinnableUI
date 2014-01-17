@@ -85,6 +85,20 @@ namespace UnusefulPlayer.PlayerControls
             if (ControlAdded != null) ControlRemoved(this, new PlayerControlEventArgs(c));
         }
 
+        public virtual void BringToFront(PlayerControl c)
+        {
+            controls.Remove(c);
+            controls.AddFirst(c);
+            c.Invalidate();
+        }
+
+        public virtual void SendToBack(PlayerControl c)
+        {
+            controls.Remove(c);
+            controls.AddLast(c);
+            c.Invalidate();
+        }
+
         public override void OnResize(EventArgs e)
         {
             base.OnResize(e);
@@ -160,7 +174,7 @@ namespace UnusefulPlayer.PlayerControls
                 foreach (var ctrl in parent.Controls)
                 {
                     result.Add(ctrl);
-                    if (ctrl.GetType() == typeof(PlayerControls.Container))
+                    if (ctrl is PlayerControls.Container)
                     {
                         containers.Push((PlayerControls.Container)ctrl);
                     }

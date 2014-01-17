@@ -330,6 +330,9 @@ namespace UnusefulPlayer
                 }
 
                 copy.Location = new PointF(copy.Location.X + 10, copy.Location.Y + 10);
+
+                playerView_DesignerControlsTreeChanged(playerView, new EventArgs());
+
                 playerView.SelectedControl = copy;
             }
         }
@@ -341,6 +344,8 @@ namespace UnusefulPlayer
                 copyToolStripButton_Click(cutToolStripButton, new EventArgs());
                 playerView.SelectedControl.Parent = null;
                 playerView.SelectedControl = null;
+
+                playerView_DesignerControlsTreeChanged(playerView, new EventArgs());
             }
         }
 
@@ -349,10 +354,7 @@ namespace UnusefulPlayer
             if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
             {
                 PlayerControls.PlayerControl ctl = playerView.SelectedControl;
-                PlayerControls.Container parent = ctl.Parent;
-                parent.Controls.Remove(ctl);
-                parent.Controls.AddFirst(ctl);
-                ctl.Invalidate();
+                ctl.Parent.BringToFront(ctl);
             }
         }
 
@@ -361,10 +363,7 @@ namespace UnusefulPlayer
             if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
             {
                 PlayerControls.PlayerControl ctl = playerView.SelectedControl;
-                PlayerControls.Container parent = ctl.Parent;
-                parent.Controls.Remove(ctl);
-                parent.Controls.AddLast(ctl);
-                ctl.Invalidate();
+                ctl.Parent.SendToBack(ctl);
             }
         }
 

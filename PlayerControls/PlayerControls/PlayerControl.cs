@@ -29,6 +29,7 @@ namespace UnusefulPlayer.PlayerControls
         public enum SemanticType
         {
             [SemanticTypeMeta("Container", typeof(PlayerControls.Container))] Container,
+            [SemanticTypeMeta("Flow Layout Container", typeof(PlayerControls.FlowLayoutContainer))] FlowLayoutContainer,
             [SemanticTypeMeta("Play", typeof(PlayerControls.Button))] Play,
             [SemanticTypeMeta("Pause", typeof(PlayerControls.Button))] Pause,
             [SemanticTypeMeta("Play/Pause", typeof(PlayerControls.ToggleButton))] PlayPause,
@@ -255,13 +256,13 @@ namespace UnusefulPlayer.PlayerControls
 
         public Bitmap ToBitmap(Rectangle clipRectangle)
         {
-            Bitmap b = new Bitmap(clipRectangle.Width, clipRectangle.Height);
+            Bitmap b = new Bitmap(clipRectangle.Width, clipRectangle.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
             var g = Graphics.FromImage(b);
             using (g)
             {
                 g.TranslateTransform(-clipRectangle.X, -clipRectangle.Y);
                 g.SetClip(clipRectangle, System.Drawing.Drawing2D.CombineMode.Intersect);
-                //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
+                //g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.AntiAlias; // ClearType non funziona bene su sfondo trasparente
                 this.OnPaint(g);
             }
             return b;
