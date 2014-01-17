@@ -2,10 +2,11 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using UnusefulPlayer.PlayerControls;
+using PlayerUI.PlayerControls;
 using ExtensionMethods;
+using System.Collections.Generic;
 
-namespace UnusefulPlayer
+namespace PlayerUI
 {
     public class PlayerViewDesigner : PlayerView
     {
@@ -21,6 +22,8 @@ namespace UnusefulPlayer
         /// Valori più alti permettono di evitare tagli non voluti quando si sposta o si ridimensiona velocemente il controllo.
         /// </summary>
         const float CONTROL_CLIP_RECTANGLE_PADDING = 10;
+
+        const string CLIPBOARD_PLAYERCONTROL_FORMAT = "skinPlayerControl";
 
         // Variabili helper per il dragging in design mode
         PlayerControl draggingControl;
@@ -638,6 +641,59 @@ namespace UnusefulPlayer
                 }
             }
             return null;
+        }
+
+        public bool CanPasteFromClipboard()
+        {
+            return (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROL_FORMAT));
+        }
+
+        public void CopyControlToClipboard(PlayerControl c)
+        {
+            var resources = new Dictionary<string, System.IO.MemoryStream>();
+            var doc = new System.Xml.XmlDocument();
+            doc.AppendChild(c.GetXmlElement(doc, resources));
+
+            var clipb = new SerializationHelper.ClipboardPlayerControl();
+            clipb.XmlDocument = doc;
+            clipb.Resources = resources;
+            Clipboard.SetDataObject(new DataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, clipb), true);
+        }
+
+        public void PasteControlFromClipboard(Container where)
+        {
+            if (CanPasteFromClipboard())
+            {
+                var clipb = (SerializationHelper.ClipboardPlayerControl)Clipboard.GetDataObject().GetData(CLIPBOARD_PLAYERCONTROL_FORMAT);
+
+                System.Xml.XmlDocument copy_xml = clipb.XmlDocument;
+                Dictionary<string, System.IO.MemoryStream> copy_resources = clipb.Resources;
+
+                var controlElement = copy_xml.ChildNodes[1];
+
+                PlayerControls.PlayerControl copy = SerializationHelper.GetPlayerControlInstanceFromTagName(controlElement.Name);
+                copy.ParentView = this;
+                copy.FromXmlElement((System.Xml.XmlElement)controlElement, copy_resources);
+
+                copy.Parent = where;
+                copy.Location = new PointF(copy.Location.X + 10, copy.Location.Y + 10);
+
+                if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
+
+                this.SelectedControl = copy;
+            }
+        }
+
+        public void CutControlToClipboard(PlayerControl c)
+        {
+            CopyControlToClipboard(c);
+            c.Parent = null;
+            if (this.selectedControl == c)
+            {
+                this.SelectedControl = null;
+            }
+
+            if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
         }
 
         protected override void OnMouseDown(MouseEventArgs e)

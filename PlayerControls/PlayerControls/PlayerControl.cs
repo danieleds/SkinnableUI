@@ -9,7 +9,7 @@ using System.ComponentModel;
 using System.Xml;
 using ExtensionMethods;
 
-namespace UnusefulPlayer.PlayerControls
+namespace PlayerUI.PlayerControls
 {
     public abstract class PlayerControl
     {

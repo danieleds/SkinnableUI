@@ -9,7 +9,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Drawing;
 
-namespace UnusefulPlayer
+namespace PlayerUI
 {
     public class SerializationHelper
     {

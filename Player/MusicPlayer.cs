@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio;
 using NAudio.Wave;
-using PlayerControls = UnusefulPlayer.PlayerControls;
+using PlayerControls = PlayerUI.PlayerControls;
 
 namespace Player
 {

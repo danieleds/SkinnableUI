@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace UnusefulPlayer
+namespace PlayerUI
 {
     public class Animator
     {

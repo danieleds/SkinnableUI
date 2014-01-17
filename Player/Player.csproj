@@ -89,9 +89,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PlayerControls\PlayerControls.csproj">
+    <ProjectReference Include="..\PlayerControls\PlayerUI.csproj">
       <Project>{d96d4fd6-c8f0-4481-86e3-93de761e77f8}</Project>
-      <Name>PlayerControls</Name>
+      <Name>PlayerUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

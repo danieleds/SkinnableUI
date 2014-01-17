@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using UnusefulPlayer.PlayerControls;
+using PlayerUI.PlayerControls;
 using System.Drawing;
 
-namespace UnusefulPlayer
+namespace PlayerUI
 {
     /* Contenitore di oggetti PlayerControl */
     public class PlayerView : UserControl

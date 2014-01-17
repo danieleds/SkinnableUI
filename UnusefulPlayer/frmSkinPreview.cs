@@ -7,8 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using PlayerUI;
 
-namespace UnusefulPlayer
+namespace SkinDesigner
 {
     public partial class frmSkinPreview : Form
     {

@@ -7,7 +7,7 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 
-namespace UnusefulPlayer.PlayerControls
+namespace PlayerUI.PlayerControls
 {
     public class ListView : PlayerControl
     {

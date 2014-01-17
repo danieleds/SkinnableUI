@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 
-namespace UnusefulPlayer.PlayerControls
+namespace PlayerUI.PlayerControls
 {
     public class TrackBar : PlayerControl
     {

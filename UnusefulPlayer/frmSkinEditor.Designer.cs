@@ -1,4 +1,4 @@
-﻿namespace UnusefulPlayer
+﻿namespace SkinDesigner
 {
     partial class frmSkinEditor
     {

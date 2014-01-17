@@ -1,4 +1,4 @@
-﻿using UnusefulPlayer;
+﻿using PlayerUI;
 namespace Player
 {
     partial class MusicPlayer
@@ -29,7 +29,7 @@ namespace Player
         /// </summary>
         private void InitializeComponent()
         {
-            this.playerView1 = new UnusefulPlayer.PlayerView();
+            this.playerView1 = new PlayerUI.PlayerView();
             this.SuspendLayout();
             // 
             // playerView1

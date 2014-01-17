@@ -1,4 +1,4 @@
-﻿namespace UnusefulPlayer
+﻿namespace SkinDesigner
 {
     partial class frmSkinPreview
     {
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.playerView1 = new UnusefulPlayer.PlayerView();
+            this.playerView1 = new PlayerUI.PlayerView();
             this.SuspendLayout();
             // 
             // playerView1
@@ -55,6 +55,6 @@
 
         #endregion
 
-        private PlayerView playerView1;
+        private PlayerUI.PlayerView playerView1;
     }
 }

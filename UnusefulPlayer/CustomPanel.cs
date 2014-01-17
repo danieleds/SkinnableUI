@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace UnusefulPlayer
+namespace SkinDesigner
 {
     /// <summary>
     /// Pannello Windows Forms con alcune correzioni

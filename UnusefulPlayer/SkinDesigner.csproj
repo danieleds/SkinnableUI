@@ -7,7 +7,7 @@
     <ProjectGuid>{A1564AAC-C9BC-4A2D-8856-2E12F79939DB}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>UnusefulPlayer</RootNamespace>
+    <RootNamespace>SkinDesigner</RootNamespace>
     <AssemblyName>UnusefulPlayer</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -77,6 +77,7 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -92,9 +93,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PlayerControls\PlayerControls.csproj">
+    <ProjectReference Include="..\PlayerControls\PlayerUI.csproj">
       <Project>{d96d4fd6-c8f0-4481-86e3-93de761e77f8}</Project>
-      <Name>PlayerControls</Name>
+      <Name>PlayerUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

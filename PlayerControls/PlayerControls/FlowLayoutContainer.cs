@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
 
-namespace UnusefulPlayer.PlayerControls
+namespace PlayerUI.PlayerControls
 {
     public class FlowLayoutContainer : Container
     {

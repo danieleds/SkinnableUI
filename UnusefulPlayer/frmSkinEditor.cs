@@ -7,12 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using PlayerControls = PlayerUI.PlayerControls;
 
-namespace UnusefulPlayer
+namespace SkinDesigner
 {
     public partial class frmSkinEditor : Form
     {
-        PlayerViewDesigner playerView;
+        PlayerUI.PlayerViewDesigner playerView;
         string filename = null;
 
         public frmSkinEditor()
@@ -27,8 +28,6 @@ namespace UnusefulPlayer
         OpenFileDialog openDialog = new OpenFileDialog();
 
         Point defaultContainerLocation = new Point(30, 50);
-
-        private const string CLIPBOARD_PLAYERCONTROL_FORMAT = "skinPlayerControl";
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -58,7 +57,7 @@ namespace UnusefulPlayer
             cmbControls.Items.Clear();
             propertyGrid1.SelectedObject = null;
 
-            playerView = new PlayerViewDesigner() {
+            playerView = new PlayerUI.PlayerViewDesigner() {
                 AllowDrop = true,
                 BlockInputEvents = true,
                 DockContainerControl = false,
@@ -288,64 +287,37 @@ namespace UnusefulPlayer
         {
             if (playerView.SelectedControl != null)
             {
-                var resources = new Dictionary<string, System.IO.MemoryStream>();
-                var doc = new System.Xml.XmlDocument();
-                doc.AppendChild(playerView.SelectedControl.GetXmlElement(doc, resources));
-
-                var clipb = new SerializationHelper.ClipboardPlayerControl();
-                clipb.XmlDocument = doc;
-                clipb.Resources = resources;
-                Clipboard.SetDataObject(new DataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, clipb), true);
+                playerView.CopyControlToClipboard(playerView.SelectedControl);
             }
         }
 
         private void pasteToolStripButton_Click(object sender, EventArgs e)
         {
-            if (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROL_FORMAT))
+            PlayerControls.Container where;
+            if (playerView.SelectedControl == null)
             {
-                var clipb = (SerializationHelper.ClipboardPlayerControl)Clipboard.GetDataObject().GetData(CLIPBOARD_PLAYERCONTROL_FORMAT);
-
-                System.Xml.XmlDocument copy_xml = clipb.XmlDocument;
-                Dictionary<string, System.IO.MemoryStream> copy_resources = clipb.Resources;
-
-                var controlElement = copy_xml.ChildNodes[1];
-
-                PlayerControls.PlayerControl copy = SerializationHelper.GetPlayerControlInstanceFromTagName(controlElement.Name);
-                copy.ParentView = playerView;
-                copy.FromXmlElement((System.Xml.XmlElement)controlElement, copy_resources);
-
-                if (playerView.SelectedControl == null)
+                where = playerView.ContainerControl;
+            }
+            else
+            {
+                if (playerView.SelectedControl is PlayerControls.Container)
                 {
-                    copy.Parent = playerView.ContainerControl;
+                    where = (PlayerControls.Container)playerView.SelectedControl;
                 }
                 else
                 {
-                    if (playerView.SelectedControl is PlayerControls.Container)
-                    {
-                        copy.Parent = (PlayerControls.Container)playerView.SelectedControl;
-                    } else
-                    {
-                        copy.Parent = playerView.SelectedControl.Parent;
-                    }
+                    where = playerView.SelectedControl.Parent;
                 }
-
-                copy.Location = new PointF(copy.Location.X + 10, copy.Location.Y + 10);
-
-                playerView_DesignerControlsTreeChanged(playerView, new EventArgs());
-
-                playerView.SelectedControl = copy;
             }
+
+            playerView.PasteControlFromClipboard(where);
         }
 
         private void cutToolStripButton_Click(object sender, EventArgs e)
         {
             if (playerView.SelectedControl != null)
             {
-                copyToolStripButton_Click(cutToolStripButton, new EventArgs());
-                playerView.SelectedControl.Parent = null;
-                playerView.SelectedControl = null;
-
-                playerView_DesignerControlsTreeChanged(playerView, new EventArgs());
+                playerView.CutControlToClipboard(playerView.SelectedControl);
             }
         }
 
