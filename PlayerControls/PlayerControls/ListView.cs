@@ -160,7 +160,7 @@ namespace PlayerUI.PlayerControls
         public Font HeaderFont
         {
             get { return headerFont; }
-            set { headerFont = (value == null ? SystemFonts.DefaultFont : value); this.Invalidate(); }
+            set { headerFont = value ?? SystemFonts.DefaultFont; this.Invalidate(); }
         }
 
         private Color headerForeColor = Color.Black;
@@ -175,7 +175,7 @@ namespace PlayerUI.PlayerControls
         public Font ActiveRowFont
         {
             get { return activeRowFont; }
-            set { activeRowFont = (value == null ? SystemFonts.DefaultFont : value); this.Invalidate(); }
+            set { activeRowFont = value ?? SystemFonts.DefaultFont; this.Invalidate(); }
         }
 
         private Color activeRowForeColor = Color.Black;
