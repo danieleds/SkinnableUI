@@ -7,7 +7,7 @@ using System.Drawing;
 
 namespace ExtensionMethods
 {
-    public static class PlayerExtensionMethods
+    static class PlayerExtensionMethods
     {
         /// <summary>
         /// Arrotonda un RectangleF per eccesso (X e Y vengono arrotondate per difetto, Width e Height per eccesso).
