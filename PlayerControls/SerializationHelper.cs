@@ -11,7 +11,7 @@ using System.Drawing;
 
 namespace PlayerUI
 {
-    public class SerializationHelper
+    class SerializationHelper
     {
         public static readonly Uri PKG_SKIN_FILE = new Uri(@"/skin.xml", UriKind.Relative);
         public static readonly string PKG_RES_PREFIX = @"/_res__";

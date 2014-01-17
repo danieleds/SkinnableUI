@@ -676,7 +676,7 @@ namespace PlayerUI
                 copy.FromXmlElement((System.Xml.XmlElement)controlElement, copy_resources);
 
                 copy.Parent = where;
-                copy.Location = new PointF(copy.Location.X + 10, copy.Location.Y + 10);
+                copy.Location = new PointF(copy.Location.X + 15, copy.Location.Y + 15);
 
                 if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
 
