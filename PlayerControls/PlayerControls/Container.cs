@@ -121,7 +121,6 @@ namespace UnusefulPlayer.PlayerControls
         /// <param name="oldContainerSize">La vecchia dimensione di this</param>
         private void AdjustSizeWithAnchor(PlayerControl control, SizeF oldContainerSize)
         {
-            // FIXME Lasciare che le posizioni e le dimensioni diventino con la virgola?
             var a_left = (control.Anchor & AnchorStyles.Left) == AnchorStyles.Left;
             var a_right = (control.Anchor & AnchorStyles.Right) == AnchorStyles.Right;
             var a_top = (control.Anchor & AnchorStyles.Top) == AnchorStyles.Top;
@@ -390,7 +389,7 @@ namespace UnusefulPlayer.PlayerControls
             var node = base.GetXmlElement(document, resources);
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
 
-            foreach (var item in this.Controls.Reverse()) // FIXME Z-index
+            foreach (var item in this.Controls.Reverse())
             {
                 node.AppendChild(item.GetXmlElement(document, resources));
             }

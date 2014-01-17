@@ -324,7 +324,7 @@ namespace UnusefulPlayer.PlayerControls
         public virtual XmlElement GetXmlElement(XmlDocument document, Dictionary<string, System.IO.MemoryStream> resources)
         {
             XmlElement node = document.CreateElement(this.Semantic.ToString());
-            // FIXME Z-index
+            
             var inv = System.Globalization.NumberFormatInfo.InvariantInfo;
             node.SetAttribute("x", this.Left.ToString(inv));
             node.SetAttribute("y", this.Top.ToString(inv));
