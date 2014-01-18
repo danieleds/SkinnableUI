@@ -52,6 +52,7 @@
     <Compile Include="PlayerControls\Label.cs" />
     <Compile Include="PlayerControls\ListView.cs" />
     <Compile Include="PlayerControls\PlayerControl.cs" />
+    <Compile Include="PlayerControls\PlayerControlCollection.cs" />
     <Compile Include="PlayerControls\PlayerControlEventArgs.cs" />
     <Compile Include="PlayerControls\ToggleButton.cs" />
     <Compile Include="PlayerControls\TrackBar.cs" />

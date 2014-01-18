@@ -542,7 +542,7 @@ namespace PlayerUI
                 {
                     // Stavamo facendo il dragging di un nostro controllo
                     // Rimettiamo il controllo al suo posto
-                    this.draggingControlOriginalContainer.AddPlayerControl(draggingControl);
+                    this.draggingControlOriginalContainer.Controls.Add(draggingControl);
                     this.SelectedControl = draggingControl;
                     this.draggingControl = null;
                 } 
@@ -573,7 +573,7 @@ namespace PlayerUI
                     // Istanziamo un nuovo oggetto del tipo draggato, e lo aggiungiamo al playerView
                     PlayerControls.PlayerControl c = (PlayerControls.PlayerControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
 
-                    dropInfo.Item3.AddPlayerControl(c);
+                    dropInfo.Item3.Controls.AddFirst(c);
                     var location = this.PointToClient(new Point(e.X, e.Y));
                     // Non posizioniamo sotto al mouse le coordinate (0,0) del controllo: lo spostiamo un pochino in alto e a sinistra.
                     const float mouseOffsetX = 7, mouseOffsetY = 7;
@@ -605,7 +605,7 @@ namespace PlayerUI
                     var newParent = dropInfo.Item3;
                     if (newParent != c)
                     {
-                        newParent.AddPlayerControl(c);
+                        newParent.Controls.AddFirst(c);
                     }
                     var location = this.PointToClient(new Point(e.X, e.Y));
                     c.Location = new PointF(location.X - this.draggingOffset.X - dropInfo.Item1, location.Y - this.draggingOffset.Y - dropInfo.Item2);
@@ -767,7 +767,7 @@ namespace PlayerUI
                     this.draggingControl = this.SelectedControl;
                     this.draggingControlOriginalContainer = draggingControl.Parent;
                     this.draggingBitmap = selectedControl.ToBitmap();
-                    this.draggingControl.Parent.RemovePlayerControl(this.draggingControl);
+                    this.draggingControl.Parent.Controls.Remove(this.draggingControl);
                     this.SelectedControl = null;
 
                     //this.DoDragDrop(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);

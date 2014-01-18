@@ -10,13 +10,13 @@ using System.Collections.ObjectModel;
 
 namespace PlayerUI.PlayerControls
 {
-    public class Container : PlayerControl
+    public partial class Container : PlayerControl
     {
         /// <summary>
         /// L'ordine degli elementi in questa lista rappresenta il loro z-order.
         /// Gli elementi in testa sono sopra rispetto a quelli in coda.
         /// </summary>
-        protected readonly Collection<PlayerControl> controls = new Collection<PlayerControl>();
+        protected readonly PlayerControlCollection controls;
 
         public delegate void ControlAddedEventHandler(object sender, PlayerControlEventArgs e);
         public event ControlAddedEventHandler ControlAdded;
@@ -32,16 +32,14 @@ namespace PlayerUI.PlayerControls
         PlayerControl lastDoubleClickCtl = null;
         bool suppressNextClick = false;
 
+        public partial class PlayerControlCollection : Collection<PlayerControl> { }
+
         public Container(SemanticType c) : base(c)
         {
-            this.Size = new SizeF(150, 100);
-            //controls.CollectionChanged += controls_CollectionChanged;
-        }
+            this.controls = new PlayerControlCollection(this);
 
-        /*void controls_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-        {
-            // FIXME Spostare qui la logica di AddPlayerControl e RemovePlayerControl
-        }*/
+            this.Size = new SizeF(150, 100);
+        }
 
         protected NinePatch backgroundNormal9P;
         [DefaultValue(null)]
@@ -58,25 +56,19 @@ namespace PlayerUI.PlayerControls
             }
         }
         
-        /// <summary>
-        /// Attenzione: aggiungere e rimuovere controlli direttamente da questa lista non genera eventi, né inizializza le proprietà dei controlli.
-        /// </summary>
         [Browsable(false)]
-        public Collection<PlayerControl> Controls { get { return this.controls; } }
+        public PlayerControlCollection Controls { get { return this.controls; } }
 
-        // FIXME Rimuovere e usare BindingList
-        public void AddPlayerControl(PlayerControl c)
+        protected void OnControlAdded(PlayerControl c)
         {
-            this.controls.Insert(0, c);
             c.ParentView = this.ParentView;
             c.Parent = this;
             this.Invalidate();
             if (ControlAdded != null) ControlAdded(this, new PlayerControlEventArgs(c));
         }
 
-        public virtual void RemovePlayerControl(PlayerControl c)
+        protected virtual void OnControlRemoved(PlayerControl c)
         {
-            this.controls.Remove(c);
             c.ParentView = null;
             c.Parent = null;
             if (lastEnterControl == c)
@@ -87,15 +79,13 @@ namespace PlayerUI.PlayerControls
 
         public virtual void BringToFront(PlayerControl c)
         {
-            controls.Remove(c);
-            controls.Insert(0, c);
+            controls.MoveToFirst(c);
             c.Invalidate();
         }
 
         public virtual void SendToBack(PlayerControl c)
         {
-            controls.Remove(c);
-            controls.Add(c);
+            controls.MoveToLast(c);
             c.Invalidate();
         }
 
@@ -406,7 +396,7 @@ namespace PlayerUI.PlayerControls
             foreach (System.Xml.XmlElement child in element.ChildNodes)
             {
                 PlayerControls.PlayerControl c = SerializationHelper.GetPlayerControlInstanceFromTagName(child.Name);
-                this.AddPlayerControl(c);
+                this.OnControlAdded(c);
                 c.FromXmlElement(child, resources);
             }
 

@@ -116,15 +116,15 @@ namespace PlayerUI.PlayerControls
                 if (value == null)
                 {
                     if (this.parent != null && this.parent.Controls.Contains(this))
-                        this.parent.RemovePlayerControl(this);
+                        this.parent.Controls.Remove(this);
                     this.parent = value;
                 }
                 else if (value != this.parent)
                 {
                     if (this.parent != null && this.parent.Controls.Contains(this))
-                        this.parent.RemovePlayerControl(this);
+                        this.parent.Controls.Remove(this);
                     if (!value.Controls.Contains(this))
-                        value.AddPlayerControl(this);
+                        value.Controls.AddFirst(this);
                     this.parent = value;
                 }
             }
