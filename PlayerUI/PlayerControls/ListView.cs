@@ -14,7 +14,7 @@ namespace PlayerUI.PlayerControls
         float curViewPosition = 0;
         ListViewRow curOverRow = null;
         float? paintedColumnsTotalWidth = null;
-        List<ListViewRow> selectedRows = new List<ListViewRow>();
+        Collection<ListViewRow> selectedRows = new Collection<ListViewRow>();
 
         public ListView(SemanticType c) : base(c)
         {

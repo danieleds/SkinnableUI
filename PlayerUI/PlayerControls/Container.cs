@@ -16,7 +16,7 @@ namespace PlayerUI.PlayerControls
         /// L'ordine degli elementi in questa lista rappresenta il loro z-order.
         /// Gli elementi in testa sono sopra rispetto a quelli in coda.
         /// </summary>
-        protected LinkedList<PlayerControl> controls = new LinkedList<PlayerControl>();
+        protected readonly Collection<PlayerControl> controls = new Collection<PlayerControl>();
 
         public delegate void ControlAddedEventHandler(object sender, PlayerControlEventArgs e);
         public event ControlAddedEventHandler ControlAdded;
@@ -57,17 +57,17 @@ namespace PlayerUI.PlayerControls
                 this.Invalidate();
             }
         }
-
+        
         /// <summary>
         /// Attenzione: aggiungere e rimuovere controlli direttamente da questa lista non genera eventi, né inizializza le proprietà dei controlli.
         /// </summary>
         [Browsable(false)]
-        public LinkedList<PlayerControl> Controls { get { return this.controls; } }
+        public Collection<PlayerControl> Controls { get { return this.controls; } }
 
-        // FIXME Rimuovere e usare ObservableCollection
+        // FIXME Rimuovere e usare BindingList
         public void AddPlayerControl(PlayerControl c)
         {
-            this.controls.AddFirst(c);
+            this.controls.Insert(0, c);
             c.ParentView = this.ParentView;
             c.Parent = this;
             this.Invalidate();
@@ -88,14 +88,14 @@ namespace PlayerUI.PlayerControls
         public virtual void BringToFront(PlayerControl c)
         {
             controls.Remove(c);
-            controls.AddFirst(c);
+            controls.Insert(0, c);
             c.Invalidate();
         }
 
         public virtual void SendToBack(PlayerControl c)
         {
             controls.Remove(c);
-            controls.AddLast(c);
+            controls.Add(c);
             c.Invalidate();
         }
 
