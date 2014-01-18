@@ -93,7 +93,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PlayerControls\PlayerUI.csproj">
+    <ProjectReference Include="..\PlayerUI\PlayerUI.csproj">
       <Project>{d96d4fd6-c8f0-4481-86e3-93de761e77f8}</Project>
       <Name>PlayerUI</Name>
     </ProjectReference>
