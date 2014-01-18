@@ -81,9 +81,6 @@ namespace Player
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
                 foreach (var file in files)
                 {
-                    //songPaths.Add(file);
-                    var filename = System.IO.Path.GetFileName(file);
-
                     TagLib.File f = null;
                     try
                     {

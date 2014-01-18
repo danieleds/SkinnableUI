@@ -102,9 +102,7 @@ namespace PlayerUI
         {
             if (element.HasAttribute(attribute))
             {
-                var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(element.GetAttribute(attribute));
-                var goodColor = System.Drawing.Color.FromArgb(color.A, color.R, color.G, color.B);
-                setter(goodColor);
+                setter(ColorTranslator.FromHtml(element.GetAttribute(attribute)));
             }
         }
 
@@ -172,6 +170,23 @@ namespace PlayerUI
             }
         }
 
+        public static void SetColor(Color color, string nodeName, System.Xml.XmlElement node)
+        {
+            if (color.A == 255)
+            {
+                node.SetAttribute(nodeName, ColorTranslator.ToHtml(color));
+            }
+            else
+            {
+                string str = String.Format("#{0}{1}{2}{3}",
+                         color.A.ToString("X2"),
+                         color.R.ToString("X2"),
+                         color.G.ToString("X2"),
+                         color.B.ToString("X2"));
+                node.SetAttribute(nodeName, str);
+            }
+        }
+
         static bool StreamsAreEqual(System.IO.MemoryStream first, System.IO.MemoryStream second)
         {
             const int BYTES_TO_READ = sizeof(Int64);
@@ -197,7 +212,7 @@ namespace PlayerUI
         }
 
         [Serializable]
-        public class ClipboardPlayerControl
+        public class SerializablePlayerControl
         {
             private string doc;
             public Dictionary<string, System.IO.MemoryStream> Resources {get; set;}

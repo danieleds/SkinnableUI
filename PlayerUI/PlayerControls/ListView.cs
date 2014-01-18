@@ -581,9 +581,9 @@ namespace PlayerUI.PlayerControls
             SerializationHelper.SetNinePatch(this.scrollbarNormal9P, "scrollbarNormal9P", resources, node);
 
             node.SetAttribute("headerFont", new FontConverter().ConvertToInvariantString(this.headerFont));
-            node.SetAttribute("headerForeColor", string.Format("#{0:x6}", this.headerForeColor.ToArgb()));
+            SerializationHelper.SetColor(this.headerForeColor, "headerForeColor", node);
             node.SetAttribute("activeRowFont", new FontConverter().ConvertToInvariantString(this.activeRowFont));
-            node.SetAttribute("activeRowForeColor", string.Format("#{0:x6}", this.activeRowForeColor.ToArgb()));
+            SerializationHelper.SetColor(this.activeRowForeColor, "activeRowForeColor", node);
             /*if(this.items.Contains(activeRow))
                 node.SetAttribute("activeRow", System.Xml.XmlConvert.ToString(this.items.IndexOf(activeRow)));
             else

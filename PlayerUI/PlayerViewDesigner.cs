@@ -643,6 +643,19 @@ namespace PlayerUI
             return null;
         }
 
+        private DataObject GetDataObject(string format, PlayerControl c)
+        {
+            var resources = new Dictionary<string, System.IO.MemoryStream>();
+            var doc = new System.Xml.XmlDocument();
+            doc.AppendChild(c.GetXmlElement(doc, resources));
+
+            var data = new SerializationHelper.SerializablePlayerControl();
+            data.XmlDocument = doc;
+            data.Resources = resources;
+
+            return new DataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, data);
+        }
+
         public bool CanPasteFromClipboard()
         {
             return (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROL_FORMAT));
@@ -650,21 +663,14 @@ namespace PlayerUI
 
         public void CopyControlToClipboard(PlayerControl c)
         {
-            var resources = new Dictionary<string, System.IO.MemoryStream>();
-            var doc = new System.Xml.XmlDocument();
-            doc.AppendChild(c.GetXmlElement(doc, resources));
-
-            var clipb = new SerializationHelper.ClipboardPlayerControl();
-            clipb.XmlDocument = doc;
-            clipb.Resources = resources;
-            Clipboard.SetDataObject(new DataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, clipb), true);
+            Clipboard.SetDataObject(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, c), true);
         }
 
         public void PasteControlFromClipboard(Container where)
         {
             if (CanPasteFromClipboard())
             {
-                var clipb = (SerializationHelper.ClipboardPlayerControl)Clipboard.GetDataObject().GetData(CLIPBOARD_PLAYERCONTROL_FORMAT);
+                var clipb = (SerializationHelper.SerializablePlayerControl)Clipboard.GetDataObject().GetData(CLIPBOARD_PLAYERCONTROL_FORMAT);
 
                 System.Xml.XmlDocument copy_xml = clipb.XmlDocument;
                 Dictionary<string, System.IO.MemoryStream> copy_resources = clipb.Resources;
@@ -764,6 +770,7 @@ namespace PlayerUI
                     this.draggingControl.Parent.RemovePlayerControl(this.draggingControl);
                     this.SelectedControl = null;
 
+                    //this.DoDragDrop(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
                     this.DoDragDrop(new DataObject(typeof(PlayerControl).FullName, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
 
                 }

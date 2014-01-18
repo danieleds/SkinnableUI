@@ -331,7 +331,7 @@ namespace PlayerUI.PlayerControls
             node.SetAttribute("width", this.Size.Width.ToString(inv));
             node.SetAttribute("height", this.Size.Height.ToString(inv));
             node.SetAttribute("anchor", this.Anchor.ToString());
-            node.SetAttribute("forecolor", string.Format("#{0:x6}", this.ForeColor.ToArgb()));
+            SerializationHelper.SetColor(this.ForeColor, "forecolor", node);
             node.SetAttribute("font", new FontConverter().ConvertToInvariantString(this.Font));
             
             return node;
