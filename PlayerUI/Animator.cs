@@ -43,9 +43,13 @@ namespace PlayerUI
         }
 
         /// <summary>
-        /// Eseguire Detach il prima possibile
+        /// Aggancia un'animazione a questo Animator. Eseguire il detach il prima possibile.
         /// </summary>
-        /// <param name="interval"></param>
+        /// <param name="interval">Numero di millisecondi ogni quanto eseguire un frame (valori più bassi indicano una frequenza maggiore).</param>
+        /// <param name="duration">Durata dell'animazione (millisecondi).</param>
+        /// <param name="from"></param>
+        /// <param name="to"></param>
+        /// <param name="invalidate"></param>
         /// <returns></returns>
         public Animation Attach(int interval, int duration, NinePatch from, NinePatch to, Action invalidate)
         {
@@ -72,146 +76,54 @@ namespace PlayerUI
             detachQueue.Add(anim);
         }
 
-
-
-        public class Animation
+        /// <summary>
+        /// Esegue un'animazione salvando l'oggetto Animation in animationPlaceholder.
+        /// Una chiamata successiva di questo metodo sullo stesso animationPlaceholder
+        /// eseguirà la nuova animazione a partire dall'istante in cui era arrivata quella vecchia.
+        /// </summary>
+        /// <param name="animationPlaceholder">Oggetto Animation per tenere traccia dell'animazione corrente. Alla prima chiamata del metodo può essere null.</param>
+        /// <param name="to">NinePatch verso cui eseguire l'animazione.</param>
+        /// <param name="defaultFrom">NinePatch da cui far partire l'animazione nel caso in cui animationPlaceholder sia null.</param>
+        /// <param name="interval">Numero di millisecondi ogni quanto eseguire un frame (valori più bassi indicano una frequenza maggiore).</param>
+        /// <param name="duration">Durata dell'animazione (millisecondi).</param>
+        /// <param name="invalidate">Metodo per richiedere l'invalidazione grafica.</param>
+        public void ContinueAnimation(ref Animation animationPlaceholder, NinePatch to, NinePatch defaultFrom, int interval, int duration, Action invalidate)
         {
-            int toNextFrame; // Istanti rimanenti per arrivare al prossimo frame
-            int frameInterval; // Numero di istanti tra un frame e l'altro
-            int numberOfFrames; // Numero totale di frame che compongono l'animazione
-            int frameCount; // Contatore frame corrente
-
-            NinePatch from, to, curFrame;
-            RectangleF srcRect, destRect;
-            ColorMatrix colorMatrix;
-            Action invalidate;
-
-            PointF topleft = new PointF();
-            PointF top1left1 = new PointF(1, 1);
-
-            private bool running;
-
-            public delegate void FinishEventHandler(object sender, EventArgs e);
-            public event FinishEventHandler Finish;
-
-            Animator detachOnFinish = null; // Se != null, quando l'animazione finisce allora questo Animator deve fare il detach.
-
-            public void SetDetachOnFinish(bool detachOnFinish, Animator animator)
+            float p;
+            NinePatch startFrame;
+            if (animationPlaceholder == null)
             {
-                this.detachOnFinish = detachOnFinish ? animator : null;
+                p = 1;
+                startFrame = defaultFrom;
+            }
+            else
+            {
+                p = animationPlaceholder.Stop();
+                startFrame = animationPlaceholder.GetCurrentFrame();
             }
 
-            /// <summary>
-            /// 
-            /// </summary>
-            /// <param name="frameInterval">Parametro >= 0.
-            /// Se 0, l'animazione va alla stessa frequenza del timer.
-            /// Se 1, l'animazione va alla metà della frequenza del timer, ecc.</param>
-            public Animation(int frameInterval, int numberOfFrames, NinePatch from, NinePatch to, Action invalidate)
-            {
-                if (numberOfFrames <= 0) throw new ArgumentException("numberOfFrames should be > 0");
-                this.frameInterval = frameInterval;
-                this.numberOfFrames = numberOfFrames;
-                this.from = from;
-                this.to = to;
-                this.invalidate = invalidate;
-
-                this.curFrame = new NinePatch(from.Image.Clone(new RectangleF(topleft, from.Image.Size), System.Drawing.Imaging.PixelFormat.Format32bppArgb));
-
-                srcRect = new RectangleF(1, 1, from.Image.Size.Width - 2, from.Image.Size.Height - 2);
-                destRect = new RectangleF(1, 1, to.Image.Size.Width - 2, to.Image.Size.Height - 2);
-
-                Reset();
-            }
-
-            public void Reset()
-            {
-                toNextFrame = 0;
-                frameCount = 0;
-                colorMatrix = new ColorMatrix();
-                running = false;
-            }
-
-            public void Start()
-            {
-                Start(0);
-            }
-
-            public void Start(float startPoint)
-            {
-                if (startPoint < 0 || startPoint > 1) throw new ArgumentException("startPoint should be between 0 and 1");
-                frameCount = (int)(startPoint * numberOfFrames);
-
-                running = true;
-                DoAnimation();
-            }
-
-            /// <summary>
-            /// Ferma l'animazione e restituisce la percentuale di completamento.
-            /// </summary>
-            /// <returns></returns>
-            public float Stop()
-            {
-                running = false;
-                return (float)frameCount / (float)numberOfFrames;
-            }
-
-            public bool IsRunning()
-            {
-                return running;
-            }
-
-            public void DoAnimation()
-            {
-                if (running)
-                {
-                    if (this.toNextFrame == 0)
-                    {
-                        frameCount++;
-
-                        var g = Graphics.FromImage(curFrame.Image);
-                        g.DrawImage(from.Image, destRect, srcRect, GraphicsUnit.Pixel);
-
-                        colorMatrix.Matrix33 = (float)frameCount / (float)numberOfFrames;
-
-                        ImageAttributes imageAtt = new ImageAttributes();
-                        imageAtt.SetColorMatrix(
-                           colorMatrix,
-                           ColorMatrixFlag.Default,
-                           ColorAdjustType.Bitmap);
-
-                        var destPoints = new PointF[] {
-                            top1left1,
-                            new PointF(to.Image.Size.Width - 1, 1),
-                            new PointF(1, to.Image.Size.Height - 1)
-                        };
-                        g.DrawImage(to.Image, destPoints, destRect, GraphicsUnit.Pixel, imageAtt);
-
-                        invalidate();
-                    }
-
-
-                    if (toNextFrame == 0)
-                        toNextFrame = frameInterval;
-                    else
-                        toNextFrame -= 1;
-
-                    if (frameCount == numberOfFrames)
-                    {
-                        Stop();
-
-                        if (detachOnFinish != null)
-                            detachOnFinish.Detach(this);
-
-                        if (Finish != null) Finish(this, new EventArgs());
-                    }
-                }
-            }
-
-            public NinePatch GetCurrentFrame()
-            {
-                return curFrame;
-            }
+            animationPlaceholder = this.Attach(interval, (int)(duration * p), startFrame, to, invalidate);
+            animationPlaceholder.SetDetachOnFinish(true, this);
+            animationPlaceholder.Start();
         }
+
+
+        public void ContinueAnimationB(ref Animation animationPlaceholder, NinePatch from, NinePatch to, int interval, int duration, Action invalidate)
+        {
+            float p;
+            if (animationPlaceholder == null)
+            {
+                p = 1;
+            }
+            else
+            {
+                p = animationPlaceholder.Stop();
+            }
+
+            animationPlaceholder = this.Attach(interval, (int)(duration * p), from, to, invalidate);
+            animationPlaceholder.SetDetachOnFinish(true, this);
+            animationPlaceholder.Start();
+        }
+
     }
 }

@@ -18,6 +18,8 @@ namespace PlayerUI.PlayerControls
 
         private bool pressed;
         private bool over;
+        Animation anim;
+        NinePatch lastDrawnPatch = null;
 
         protected NinePatch backgroundNormal9P;
         [DefaultValue(null)]
@@ -67,44 +69,31 @@ namespace PlayerUI.PlayerControls
         private string text;
         public string Text { get { return text; } set { text = value; this.Invalidate(); } }
 
+        /// <summary>
+        /// True per attivare le animazioni su mouse enter / mouse leave.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool EnterLeave9PAnimation { get; set; }
+
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             var strSize = g.MeasureString(this.Text, this.Font);
             var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);
-            
-            if (pressed)
+
+            var patch =
+                this.pressed ? backgroundPressed9P
+                : this.over ? backgroundOver9P
+                : backgroundNormal9P;
+
+            if (patch != null)
             {
-                if (backgroundPressed9P != null)
-                {
-                    var patch = backgroundPressed9P;
-                    contentBox = patch.GetContentBox(this.Size);
-                    patch.Paint(g, this.Size);
-                }
-                else
-                    drawDefaultButton(g);
-            }
-            else if(over)
-            {
-                if (backgroundOver9P != null)
-                {
-                    var patch = anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundOver9P;
-                    contentBox = patch.GetContentBox(this.Size);
-                    patch.Paint(g, this.Size);
-                }
-                else
-                    drawDefaultButton(g);
+                patch = anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : patch;
+                lastDrawnPatch = patch;
+                contentBox = patch.GetContentBox(this.Size);
+                patch.Paint(g, this.Size);
             }
             else
-            {
-                if (backgroundNormal9P != null)
-                {
-                    var patch = anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : backgroundNormal9P;
-                    contentBox = patch.GetContentBox(this.Size);
-                    patch.Paint(g, this.Size);
-                }
-                else
-                    drawDefaultButton(g);
-            }
+                drawDefaultButton(g);
 
             g.SetClip(contentBox, System.Drawing.Drawing2D.CombineMode.Intersect);
             g.DrawString(this.Text, this.Font, new SolidBrush(this.ForeColor), contentBox.Width / 2 - strSize.Width / 2 + contentBox.Left, contentBox.Height / 2 - strSize.Height / 2 + contentBox.Top);
@@ -136,47 +125,18 @@ namespace PlayerUI.PlayerControls
             }
         }
 
-        Animator.Animation anim;
         public override void OnMouseEnter(EventArgs e)
         {
             base.OnMouseEnter(e);
             this.over = true;
 
-            if (this.backgroundOver9P != null && this.backgroundNormal9P != null)
-                AnimateTo(ref anim, this.backgroundOver9P, this.backgroundNormal9P, this.GetAnimator(), 50, 400);
-            
+            if (EnterLeave9PAnimation)
+            {
+                if (this.backgroundOver9P != null && this.lastDrawnPatch != null)
+                    this.GetAnimator().ContinueAnimationB(ref anim, lastDrawnPatch, this.backgroundOver9P, 50, 300, this.Invalidate);
+            }
+
             this.Invalidate();
-        }
-
-        /// <summary>
-        /// Esegue un'animazione salvando l'oggetto in animationPlaceholder.
-        /// Una chiamata successiva di questo metodo sullo stesso animationPlaceholder
-        /// eseguirà la nuova animazione a partire dall'istante in cui era arrivata quella vecchia.
-        /// </summary>
-        /// <param name="animationPlaceholder"></param>
-        /// <param name="to"></param>
-        /// <param name="defaultFrom"></param>
-        /// <param name="animator"></param>
-        /// <param name="interval"></param>
-        /// <param name="duration"></param>
-        private void AnimateTo(ref Animator.Animation animationPlaceholder, NinePatch to, NinePatch defaultFrom, Animator animator, int interval, int duration)
-        {
-            float p;
-            NinePatch startFrame;
-            if (animationPlaceholder == null)
-            {
-                p = 1;
-                startFrame = defaultFrom;
-            }
-            else
-            {
-                p = animationPlaceholder.Stop();
-                startFrame = animationPlaceholder.GetCurrentFrame();
-            }
-
-            animationPlaceholder = animator.Attach(interval, (int)(duration * p), startFrame, to, this.Invalidate);
-            animationPlaceholder.SetDetachOnFinish(true, animator);
-            animationPlaceholder.Start();
         }
 
         public override void OnMouseLeave(EventArgs e)
@@ -184,8 +144,11 @@ namespace PlayerUI.PlayerControls
             base.OnMouseLeave(e);
             this.over = false;
 
-            if (this.backgroundNormal9P != null && this.backgroundOver9P != null)
-                AnimateTo(ref anim, this.backgroundNormal9P, this.backgroundOver9P, this.GetAnimator(), 50, 400);
+            if (EnterLeave9PAnimation)
+            {
+                if (this.backgroundNormal9P != null && this.lastDrawnPatch != null)
+                    this.GetAnimator().ContinueAnimationB(ref anim, lastDrawnPatch, this.backgroundNormal9P, 50, 300, this.Invalidate);
+            }
 
             this.Invalidate();
         }
@@ -194,6 +157,7 @@ namespace PlayerUI.PlayerControls
         {
             var node = base.GetXmlElement(document, resources);
             node.SetAttribute("text", this.Text);
+            node.SetAttribute("enterLeave9PAnimation", System.Xml.XmlConvert.ToString(this.EnterLeave9PAnimation));
 
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundOver9P, "backgroundOver9P", resources, node);
@@ -206,6 +170,7 @@ namespace PlayerUI.PlayerControls
         {
             base.FromXmlElement(element, resources);
             SerializationHelper.LoadString(element, "text", s => this.Text = s);
+            SerializationHelper.LoadBoolean(element, "enterLeave9PAnimation", s => this.EnterLeave9PAnimation = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundOver9P", resources, s => this.BackgroundOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundPressed9P", resources, s => this.BackgroundPressed9P = s);

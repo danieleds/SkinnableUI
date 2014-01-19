@@ -18,6 +18,8 @@ namespace PlayerUI.PlayerControls
 
         private bool pressed;
         private bool over;
+        Animation anim;
+        NinePatch lastDrawnPatch = null;
 
         public delegate void CheckedChangedEventHandler(object sender, EventArgs e);
         public event CheckedChangedEventHandler CheckedChanged;
@@ -79,6 +81,12 @@ namespace PlayerUI.PlayerControls
             set { set9P(value, v => this.backgroundCheckedPressed9P = v); }
         }
 
+        /// <summary>
+        /// True per attivare le animazioni su mouse enter / mouse leave.
+        /// </summary>
+        [DefaultValue(false)]
+        public bool EnterLeave9PAnimation { get; set; }
+
         private bool checked_;
         public bool Checked
         {
@@ -96,7 +104,7 @@ namespace PlayerUI.PlayerControls
 
         private string checkedText;
         public string CheckedText { get { return checkedText; } set { checkedText = value; if(checked_) this.Invalidate(); } }
-
+        
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             var actualText = this.checked_ ? this.CheckedText : this.Text;
@@ -113,6 +121,8 @@ namespace PlayerUI.PlayerControls
 
             if (patch != null)
             {
+                patch = anim != null && anim.IsRunning() ? anim.GetCurrentFrame() : patch;
+                lastDrawnPatch = patch;
                 contentBox = patch.GetContentBox(this.Size);
                 patch.Paint(g, this.Size);
             }
@@ -157,6 +167,21 @@ namespace PlayerUI.PlayerControls
         {
             base.OnMouseEnter(e);
             this.over = true;
+
+            if (EnterLeave9PAnimation)
+            {
+                if (this.checked_)
+                {
+                    if (this.backgroundCheckedOver9P != null && this.lastDrawnPatch != null)
+                        this.GetAnimator().ContinueAnimationB(ref anim, lastDrawnPatch, this.backgroundCheckedOver9P, 50, 300, this.Invalidate);
+                }
+                else
+                {
+                    if (this.backgroundOver9P != null && this.lastDrawnPatch != null)
+                        this.GetAnimator().ContinueAnimationB(ref anim, lastDrawnPatch, this.backgroundOver9P, 50, 300, this.Invalidate);
+                }
+            }
+
             this.Invalidate();
         }
 
@@ -164,6 +189,21 @@ namespace PlayerUI.PlayerControls
         {
             base.OnMouseLeave(e);
             this.over = false;
+
+            if (EnterLeave9PAnimation)
+            {
+                if (this.checked_)
+                {
+                    if (this.backgroundCheckedNormal9P != null && this.lastDrawnPatch != null)
+                        this.GetAnimator().ContinueAnimationB(ref anim, lastDrawnPatch, this.backgroundCheckedNormal9P, 50, 300, this.Invalidate);
+                }
+                else
+                {
+                    if (this.backgroundNormal9P != null && this.lastDrawnPatch != null)
+                        this.GetAnimator().ContinueAnimationB(ref anim, lastDrawnPatch, this.backgroundNormal9P, 50, 300, this.Invalidate);
+                }
+            }
+
             this.Invalidate();
         }
 
@@ -179,6 +219,7 @@ namespace PlayerUI.PlayerControls
             node.SetAttribute("text", this.Text);
             node.SetAttribute("checkedText", this.CheckedText);
             node.SetAttribute("checked", System.Xml.XmlConvert.ToString(this.Checked));
+            node.SetAttribute("enterLeave9PAnimation", System.Xml.XmlConvert.ToString(this.EnterLeave9PAnimation));
 
             SerializationHelper.SetNinePatch(this.backgroundNormal9P, "backgroundNormal9P", resources, node);
             SerializationHelper.SetNinePatch(this.backgroundOver9P, "backgroundOver9P", resources, node);
@@ -196,6 +237,7 @@ namespace PlayerUI.PlayerControls
             SerializationHelper.LoadString(element, "text", s => this.Text = s);
             SerializationHelper.LoadString(element, "checkedText", s => this.CheckedText = s);
             SerializationHelper.LoadBoolean(element, "checked", s => this.Checked = s);
+            SerializationHelper.LoadBoolean(element, "enterLeave9PAnimation", s => this.EnterLeave9PAnimation = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundNormal9P", resources, s => this.BackgroundNormal9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundOver9P", resources, s => this.BackgroundOver9P = s);
             SerializationHelper.LoadBitmapFromResources(element, "backgroundPressed9P", resources, s => this.BackgroundPressed9P = s);

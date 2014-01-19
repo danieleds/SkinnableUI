@@ -43,6 +43,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Animation.cs" />
     <Compile Include="Animator.cs" />
     <Compile Include="NinePatch.cs" />
     <Compile Include="PlayerControls\Button.cs" />
