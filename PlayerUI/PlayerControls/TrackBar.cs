@@ -287,6 +287,7 @@ namespace PlayerUI.PlayerControls
                     this.Value = maximum;
                 else
                     this.Value += increment;
+                if (UserChangedValue != null) UserChangedValue(this, new EventArgs());
             }
             else if (e.KeyCode == System.Windows.Forms.Keys.Left && e.Modifiers == System.Windows.Forms.Keys.None)
             {
@@ -295,6 +296,7 @@ namespace PlayerUI.PlayerControls
                     this.Value = minimum;
                 else
                     this.Value -= decrement;
+                if (UserChangedValue != null) UserChangedValue(this, new EventArgs());
             }
         }
 
