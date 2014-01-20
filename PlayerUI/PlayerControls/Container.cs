@@ -312,7 +312,6 @@ namespace PlayerUI.PlayerControls
             {
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
                 ctl.OnMouseDown(e2);
-                ctl.IsShowingFocusRect = false;
                 this.FocusedControl = ctl;
             }
             
