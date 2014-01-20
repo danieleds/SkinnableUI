@@ -123,8 +123,37 @@ namespace PlayerUI
                 case Keys.Shift | Keys.Up:
                 case Keys.Shift | Keys.Down:
                     return true;
+                case Keys.Tab:
+                case Keys.Shift | Keys.Tab:
+                    return true;
             }
             return base.IsInputKey(keyData);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+
+            if (!BlockInputEvents)
+            {
+                if (e.KeyCode == Keys.Tab && e.Modifiers == Keys.None)
+                {
+                    if (this.containerControl != null)
+                        if (this.containerControl.DoTab(true, true) == false)
+                            this.containerControl.DoTab(true, true);
+                }
+                else if (e.KeyCode == Keys.Tab && e.Modifiers == Keys.Shift)
+                {
+                    if (this.containerControl != null)
+                        if (this.containerControl.DoTab(false, true) == false)
+                            this.containerControl.DoTab(false, true);
+                }
+                else
+                {
+                    if (this.containerControl != null)
+                        this.containerControl.OnKeyDown(e);
+                }
+            }
         }
 
         protected override void OnResize(EventArgs e)

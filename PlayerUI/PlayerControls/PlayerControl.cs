@@ -13,6 +13,8 @@ namespace PlayerUI.PlayerControls
 {
     public abstract class PlayerControl
     {
+        public bool IsShowingFocusRect = false;
+
         [System.AttributeUsage(System.AttributeTargets.Field)]
         public class SemanticTypeMeta : System.Attribute
         {
@@ -53,6 +55,7 @@ namespace PlayerUI.PlayerControls
         {
             this.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.Semantic = controlType;
+            this.TabStop = true;
         }
 
         public static SemanticTypeMeta GetPlayerControlInstanceInfo(SemanticType t)
@@ -102,6 +105,9 @@ namespace PlayerUI.PlayerControls
 
         public delegate void MoveEventHandler(object sender, EventArgs e);
         public event MoveEventHandler Move;
+
+        public delegate void KeyDownEventHandler(object sender, EventArgs e);
+        public event KeyDownEventHandler KeyDown;
 
         [Browsable(false)]
         public PlayerView ParentView { get; set; }
@@ -208,6 +214,11 @@ namespace PlayerUI.PlayerControls
             }
         }
 
+        public int TabIndex { get; set; }
+
+        [DefaultValue(true)]
+        public virtual bool TabStop { get; set; }
+
         private SemanticType semantic;
         [Browsable(false)]
         public SemanticType Semantic
@@ -252,6 +263,28 @@ namespace PlayerUI.PlayerControls
             g.SetClip(new RectangleF(new PointF(-0.5f, -0.5f), this.size.Expand(0.5f)), System.Drawing.Drawing2D.CombineMode.Intersect);
             this.OnPaint(g);
             g.Restore(s);
+
+            if (this.IsShowingFocusRect && this.Parent != null && this.Parent.FocusedControl == this)
+            {
+                s = g.Save();
+                g.TranslateTransform(location.X, location.Y);
+                PaintFocusRect(g);
+                g.Restore(s);
+            }
+        }
+
+        /// <summary>
+        /// Disegna l'indicatore del focus da tastiera (in seguito a pressione tasto TAB).
+        /// </summary>
+        /// <param name="g"></param>
+        public virtual void PaintFocusRect(Graphics g)
+        {
+            Pen p = new Pen(Color.Gray);
+            p.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+            if (this.size.Width >= 12)
+                g.DrawRectangle(p, 3, 3, this.size.Width - 7, this.size.Height - 7);
+            else
+                g.DrawRectangle(p, 0, 0, this.size.Width - 1, this.size.Height - 1);
         }
 
         public Bitmap ToBitmap(Rectangle clipRectangle)
@@ -333,6 +366,8 @@ namespace PlayerUI.PlayerControls
             node.SetAttribute("anchor", this.Anchor.ToString());
             SerializationHelper.SetColor(this.ForeColor, "forecolor", node);
             node.SetAttribute("font", new FontConverter().ConvertToInvariantString(this.Font));
+            node.SetAttribute("tabIndex", XmlConvert.ToString(this.TabIndex));
+            node.SetAttribute("tabStop", XmlConvert.ToString(this.TabStop));
             
             return node;
         }
@@ -346,6 +381,8 @@ namespace PlayerUI.PlayerControls
             SerializationHelper.LoadEnum<AnchorStyles>(element, "anchor", s => this.Anchor = s);
             SerializationHelper.LoadColor(element, "forecolor", s => this.ForeColor = s);
             SerializationHelper.LoadFont(element, "font", s => this.Font = s);
+            SerializationHelper.LoadInteger(element, "tabIndex", s => this.TabIndex = s);
+            SerializationHelper.LoadBoolean(element, "tabStop", s => this.TabStop = s);
         }
 
         // Lavora nelle coordinate globali
@@ -423,6 +460,11 @@ namespace PlayerUI.PlayerControls
         public virtual void OnMove(EventArgs e)
         {
             if (Move != null) Move(this, e);
+        }
+
+        public virtual void OnKeyDown(KeyEventArgs e)
+        {
+            if (KeyDown != null) KeyDown(this, e);
         }
 
     }

@@ -14,10 +14,14 @@ namespace PlayerUI.PlayerControls
         public PictureBox(SemanticType c) : base(c)
         {
             this.Size = new SizeF(50, 50);
+            this.TabStop = false;
         }
 
         private Image image;
         public Image Image { get { return image; } set { image = value; this.Invalidate(); } }
+
+        [DefaultValue(false)]
+        public override bool TabStop { get; set; }
 
         protected override void OnPaint(System.Drawing.Graphics g)
         {

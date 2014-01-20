@@ -15,6 +15,7 @@ namespace PlayerUI.PlayerControls
         {
             this.Size = new SizeF(75, 20);
             this.Text = GetPlayerControlInstanceInfo(c).Title;
+            this.TabStop = false;
         }
 
         private string text;
@@ -22,6 +23,9 @@ namespace PlayerUI.PlayerControls
 
         private ContentAlignment textAlign = ContentAlignment.MiddleLeft;
         public ContentAlignment TextAlign { get { return textAlign; } set { textAlign = value; this.Invalidate(); } }
+
+        [DefaultValue(false)]
+        public override bool TabStop { get; set; }
 
         protected override void OnPaint(System.Drawing.Graphics g)
         {

@@ -39,6 +39,7 @@ namespace PlayerUI.PlayerControls
             this.controls = new PlayerControlCollection(this);
 
             this.Size = new SizeF(150, 100);
+            this.TabStop = false;
         }
 
         protected NinePatch backgroundNormal9P;
@@ -55,6 +56,9 @@ namespace PlayerUI.PlayerControls
                 this.Invalidate();
             }
         }
+
+        [DefaultValue(false)]
+        public override bool TabStop { get; set; }
         
         [Browsable(false)]
         public PlayerControlCollection Controls { get { return this.controls; } }
@@ -173,6 +177,113 @@ namespace PlayerUI.PlayerControls
             return result;
         }
 
+        /// <summary>
+        /// Restituisce il prossimo (o precedente) controllo secondo le proprietà TabOrder e TabStop.
+        /// Dopo aver raggiunto l'ultimo controllo restituisce null.
+        /// </summary>
+        /// <param name="ctl">Controllo da cui iniziare la ricerca. Se è null, parte dall'inizio (o dalla fine).</param>
+        /// <param name="forward"></param>
+        /// <returns></returns>
+        public PlayerControl GetNextControl(PlayerControl ctl, bool forward)
+        {
+            IEnumerable<PlayerControl> ctrls;
+
+            if (ctl == null)
+            {
+                if(forward)
+                    ctrls = from c in this.controls
+                            where (c.TabStop == true || c is Container)
+                            orderby c.TabIndex, c.Top, c.Left
+                            select c;
+                else
+                    ctrls = from c in this.controls
+                            where (c.TabStop == true || c is Container)
+                            orderby c.TabIndex descending, c.Top descending, c.Left descending
+                            select c;
+            }
+            else
+            {
+                if (forward)
+                {
+                    ctrls = from c in this.controls
+                            where (c.TabStop == true || c is Container)
+                            && c.TabIndex >= ctl.TabIndex
+                            && (c.TabIndex == ctl.TabIndex ?
+                            (c.Top != ctl.Top ? c.Top > ctl.Top : c.Left > ctl.Left)
+                            : true)
+                            orderby c.TabIndex, c.Top, c.Left
+                            select c;
+                }
+                else
+                {
+                    ctrls = from c in this.controls
+                            where (c.TabStop == true || c is Container)
+                            && c.TabIndex <= ctl.TabIndex
+                            && (c.TabIndex == ctl.TabIndex ?
+                            (c.Top != ctl.Top ? c.Top < ctl.Top : c.Left < ctl.Left)
+                            : true)
+                            orderby c.TabIndex descending, c.Top descending, c.Left descending
+                            select c;
+                }
+            }
+            
+            return ctrls.FirstOrDefault(c => c != ctl);
+        }
+
+        private PlayerControl focusedControl;
+        public PlayerControl FocusedControl
+        {
+            get { return this.focusedControl; }
+            set
+            {
+                PlayerControl oldFocusCtl = this.focusedControl;
+                this.focusedControl = value;
+                if(oldFocusCtl != null) oldFocusCtl.Invalidate();
+                if(value != null) value.Invalidate();
+            }
+        }
+
+        /// <summary>
+        /// Sposta ricorsivamente il focus al controllo successivo (o precedente).
+        /// Restituisce false se i controlli sono finiti, altrimenti true.
+        /// </summary>
+        /// <param name="forward"></param>
+        /// <returns></returns>
+        public bool DoTab(bool forward, bool showTabFocus)
+        {
+            if (this.FocusedControl is Container)
+            {
+                Container container = (Container)this.FocusedControl;
+                bool finished = !container.DoTab(forward, showTabFocus);
+                if (!finished)
+                    return true;
+            }
+
+            PlayerControl ctl = GetNextControl(this.FocusedControl, forward);
+            if(this.focusedControl != null) this.focusedControl.IsShowingFocusRect = false;
+            if(ctl != null) ctl.IsShowingFocusRect = showTabFocus;
+            this.FocusedControl = ctl;
+
+            if (ctl == null)
+                return false;
+            else
+            {
+                if (ctl is Container)
+                {
+                    Container container = (Container)ctl;
+                    if (container.focusedControl != null) container.focusedControl.IsShowingFocusRect = false;
+                    container.FocusedControl = container.GetNextControl(null, forward);
+                    if (container.focusedControl != null) container.focusedControl.IsShowingFocusRect = showTabFocus;
+                }
+                return true;
+            }
+        }
+
+        public override void PaintFocusRect(Graphics g)
+        {
+            
+        }
+
         #region Events
 
         protected override void OnPaint(Graphics g)
@@ -201,6 +312,8 @@ namespace PlayerUI.PlayerControls
             {
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
                 ctl.OnMouseDown(e2);
+                ctl.IsShowingFocusRect = false;
+                this.FocusedControl = ctl;
             }
             
             // Gestione doppio click
@@ -261,44 +374,6 @@ namespace PlayerUI.PlayerControls
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
                 ctl.OnMouseMove(e2);
             }
-
-            /*
-            foreach (var ctl in controls)
-            {
-                var capture = ctl.Capture;
-                var hit = ctl.HitTest(e.Location);
-
-                if (hit)
-                {
-                    someoneHit = true;
-                    if (lastEnterControl != ctl)
-                    {
-                        // Lanciamo mouseLeave / mouseEnter sul vecchio / nuovo controllo sopra il quale ci troviamo.
-                        if (lastEnterControl != null)
-                            lastEnterControl.OnMouseLeave(new EventArgs());
-                        lastEnterControl = ctl;
-                        ctl.OnMouseEnter(new EventArgs());
-                    }
-                }
-
-                if (capture || hit)
-                {
-                    // Lanciamo l'evento mouseMove
-                    MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
-                    ctl.OnMouseMove(e2);
-                }
-            }
-
-            if (!someoneHit)
-            {
-                // Non ci troviamo sopra a nessun controllo: se qualcuno dei nostri
-                // controlli aveva il mouseEnter, gli chiamiamo mouseLeave.
-                if (lastEnterControl != null)
-                {
-                    lastEnterControl.OnMouseLeave(new EventArgs());
-                    lastEnterControl = null;
-                }
-            }*/
         }
 
         public override void OnMouseUp(MouseEventArgs e)
@@ -369,6 +444,24 @@ namespace PlayerUI.PlayerControls
             {
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
                 ctl.OnMouseWheel(e2);
+            }
+        }
+
+        public override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter && e.Modifiers == Keys.None)
+            {
+                if (this.focusedControl != null)
+                {
+                    if (this.focusedControl is Container)
+                        this.focusedControl.OnKeyDown(e);
+                    else
+                        this.focusedControl.OnClick(new EventArgs());
+                }
+            }
+            else
+            {
+                base.OnKeyDown(e);
             }
         }
 
