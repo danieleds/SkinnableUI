@@ -102,6 +102,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private int minimum = 0;
+        [DefaultValue(0)]
         public int Minimum
         {
             get { return minimum; }
@@ -116,6 +117,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private int maximum = 100;
+        [DefaultValue(100)]
         public int Maximum
         {
             get { return maximum; }
@@ -130,6 +132,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private int value = 0;
+        [DefaultValue(0)]
         public int Value
         {
             get { return value; }
@@ -272,6 +275,27 @@ namespace PlayerUI.PlayerControls
             base.OnMouseLeave(e);
             this.over = false;
             this.Invalidate();
+        }
+
+        public override void OnKeyDown(System.Windows.Forms.KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.KeyCode == System.Windows.Forms.Keys.Right && e.Modifiers == System.Windows.Forms.Keys.None)
+            {
+                int increment = (int)((this.maximum - this.minimum) * 0.05f);
+                if (this.value + increment > this.maximum)
+                    this.Value = maximum;
+                else
+                    this.Value += increment;
+            }
+            else if (e.KeyCode == System.Windows.Forms.Keys.Left && e.Modifiers == System.Windows.Forms.Keys.None)
+            {
+                int decrement = (int)((this.maximum - this.minimum) * 0.05f);
+                if (this.value - decrement < this.minimum)
+                    this.Value = minimum;
+                else
+                    this.Value -= decrement;
+            }
         }
 
         public override System.Xml.XmlElement GetXmlElement(System.Xml.XmlDocument document, Dictionary<string, System.IO.MemoryStream> resources)

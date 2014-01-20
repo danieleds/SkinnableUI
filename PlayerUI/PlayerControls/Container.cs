@@ -461,6 +461,11 @@ namespace PlayerUI.PlayerControls
             else
             {
                 base.OnKeyDown(e);
+                if (!e.Handled)
+                {
+                    if (this.focusedControl != null)
+                        this.focusedControl.OnKeyDown(e);
+                }
             }
         }
 
