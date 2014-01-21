@@ -17,7 +17,6 @@ namespace PlayerUI
 
         NinePatch from, to, curFrame;
         RectangleF srcRect, destRect;
-        ColorMatrix colorMatrix;
         Action invalidate;
 
         PointF topleft = new PointF();
@@ -62,7 +61,6 @@ namespace PlayerUI
         {
             toNextFrame = 0;
             frameCount = 0;
-            colorMatrix = new ColorMatrix();
             running = false;
         }
 
@@ -102,25 +100,7 @@ namespace PlayerUI
                 if (this.toNextFrame == 0)
                 {
                     frameCount++;
-
-                    var g = Graphics.FromImage(curFrame.Image);
-                    g.DrawImage(from.Image, destRect, srcRect, GraphicsUnit.Pixel);
-
-                    colorMatrix.Matrix33 = (float)frameCount / (float)numberOfFrames;
-
-                    ImageAttributes imageAtt = new ImageAttributes();
-                    imageAtt.SetColorMatrix(
-                       colorMatrix,
-                       ColorMatrixFlag.Default,
-                       ColorAdjustType.Bitmap);
-
-                    var destPoints = new PointF[] {
-                            top1left1,
-                            new PointF(to.Image.Size.Width - 1, 1),
-                            new PointF(1, to.Image.Size.Height - 1)
-                        };
-                    g.DrawImage(to.Image, destPoints, destRect, GraphicsUnit.Pixel, imageAtt);
-
+                    FadingEasingFunction((float)frameCount / (float)numberOfFrames);
                     invalidate();
                 }
 
@@ -145,6 +125,30 @@ namespace PlayerUI
         public NinePatch GetCurrentFrame()
         {
             return curFrame;
+        }
+
+        ColorMatrix fading_colorMatrix = new ColorMatrix();
+        ImageAttributes fading_imageAtt = new ImageAttributes();
+        private void FadingEasingFunction(float percent)
+        {
+            using (var g = Graphics.FromImage(curFrame.Image))
+            {
+                g.DrawImage(from.Image, destRect, srcRect, GraphicsUnit.Pixel);
+
+                fading_colorMatrix.Matrix33 = percent;
+
+                fading_imageAtt.SetColorMatrix(
+                   fading_colorMatrix,
+                   ColorMatrixFlag.Default,
+                   ColorAdjustType.Bitmap);
+
+                var destPoints = new PointF[] {
+                            top1left1,
+                            new PointF(to.Image.Size.Width - 1, 1),
+                            new PointF(1, to.Image.Size.Height - 1)
+                        };
+                g.DrawImage(to.Image, destPoints, destRect, GraphicsUnit.Pixel, fading_imageAtt);
+            }
         }
     }
 }
