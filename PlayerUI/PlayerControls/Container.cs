@@ -231,6 +231,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private PlayerControl focusedControl;
+        [Browsable(false)]
         public PlayerControl FocusedControl
         {
             get { return this.focusedControl; }
