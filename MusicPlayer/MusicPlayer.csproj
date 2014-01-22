@@ -61,6 +61,7 @@
     <Compile Include="MusicPlayer.Designer.cs">
       <DependentUpon>MusicPlayer.cs</DependentUpon>
     </Compile>
+    <Compile Include="PlayerStateModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="MusicPlayer.resx">

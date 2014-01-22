@@ -44,6 +44,8 @@ namespace Player
 
         PlayerControls.ListView.ListViewRow currentSong;
 
+        PlayerStateModel state = new PlayerStateModel();
+
         public MusicPlayer()
         {
             InitializeComponent();
