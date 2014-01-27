@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace PlayerUI.PlayerControls
 {
-    public class PlayerControlEventArgs
+    public class PlayerControlEventArgs : EventArgs
     {
         public PlayerControl Control;
         
-        public PlayerControlEventArgs(PlayerControl control)
+        public PlayerControlEventArgs(PlayerControl control) : base()
         {
             this.Control = control;
         }
