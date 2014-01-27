@@ -227,7 +227,7 @@ namespace PlayerUI
                 }
                 set
                 {
-                    using (var stringWriter = new StringWriter())
+                    var stringWriter = new StringWriter();
                     using (var xmlTextWriter = XmlWriter.Create(stringWriter))
                     {
                         value.WriteTo(xmlTextWriter);
