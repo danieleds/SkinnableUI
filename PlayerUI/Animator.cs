@@ -11,11 +11,11 @@ namespace PlayerUI
 {
     public class Animator
     {
+        const int min_interval = 50;
+
         Timer tmr = new Timer();
         List<Animation> animations = new List<Animation>();
         List<Animation> detachQueue = new List<Animation>();
-
-        const int min_interval = 50;
 
         public Animator()
         {

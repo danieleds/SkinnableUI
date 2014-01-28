@@ -217,25 +217,6 @@ namespace PlayerUI.PlayerControls
         private ObservableCollection<ListViewColumn> columns = new ObservableCollection<ListViewColumn>();
         public ObservableCollection<ListViewColumn> Columns { get { return columns; } }
 
-        public class ListViewRow
-        {
-            public ListViewRow() {
-                this.Values = new System.Collections.ArrayList();
-            }
-            public System.Collections.ArrayList Values { get; set; }
-        }
-
-        public class ListViewColumn
-        {
-            public ListViewColumn()
-            {
-                this.Width = 100;
-            }
-
-            public string Title { get; set; }
-            public float Width { get; set; }
-        }
-
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             //var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);
@@ -637,6 +618,26 @@ namespace PlayerUI.PlayerControls
             SerializationHelper.LoadColor(element, "activeRowForeColor", s => this.ActiveRowForeColor = s);
             //SerializationHelper.LoadInteger(element, "activeRow", s => { if (s >= 0 && s < this.items.Count) this.ActiveRow = this.items[s]; else this.activeRow = null; });
 
+        }
+
+        public class ListViewRow
+        {
+            public ListViewRow()
+            {
+                this.Values = new System.Collections.ArrayList();
+            }
+            public System.Collections.ArrayList Values { get; set; }
+        }
+
+        public class ListViewColumn
+        {
+            public ListViewColumn()
+            {
+                this.Width = 100;
+            }
+
+            public string Title { get; set; }
+            public float Width { get; set; }
         }
 
     }
