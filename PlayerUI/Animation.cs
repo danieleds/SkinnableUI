@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PlayerUI
 {
-    public class Animation
+    public class Animation : IDisposable
     {
         int toNextFrame; // Istanti rimanenti per arrivare al prossimo frame
         int frameInterval; // Numero di istanti tra un frame e l'altro
@@ -149,6 +149,22 @@ namespace PlayerUI
                         };
                 g.DrawImage(to.Image, destPoints, destRect, GraphicsUnit.Pixel, fading_imageAtt);
             }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+                fading_imageAtt.Dispose();
+            }
+            // free native resources
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
     }
 }

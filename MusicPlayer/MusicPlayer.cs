@@ -354,5 +354,22 @@ namespace Player
         {
 
         }
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.waveOut != null) this.waveOut.Dispose();
+                if (this.mp3Reader != null) this.mp3Reader.Dispose();
+
+                if(components != null)
+                    components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
     }
 }
