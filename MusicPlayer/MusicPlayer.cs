@@ -318,9 +318,13 @@ namespace Player
         {
             var ctl = (PlayerControls.ToggleButton)sender;
             if (ctl.Checked)
+            {
                 if (mp3Reader != null) waveOut.Play();
+            }
             else
+            {
                 waveOut.Pause();
+            }
         }
 
         private void pause_Click(object sender, EventArgs e)
