@@ -59,7 +59,7 @@ namespace Player
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
         {
-            if (mp3Reader != null && mp3Reader.CurrentTime == mp3Reader.TotalTime)
+            if (mp3Reader != null && mp3Reader.CurrentTime >= mp3Reader.TotalTime)
             {
                 var pl = playlist.FirstOrDefault();
                 if (pl != null)
@@ -109,7 +109,7 @@ namespace Player
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (var file in files)
+                foreach (var file in files.OrderBy(k => k))
                 {
                     TagLib.File f = null;
                     try
