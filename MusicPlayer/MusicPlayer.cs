@@ -59,7 +59,7 @@ namespace Player
 
         void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
         {
-            if (mp3Reader != null && mp3Reader.CurrentTime >= mp3Reader.TotalTime)
+            if (mp3Reader != null && mp3Reader.CurrentTime >= mp3Reader.TotalTime.Add(new TimeSpan(0, 0, 0, 0, -100)))
             {
                 var pl = playlist.FirstOrDefault();
                 if (pl != null)
