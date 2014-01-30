@@ -52,8 +52,38 @@ namespace Player
                 this.controls.Add(c, new List<PlayerControls.PlayerControl>());
             
             waveOut = new WaveOut();
-
+            waveOut.PlaybackStopped += waveOut_PlaybackStopped;
+            
             tmr.Tick += tmr_Tick;
+        }
+
+        void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            if (mp3Reader != null && mp3Reader.CurrentTime == mp3Reader.TotalTime)
+            {
+                var pl = playlist.FirstOrDefault();
+                if (pl != null)
+                {
+                    for (int i = 0; i < pl.Items.Count; i++)
+                    {
+                        if (pl.Items[i] == currentSong)
+                        {
+                            if (i + 1 < pl.Items.Count)
+                            {
+                                currentSong = pl.Items[i + 1];
+                                LoadSong(currentSong.Values[3].ToString(), currentSong);
+                            }
+                            else
+                            {
+                                currentSong = pl.Items[0];
+                                LoadSong(currentSong.Values[3].ToString(), currentSong);
+                                stopAction();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         void tmr_Tick(object sender, EventArgs e)
@@ -229,7 +259,7 @@ namespace Player
 
                 mp3Reader = new Mp3FileReader(path);
                 waveOut.Init(mp3Reader);
-
+                
                 songProgress.ForEach(item => item.Maximum = (int)mp3Reader.TotalTime.TotalMilliseconds);
                 currentTime.ForEach(item => item.Text = FormatTime(mp3Reader.CurrentTime, mp3Reader.TotalTime));
                 totalTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime, mp3Reader.TotalTime));
@@ -268,6 +298,11 @@ namespace Player
         }
 
         void stop_Click(object sender, EventArgs e)
+        {
+            stopAction();
+        }
+
+        void stopAction()
         {
             playPause.ForEach(item => item.Checked = false);
             waveOut.Stop();
