@@ -39,6 +39,7 @@ namespace PlayerUI
         Collection<PlayerControl> selectedControls = new Collection<PlayerControl>();
         Dictionary<PlayerControl, MetaControls.MetaResizeHandles> selectionResizeHandles;
         Dictionary<PlayerControl, MetaControls.MetaMeasure> resizeMeasure;
+        Dictionary<PlayerControl, MetaControls.MetaDragContainer> dragContainerHandles;
 
         bool selectingWithMouse = false; // Indica se stiamo trascinando il mouse per tracciare un rettangolo di selezione.
         PointF selectionStartPoint, selectionEndPoint; // Punti di inizio e fine del rettangolo di selezione. Hanno senso solo se selectingWithMouse != null.
@@ -64,7 +65,8 @@ namespace PlayerUI
         public PlayerViewDesigner()
         {
             selectionResizeHandles = new Dictionary<PlayerControl, MetaControls.MetaResizeHandles>();
-            resizeMeasure = new Dictionary<PlayerControl,MetaControls.MetaMeasure>();
+            resizeMeasure = new Dictionary<PlayerControl, MetaControls.MetaMeasure>();
+            dragContainerHandles = new Dictionary<PlayerControl, MetaControls.MetaDragContainer>();
 
             DebugShowPaints = false;
             DebugShowRuler = false;
@@ -125,12 +127,18 @@ namespace PlayerUI
             SelectMultiple(new Collection<PlayerControl>(tmp));
         }
 
-        public void ToggleSelection(PlayerControl control)
+        public bool ToggleSelection(PlayerControl control)
         {
             if (this.selectedControls.Contains(control))
+            {
                 Deselect(control);
+                return false;
+            }
             else
+            {
                 AddToSelection(control);
+                return true;
+            }
         }
 
         public void Deselect(PlayerControl control)
@@ -170,6 +178,9 @@ namespace PlayerUI
 
             PlayerControl control = (PlayerControl)sender;
 
+            
+            // Handles per il resize
+
             MetaControls.MetaResizeHandles resizeHandles = new MetaControls.MetaResizeHandles(this);
             resizeHandles.Control = control;
             resizeHandles.IsWindow = this.containerControl == resizeHandles.Control;
@@ -178,6 +189,18 @@ namespace PlayerUI
             selectionResizeHandles.Remove(control);
             selectionResizeHandles.Add(control, resizeHandles);
             resizeHandles.InvalidateView();
+
+
+            // Handle per il drag dei Container
+
+            MetaControls.MetaDragContainer dragContainer = new MetaControls.MetaDragContainer(this);
+            dragContainer.Control = control;
+            dragContainer.IsWindow = this.containerControl == dragContainer.Control;
+
+            dragContainerHandles.Remove(control);
+            dragContainerHandles.Add(control, dragContainer);
+            dragContainer.InvalidateView();
+
 
             // FIXME Il clipping funziona, ma non considera i righelli (che vengono tagliati fuori)...
             // questa è una mancanza (da fixare) di getMetaControlsOuterRectangle() in InvalidateView().
@@ -249,9 +272,16 @@ namespace PlayerUI
             if (DrawWindowDecorations)
                 drawWindowDecorations(e.Graphics);
             
-            // Disegna il rettangolo di selezione
+            
             foreach (var ctl in selectedControls)
+            {
+                // Disegna il rettangolo di selezione
                 selectionResizeHandles[ctl].Paint(e.Graphics);
+
+                // Disegna l'handle per spostare i Container
+                if (ctl is PlayerControls.Container)
+                    dragContainerHandles[ctl].Paint(e.Graphics);
+            }
 
             if (DebugShowRuler && resizingControl != null)
             {
@@ -585,25 +615,47 @@ namespace PlayerUI
         {
             base.OnMouseDown(e);
 
-            // Gestione resize handle
+            // Gestione handle di spostamento Container
             foreach (var ctl in selectedControls)
             {
-                var resizeHandles = selectionResizeHandles[ctl];
-                Direction resizeDir = resizeHandles.WhatResizeHandle(e.Location);
-                if (resizeDir != Direction.None)
+                if (ctl != this.containerControl)
                 {
-                    if (ctl != this.containerControl ||
-                        ((resizeDir & Direction.Left) != Direction.Left // containerControl non può ridimensionarsi a sx
-                        && (resizeDir & Direction.Up) != Direction.Up)) // containerControl non può ridimensionarsi in alto
+                    var rect = dragContainerHandles[ctl].GetHandleRectangle();
+                    if (rect.Contains(e.Location))
                     {
-                        this.resizingControl = ctl;
-                        this.resizingDirection = resizeDir;
+                        var absLoc = ctl.GetAbsoluteLocation();
+
+                        this.dragStarting = true;
+                        this.dragStartPosition = e.Location;
+                        this.draggingOffset.X = e.X - absLoc.X;
+                        this.draggingOffset.Y = e.Y - absLoc.Y;
+                        break;
                     }
                 }
             }
 
-            // Gestione selezione e dragging (se non è stato cliccato un resize handle)
-            if (resizingControl == null)
+            // Gestione resize handle (se non sta partendo il drag)
+            if (!dragStarting)
+            {
+                foreach (var ctl in selectedControls)
+                {
+                    var resizeHandles = selectionResizeHandles[ctl];
+                    Direction resizeDir = resizeHandles.WhatResizeHandle(e.Location);
+                    if (resizeDir != Direction.None)
+                    {
+                        if (ctl != this.containerControl ||
+                            ((resizeDir & Direction.Left) != Direction.Left // containerControl non può ridimensionarsi a sx
+                            && (resizeDir & Direction.Up) != Direction.Up)) // containerControl non può ridimensionarsi in alto
+                        {
+                            this.resizingControl = ctl;
+                            this.resizingDirection = resizeDir;
+                        }
+                    }
+                }
+            }
+
+            // Gestione selezione e dragging (se non è stato cliccato un resize handle e se non sta partendo un drag)
+            if (resizingControl == null && !dragStarting)
             {
                 if (DrawWindowDecorations && getWindowDecorationsPath().IsVisible(e.Location))
                 {
@@ -636,7 +688,6 @@ namespace PlayerUI
                             this.Select(this.containerControl);
                     }
 
-
                     if (hitInfo != null && hitInfo.Item3 is PlayerControls.Container)
                     {
                         // Fa partire la selezione col mouse
@@ -650,15 +701,20 @@ namespace PlayerUI
                     {
                         if (startDrag)
                         {
-                            this.dragStarting = true;
-                            this.dragStartPosition = e.Location;
-                            this.draggingOffset.X = e.X - hitInfo.Item1;
-                            this.draggingOffset.Y = e.Y - hitInfo.Item2;
+                            StartingControlDrag(e.Location, e.X - hitInfo.Item1, e.Y - hitInfo.Item2);
                         }
                     }
                     
                 }
             }
+        }
+
+        private void StartingControlDrag(Point startPos, float offsetX, float offsetY)
+        {
+            this.dragStarting = true;
+            this.dragStartPosition = startPos;
+            this.draggingOffset.X = offsetX;
+            this.draggingOffset.Y = offsetY;
         }
 
         protected override void OnMouseMove(MouseEventArgs e)
@@ -698,31 +754,49 @@ namespace PlayerUI
             {
                 // Non stiamo né draggando né ridimensionando.
 
-                bool actionSet = false;
-
-                // Controlliamo se siamo sopra a un resize handle
+                // Controlliamo se siamo sopra a un drag handle di un Container
+                bool trovato = false;
                 foreach (var ctl in selectedControls)
                 {
-                    var topctn = ctl == this.containerControl;
-                    Direction resizeDir = selectionResizeHandles[ctl].WhatResizeHandle(e.Location);
-                    actionSet = true;
-                    if ((resizeDir == Direction.Left && !topctn) || resizeDir == Direction.Right)
-                        this.Cursor = Cursors.SizeWE;
-                    else if ((resizeDir == Direction.Up && !topctn) || resizeDir == Direction.Down)
-                        this.Cursor = Cursors.SizeNS;
-                    else if ((resizeDir == (Direction.Up | Direction.Right) && !topctn) || (resizeDir == (Direction.Down | Direction.Left) && !topctn))
-                        this.Cursor = Cursors.SizeNESW;
-                    else if ((resizeDir == (Direction.Up | Direction.Left) && !topctn) || resizeDir == (Direction.Down | Direction.Right))
-                        this.Cursor = Cursors.SizeNWSE;
-                    else
-                        actionSet = false;
-
-                    if (actionSet)
-                        break;
+                    if (ctl != this.containerControl)
+                    {
+                        var rect = dragContainerHandles[ctl].GetHandleRectangle();
+                        if (rect.Contains(e.Location))
+                        {
+                            trovato = true;
+                            this.Cursor = Cursors.SizeAll;
+                            break;
+                        }
+                    }
                 }
 
-                if (!actionSet)
-                    this.Cursor = Cursors.Default;
+                if (!trovato)
+                {
+                    // Controlliamo se siamo sopra a un resize handle
+                    bool actionSet = false;
+                    foreach (var ctl in selectedControls)
+                    {
+                        var topctn = ctl == this.containerControl;
+                        Direction resizeDir = selectionResizeHandles[ctl].WhatResizeHandle(e.Location);
+                        actionSet = true;
+                        if ((resizeDir == Direction.Left && !topctn) || resizeDir == Direction.Right)
+                            this.Cursor = Cursors.SizeWE;
+                        else if ((resizeDir == Direction.Up && !topctn) || resizeDir == Direction.Down)
+                            this.Cursor = Cursors.SizeNS;
+                        else if ((resizeDir == (Direction.Up | Direction.Right) && !topctn) || (resizeDir == (Direction.Down | Direction.Left) && !topctn))
+                            this.Cursor = Cursors.SizeNESW;
+                        else if ((resizeDir == (Direction.Up | Direction.Left) && !topctn) || resizeDir == (Direction.Down | Direction.Right))
+                            this.Cursor = Cursors.SizeNWSE;
+                        else
+                            actionSet = false;
+
+                        if (actionSet)
+                            break;
+                    }
+
+                    if (!actionSet)
+                        this.Cursor = Cursors.Default;
+                }
             }
 
             if (resizingControl != null)
@@ -774,24 +848,39 @@ namespace PlayerUI
             if (this.selectingWithMouse)
             {
                 this.selectingWithMouse = false;
-                
-                // Cerchiamo i controlli che cadono nel rettangolo di selezione
-                RectangleF selRect = new RectangleF(
-                        Math.Min(selectionStartPoint.X, selectionEndPoint.X),
-                        Math.Min(selectionStartPoint.Y, selectionEndPoint.Y),
-                        Math.Abs(selectionStartPoint.X - selectionEndPoint.X),
-                        Math.Abs(selectionStartPoint.Y - selectionEndPoint.Y));
 
-                foreach (var ctl in this.selectionStartContainer.Controls)
+                if (this.selectionStartPoint != this.selectionEndPoint)
                 {
-                    RectangleF ctlRect = new RectangleF(ctl.GetAbsoluteLocation(), ctl.Size);
-                    if (selRect.IntersectsWith(ctlRect))
+                    // Cerchiamo i controlli che cadono nel rettangolo di selezione
+                    RectangleF selRect = new RectangleF(
+                            Math.Min(selectionStartPoint.X, selectionEndPoint.X),
+                            Math.Min(selectionStartPoint.Y, selectionEndPoint.Y),
+                            Math.Abs(selectionStartPoint.X - selectionEndPoint.X),
+                            Math.Abs(selectionStartPoint.Y - selectionEndPoint.Y));
+
+                    bool foundSome = false;
+                    foreach (var ctl in this.selectionStartContainer.Controls)
                     {
-                        if (ModifierKeys == Keys.Control)
-                            this.ToggleSelection(ctl);
-                        else
-                            this.AddToSelection(ctl);
+                        RectangleF ctlRect = new RectangleF(ctl.GetAbsoluteLocation(), ctl.Size);
+                        if (selRect.IntersectsWith(ctlRect))
+                        {
+                            if (ModifierKeys == Keys.Control)
+                            {
+                                foundSome |= this.ToggleSelection(ctl);
+                            }
+                            else
+                            {
+                                this.AddToSelection(ctl);
+                                foundSome = true;
+                            }
+                        }
                     }
+
+                    // Decidiamo se deselezionare il contenitore oppure no
+                    // in base al fatto che sia stato selezionato almeno un figlio
+                    // (n.b. questa logica potrebbe benissimo essere migliorata)
+                    if (foundSome)
+                        this.Deselect(this.selectionStartContainer);
                 }
 
                 this.Invalidate();
