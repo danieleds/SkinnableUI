@@ -8,14 +8,13 @@ using ExtensionMethods;
 
 namespace PlayerUI
 {
-    class MetaResizeHandles
+    class MetaResizeHandles : MetaControl
     {
         // dimensioni resize handles
         const int HANDLE_W = 6, HANDLE_H = 6;
 
         PlayerControls.PlayerControl control;
         bool isWindow;
-        PlayerView parentView;
 
         struct ControlRectangleInfo
         {
@@ -24,9 +23,9 @@ namespace PlayerUI
         }
         ControlRectangleInfo selectedControlOldRect = new ControlRectangleInfo();
 
-        public MetaResizeHandles(PlayerView parentView)
+        public MetaResizeHandles(PlayerView parentView) : base(parentView)
         {
-            this.parentView = parentView;
+
         }
 
         public PlayerControls.PlayerControl Control
@@ -43,7 +42,7 @@ namespace PlayerUI
 
         public float ClipRectanglePadding { get; set; }
 
-        public void AutoInvalidate()
+        public override void InvalidateView()
         {
             if (control == null) return;
 
@@ -69,7 +68,7 @@ namespace PlayerUI
 
         }
 
-        public void Paint(Graphics g)
+        public override void Paint(Graphics g)
         {
             drawSelectionMetacontrols(g);
         }
@@ -145,6 +144,7 @@ namespace PlayerUI
         public Direction WhatResizeHandle(PointF p)
         {
             PlayerControls.PlayerControl c = this.control;
+            if (c == null) return Direction.None;
 
             Direction dir = Direction.None;
             var loc = c.GetAbsoluteLocation();

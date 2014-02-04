@@ -36,6 +36,7 @@ namespace PlayerUI
         Direction resizingDirection;
 
         MetaResizeHandles selectionResizeHandles;
+        MetaMeasure resizeMeasure;
 
         private Random rand = new Random();
 
@@ -57,6 +58,8 @@ namespace PlayerUI
         public PlayerViewDesigner()
         {
             selectionResizeHandles = new MetaResizeHandles(this);
+            resizeMeasure = new MetaMeasure(this);
+
             DebugShowPaints = false;
             DebugShowRuler = false;
             DrawWindowDecorations = false;
@@ -79,7 +82,6 @@ namespace PlayerUI
                     }
 
                     selectedControl = value;
-                    selectionResizeHandles.Control = value;
                     
                     if (selectedControl != null)
                     {
@@ -104,19 +106,23 @@ namespace PlayerUI
         /// <param name="e"></param>
         void selectedControl_MetaControlsNeedRepaint(object sender, EventArgs e)
         {
+            selectionResizeHandles.Control = selectedControl;
             selectionResizeHandles.IsWindow = this.containerControl == selectionResizeHandles.Control;
             selectionResizeHandles.ClipRectanglePadding = CONTROL_CLIP_RECTANGLE_PADDING;
-            selectionResizeHandles.AutoInvalidate();
+            selectionResizeHandles.InvalidateView();
 
             // FIXME Il clipping funziona, ma non considera i righelli (che vengono tagliati fuori)...
-            // questa è una mancanza (da fixare) di getMetaControlsOuterRectangle().
+            // questa è una mancanza (da fixare) di getMetaControlsOuterRectangle() in InvalidateView().
             // Per ora risolviamo invalidando tutto, correggere non ne vale la pena (bisognerebbe
             // effettuare misurazioni del testo, calcolare rotazioni, ecc). Il problema comunque non
             // è grave visto che è limitato al designer, e al momento non causa problemi di performance.
 
             if (DebugShowRuler)
             {
-                this.Invalidate();
+                resizeMeasure.Control = selectedControl;
+                resizeMeasure.Font = this.Font;
+                resizeMeasure.MeasureDirection = MetaMeasure.ResizeDirectionToMeasureDirection(this.resizingDirection);
+                resizeMeasure.InvalidateView();
             }
         }
 
@@ -173,7 +179,7 @@ namespace PlayerUI
                 selectionResizeHandles.Paint(e.Graphics);
 
             if (DebugShowRuler && resizingControl != null)
-                drawResizingMeasure(e.Graphics);
+                resizeMeasure.Paint(e.Graphics);
 
             if (draggingControl != null && showDraggingBitmap)
             {
@@ -210,90 +216,6 @@ namespace PlayerUI
                 g.FillPath(brushBack, path);
                 g.DrawPath(penBorder, path);
             }
-        }
-
-        private void drawResizingMeasure(Graphics g)
-        {
-            if (resizingControl != null)
-            {
-                var loc = resizingControl.GetAbsoluteLocation();
-
-                bool drawUp = (resizingDirection & Direction.Up) != Direction.Up;
-                bool drawLeft = (resizingDirection & Direction.Left) != Direction.Left;
-                bool drawDown = (resizingDirection & Direction.Down) != Direction.Down;
-                bool drawRight = (resizingDirection & Direction.Right) != Direction.Right;
-                if (drawLeft && drawRight) drawRight = false;
-                if (drawUp && drawDown) drawDown = false;
-
-                if (drawUp) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Up);
-                if (drawLeft) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Left);
-                if (drawDown) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Down);
-                if (drawRight) drawSingleResizingMeasure(g, loc, resizingControl.Size, Direction.Right);
-            }
-        }
-
-        private void drawSingleResizingMeasure(Graphics g, PointF controlAbsoluteLocation, SizeF controlSize, Direction direction)
-        {
-            var loc = controlAbsoluteLocation;
-            var size = controlSize;
-
-            var str = "";
-            if (direction == Direction.Up || direction == Direction.Down)
-                str = size.Width.ToString();
-            else if (direction == Direction.Left || direction == Direction.Right)
-                str = size.Height.ToString();
-            else throw new ArgumentException("Invalid direction");
-
-            var strSize = g.MeasureString(str, this.Font);
-
-            const int textVerticalShift = 6; // Quanto spostare il testo dal bordo superiore (o inferiore) del controllo.
-            const int textLateralMargin = 3; // Spazio vuoto a destra e a sinistra (o sopra e sotto) del testo
-
-            var t = g.Transform;
-            if (direction == Direction.Left || direction == Direction.Right)
-            {
-                g.TranslateTransform(-controlAbsoluteLocation.X, -controlAbsoluteLocation.Y, System.Drawing.Drawing2D.MatrixOrder.Append);
-                g.RotateTransform(-90, System.Drawing.Drawing2D.MatrixOrder.Append);
-                g.TranslateTransform(controlAbsoluteLocation.X, controlAbsoluteLocation.Y + size.Height, System.Drawing.Drawing2D.MatrixOrder.Append);
-
-                size = new SizeF(size.Height, size.Width);
-            }
-
-            if (direction == Direction.Down)
-                g.TranslateTransform(0, size.Height + strSize.Height + textVerticalShift, System.Drawing.Drawing2D.MatrixOrder.Append);
-            else if (direction == Direction.Right)
-                g.TranslateTransform(size.Height + strSize.Height + textVerticalShift, 0, System.Drawing.Drawing2D.MatrixOrder.Append);
-
-            float barHeight = strSize.Height + textVerticalShift;
-            g.DrawLine(Pens.Blue, loc.X, loc.Y, loc.X, loc.Y - barHeight);
-            g.DrawLine(Pens.Blue, loc.X + size.Width, loc.Y, loc.X + size.Width, loc.Y - barHeight);
-
-            int realTextVerticalShift = (direction == Direction.Down || direction == Direction.Right) ? 0 : textVerticalShift;
-
-            if (strSize.Width + textLateralMargin + 15 < size.Width)
-            {
-                // Non c'è spazio a disposizione: spostiamo il testo più all'esterno
-                PointF strPos = new PointF(loc.X + size.Width / 2 - strSize.Width / 2, loc.Y - strSize.Height - realTextVerticalShift);
-
-                g.DrawLine(Pens.Blue, loc.X, loc.Y - strSize.Height / 2 - realTextVerticalShift, strPos.X - textLateralMargin, loc.Y - strSize.Height / 2 - realTextVerticalShift);
-                g.DrawLine(Pens.Blue, strPos.X + strSize.Width + textLateralMargin, loc.Y - strSize.Height / 2 - realTextVerticalShift, loc.X + size.Width, loc.Y - strSize.Height / 2 - realTextVerticalShift);
-
-                g.DrawString(size.Width.ToString(), this.Font, Brushes.Blue, strPos);
-            }
-            else
-            {
-                float inverseShift = 0;
-                if (direction == Direction.Down || direction == Direction.Right)
-                    inverseShift = 2 * strSize.Height;
-
-                PointF strPos = new PointF(loc.X + size.Width / 2 - strSize.Width / 2, loc.Y - 2 * strSize.Height - realTextVerticalShift + inverseShift);
-
-                g.DrawLine(Pens.Blue, loc.X, loc.Y - strSize.Height / 2 - realTextVerticalShift, loc.X + size.Width, loc.Y - strSize.Height / 2 - realTextVerticalShift);
-
-                g.DrawString(size.Width.ToString(), this.Font, Brushes.Blue, strPos);
-            }
-
-            g.Transform = t;
         }
 
         protected override void OnDragEnter(DragEventArgs e)
