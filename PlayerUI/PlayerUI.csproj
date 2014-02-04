@@ -45,9 +45,9 @@
     <Compile Include="Animation.cs" />
     <Compile Include="Animator.cs" />
     <Compile Include="Direction.cs" />
-    <Compile Include="MetaControl.cs" />
-    <Compile Include="MetaMeasure.cs" />
-    <Compile Include="MetaResizeHandles.cs" />
+    <Compile Include="MetaControls\MetaControl.cs" />
+    <Compile Include="MetaControls\MetaMeasure.cs" />
+    <Compile Include="MetaControls\MetaResizeHandles.cs" />
     <Compile Include="NinePatch.cs" />
     <Compile Include="PlayerControls\Button.cs" />
     <Compile Include="PlayerControls\FlowLayoutContainer.cs" />
