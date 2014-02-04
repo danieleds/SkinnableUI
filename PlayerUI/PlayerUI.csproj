@@ -44,6 +44,8 @@
   <ItemGroup>
     <Compile Include="Animation.cs" />
     <Compile Include="Animator.cs" />
+    <Compile Include="Direction.cs" />
+    <Compile Include="MetaResizeHandles.cs" />
     <Compile Include="NinePatch.cs" />
     <Compile Include="PlayerControls\Button.cs" />
     <Compile Include="PlayerControls\FlowLayoutContainer.cs" />

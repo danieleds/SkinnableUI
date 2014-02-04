@@ -14,9 +14,6 @@ namespace PlayerUI
         public bool DebugShowRuler { get; set; }
         public bool DrawWindowDecorations { get; set; }
 
-        // dimensioni resize handles
-        const int HANDLE_W = 6, HANDLE_H = 6;
-
         /// <summary>
         /// Indica di quanto estendere l'area del rettangolo da invalidare per quando si ridisegna un controllo.
         /// Valori più alti permettono di evitare tagli non voluti quando si sposta o si ridimensiona velocemente il controllo.
@@ -35,28 +32,12 @@ namespace PlayerUI
         bool dragStarting = false; // true se è stato fatto un MouseDown e stiamo aspettando un delta di spostamento sufficiente.
         Point dragStartPosition; // Posizione del MouseDown iniziale (coordinate relative alla finestra). Ha senso solo se draggingControl != null.
 
-        struct ControlRectangleInfo
-        {
-            public SizeF size;
-            public PointF abslocation;
-        }
-
-        ControlRectangleInfo selectedControlOldRect = new ControlRectangleInfo();
-
         PlayerControl resizingControl;
         Direction resizingDirection;
 
-        private Random rand = new Random();
+        MetaResizeHandles selectionResizeHandles;
 
-        [Flags]
-        private enum Direction
-        {
-            None = 0,
-            Left = 1 << 0,
-            Up = 1 << 1,
-            Right = 1 << 2,
-            Down = 1 << 3
-        };
+        private Random rand = new Random();
 
         public delegate void SelectionChangedEventHandler(object sender, EventArgs e);
         /// <summary>
@@ -75,6 +56,7 @@ namespace PlayerUI
 
         public PlayerViewDesigner()
         {
+            selectionResizeHandles = new MetaResizeHandles(this);
             DebugShowPaints = false;
             DebugShowRuler = false;
             DrawWindowDecorations = false;
@@ -97,6 +79,7 @@ namespace PlayerUI
                     }
 
                     selectedControl = value;
+                    selectionResizeHandles.Control = value;
                     
                     if (selectedControl != null)
                     {
@@ -121,11 +104,9 @@ namespace PlayerUI
         /// <param name="e"></param>
         void selectedControl_MetaControlsNeedRepaint(object sender, EventArgs e)
         {
-            if (selectedControl == this.containerControl)
-            {
-                this.Invalidate();
-                return;
-            }
+            selectionResizeHandles.IsWindow = this.containerControl == selectionResizeHandles.Control;
+            selectionResizeHandles.ClipRectanglePadding = CONTROL_CLIP_RECTANGLE_PADDING;
+            selectionResizeHandles.AutoInvalidate();
 
             // FIXME Il clipping funziona, ma non considera i righelli (che vengono tagliati fuori)...
             // questa è una mancanza (da fixare) di getMetaControlsOuterRectangle().
@@ -137,76 +118,6 @@ namespace PlayerUI
             {
                 this.Invalidate();
             }
-            else
-            {
-                Rectangle clip;
-                
-                // Repaint della vecchia posizione/dimensione del controllo (non necessariamente il solito controllo attualmente selezionato)
-                clip = getMetaControlsOuterRectangle(selectedControlOldRect.abslocation, selectedControlOldRect.size).RoundUp();
-                this.Invalidate(clip);
-
-                // Repaint della nuova posizione/dimensione del controllo
-                var absloc = selectedControl.GetAbsoluteLocation();
-                clip = getMetaControlsOuterRectangle(absloc, selectedControl.Size).RoundUp();
-                this.Invalidate(clip);
-
-                selectedControlOldRect.abslocation = absloc;
-                selectedControlOldRect.size = selectedControl.Size;
-            }
-        }
-
-        /// <summary>
-        /// Dato un controllo e un punto, determina quale resize handle è disponibile su quel punto.
-        /// </summary>
-        /// <param name="c">Controllo</param>
-        /// <param name="p">Punto</param>
-        /// <returns></returns>
-        private Direction WhatResizeHandle(PlayerControl c, PointF p)
-        {
-            /*RectangleF[] resizeHandles = getResizeHandlesRectangles(c.GetAbsoluteLocation(), c.Size);
-            var match = (from h in resizeHandles
-                        where p.X >= h.Location.X && p.X <= h.Location.X + h.Width
-                        && p.Y >= h.Location.Y && p.Y <= h.Location.Y + h.Height
-                        select h).FirstOrDefault();
-
-            if (match == resizeHandles[0]) return Direction.Up | Direction.Left;
-            else if (match == resizeHandles[1]) return Direction.Up;
-            else if (match == resizeHandles[2]) return Direction.Up | Direction.Right;
-            else if (match == resizeHandles[3]) return Direction.Left;
-            else if (match == resizeHandles[4]) return Direction.Right;
-            else if (match == resizeHandles[5]) return Direction.Down | Direction.Left;
-            else if (match == resizeHandles[6]) return Direction.Down;
-            else if (match == resizeHandles[7]) return Direction.Down | Direction.Right;
-            else return Direction.None;*/
-
-            Direction dir = Direction.None;
-            var loc = c.GetAbsoluteLocation();
-            if (loc.X + c.Size.Width - 5 <= p.X && p.X <= loc.X + c.Size.Width + 5
-                && loc.Y + c.Size.Height - 5 <= p.Y && p.Y <= loc.Y + c.Size.Height + 5)
-                dir = Direction.Right | Direction.Down;
-            else if (loc.X - 6 <= p.X && p.X <= loc.X + 5
-                && loc.Y - 6 <= p.Y && p.Y <= loc.Y + 5)
-                dir = Direction.Left | Direction.Up;
-            else if (loc.X + c.Size.Width - 5 <= p.X && p.X <= loc.X + c.Size.Width + 5
-                && loc.Y - 6 <= p.Y && p.Y <= loc.Y + 5)
-                dir = Direction.Right | Direction.Up;
-            else if (loc.X - 6 <= p.X && p.X <= loc.X + 5
-                && loc.Y + c.Size.Height - 5 <= p.Y && p.Y <= loc.Y + c.Size.Height + 5)
-                dir = Direction.Left | Direction.Down;
-            else if (loc.X + c.Size.Width - 2 <= p.X && p.X <= loc.X + c.Size.Width + 5
-                && loc.Y <= p.Y && p.Y <= loc.Y + c.Size.Height)
-                dir = Direction.Right;
-            else if (loc.Y + c.Size.Height - 2 <= p.Y && p.Y <= loc.Y + c.Size.Height + 5
-                && loc.X <= p.X && p.X <= loc.X + c.Size.Width)
-                dir = Direction.Down;
-            else if (loc.Y - 6 <= p.Y && p.Y <= loc.Y + 2
-                && loc.X <= p.X && p.X <= loc.X + c.Size.Width)
-                dir = Direction.Up;
-            else if (loc.X - 6 <= p.X && p.X <= loc.X + 2
-                && loc.Y <= p.Y && p.Y <= loc.Y + c.Size.Height)
-                dir = Direction.Left;
-
-            return dir;
         }
 
         private Tuple<float, float, PlayerControl> RecursiveHitTest(int x, int y)
@@ -259,7 +170,7 @@ namespace PlayerUI
             
             // Disegna il rettangolo di selezione
             if (selectedControl != null)
-                drawSelectionMetacontrols(e.Graphics);
+                selectionResizeHandles.Paint(e.Graphics);
 
             if (DebugShowRuler && resizingControl != null)
                 drawResizingMeasure(e.Graphics);
@@ -274,43 +185,6 @@ namespace PlayerUI
                 var b = new SolidBrush(Color.FromArgb(60, rand.Next(255), rand.Next(255), rand.Next(255)));
                 e.Graphics.FillRectangle(b, e.ClipRectangle);
             }
-        }
-
-        RectangleF[] getResizeHandlesRectangles(PointF controlAbsoluteLocation, SizeF controlSize)
-        {
-            RectangleF[] resizeHandles = {
-                    new RectangleF(controlAbsoluteLocation.X - HANDLE_W, controlAbsoluteLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlAbsoluteLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlAbsoluteLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlAbsoluteLocation.X + controlSize.Width - 1, controlAbsoluteLocation.Y - HANDLE_H, HANDLE_W, HANDLE_H),
-
-                    new RectangleF(controlAbsoluteLocation.X - HANDLE_W, controlAbsoluteLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
-                    new RectangleF(controlAbsoluteLocation.X + controlSize.Width - 1, controlAbsoluteLocation.Y + (controlSize.Height / 2) - (HANDLE_H / 2), HANDLE_W, HANDLE_H),
-
-                    new RectangleF(controlAbsoluteLocation.X - HANDLE_W, controlAbsoluteLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlAbsoluteLocation.X + (controlSize.Width / 2) - (HANDLE_W / 2), controlAbsoluteLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H),
-                    new RectangleF(controlAbsoluteLocation.X + controlSize.Width - 1, controlAbsoluteLocation.Y + controlSize.Height - 1, HANDLE_W, HANDLE_H)
-                };
-
-            return resizeHandles;
-        }
-
-        /// <summary>
-        /// Restituisce il rettangolo che inscrive tutti i metacontrolli (resize handles, righelli).
-        /// </summary>
-        /// <returns></returns>
-        RectangleF getMetaControlsOuterRectangle(PointF controlAbsoluteLocation, SizeF controlSize)
-        {
-            var resizeHandles = getResizeHandlesRectangles(controlAbsoluteLocation, controlSize);
-
-            var topLeftHnd = resizeHandles[0];
-            var bottomRightHnd = resizeHandles[7];
-            // FIXME Includere righelli!!!
-            return new RectangleF(
-                topLeftHnd.X,
-                topLeftHnd.Y,
-                bottomRightHnd.X + bottomRightHnd.Width - topLeftHnd.X + 1,
-                bottomRightHnd.Y + bottomRightHnd.Height - topLeftHnd.Y + 1
-            ).Expand(CONTROL_CLIP_RECTANGLE_PADDING);
         }
 
         private System.Drawing.Drawing2D.GraphicsPath getWindowDecorationsPath()
@@ -335,32 +209,6 @@ namespace PlayerUI
                 var path = getWindowDecorationsPath();
                 g.FillPath(brushBack, path);
                 g.DrawPath(penBorder, path);
-            }
-        }
-
-        private void drawSelectionMetacontrols(Graphics g)
-        {
-            if (selectedControl != null)
-            {
-                var selectedControlPos = selectedControl.GetAbsoluteLocation();
-
-                RectangleF[] resizeHandles = getResizeHandlesRectangles(selectedControlPos, selectedControl.Size);
-
-                // Linee tratteggiate
-                Pen selectionPen = new Pen(Color.Black);
-                selectionPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
-                g.DrawRectangle(selectionPen, selectedControlPos.X - (HANDLE_W / 2), selectedControlPos.Y - (HANDLE_H / 2), selectedControl.Size.Width + HANDLE_W - 1, selectedControl.Size.Height + HANDLE_H - 1);
-
-                // Handles
-                RectangleF[] handlesToDraw = resizeHandles;
-                if (selectedControl == this.ContainerControl)
-                    handlesToDraw = new RectangleF[] { resizeHandles[4], resizeHandles[6], resizeHandles[7] };
-
-                foreach (RectangleF handle in handlesToDraw)
-                {
-                    g.FillRectangle(Brushes.White, handle);
-                    g.DrawRectangle(Pens.Black, handle.X, handle.Y, handle.Width, handle.Height);
-                }
             }
         }
 
@@ -709,7 +557,7 @@ namespace PlayerUI
             // Gestione resize handle
             if (selectedControl != null)
             {
-                Direction resizeDir = WhatResizeHandle(selectedControl, e.Location);
+                Direction resizeDir = selectionResizeHandles.WhatResizeHandle(e.Location);
                 if (resizeDir != Direction.None)
                 {
                     if (selectedControl != this.containerControl ||
@@ -786,7 +634,7 @@ namespace PlayerUI
                 if (selectedControl != null)
                 {
                     var cc = selectedControl == this.containerControl;
-                    Direction resizeDir = WhatResizeHandle(selectedControl, e.Location);
+                    Direction resizeDir = selectionResizeHandles.WhatResizeHandle(e.Location);
                     actionSet = true;
                     if ((resizeDir == Direction.Left && !cc) || resizeDir == Direction.Right)
                         this.Cursor = Cursors.SizeWE;
