@@ -306,7 +306,7 @@ namespace SkinDesigner
 
         private void copyToolStripButton_Click(object sender, EventArgs e)
         {
-            playerView.CopyControlToClipboard(playerView.SelectedControls);
+            playerView.CopyControlsToClipboard(playerView.SelectedControls);
         }
 
         private void pasteToolStripButton_Click(object sender, EventArgs e)
@@ -329,12 +329,12 @@ namespace SkinDesigner
                 }
             }
 
-            playerView.PasteControlFromClipboard(where);
+            playerView.PasteControlsFromClipboard(where);
         }
 
         private void cutToolStripButton_Click(object sender, EventArgs e)
         {
-            playerView.CutControlToClipboard(playerView.SelectedControls);
+            playerView.CutControlsToClipboard(playerView.SelectedControls);
         }
 
         private void btnBringForward_Click(object sender, EventArgs e)

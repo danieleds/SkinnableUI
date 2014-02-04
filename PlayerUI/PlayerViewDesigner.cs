@@ -21,7 +21,7 @@ namespace PlayerUI
         /// </summary>
         const float CONTROL_CLIP_RECTANGLE_PADDING = 10;
 
-        const string CLIPBOARD_PLAYERCONTROL_FORMAT = "skinPlayerControl";
+        const string CLIPBOARD_PLAYERCONTROLS_FORMAT = "skinPlayerControl";
 
         // Variabili helper per il dragging in design mode
         PlayerControl draggingControl;
@@ -249,7 +249,7 @@ namespace PlayerUI
             foreach (var ctl in selectedControls)
                 selectionResizeHandles[ctl].Paint(e.Graphics);
 
-            if (DebugShowRuler)
+            if (DebugShowRuler && resizingControl != null)
             {
                 foreach (var ctl in selectedControls)
                     resizeMeasure[ctl].Paint(e.Graphics);
@@ -487,58 +487,69 @@ namespace PlayerUI
             return null;
         }
 
-        private DataObject GetDataObject(string format, PlayerControl c)
+        private DataObject GetDataObject(string format, ReadOnlyCollection<PlayerControl> controls)
         {
-            var resources = new Dictionary<string, System.IO.MemoryStream>();
-            var doc = new System.Xml.XmlDocument();
-            doc.AppendChild(c.GetXmlElement(doc, resources));
+            var box = new Collection<SerializationHelper.SerializablePlayerControl>();
+            foreach (var c in controls)
+            {
+                var resources = new Dictionary<string, System.IO.MemoryStream>();
+                var doc = new System.Xml.XmlDocument();
+                doc.AppendChild(c.GetXmlElement(doc, resources));
 
-            var data = new SerializationHelper.SerializablePlayerControl();
-            data.XmlDocument = doc;
-            data.Resources = resources;
+                var data = new SerializationHelper.SerializablePlayerControl();
+                data.XmlDocument = doc;
+                data.Resources = resources;
 
-            return new DataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, data);
+                box.Add(data);
+            }
+
+            return new DataObject(CLIPBOARD_PLAYERCONTROLS_FORMAT, box);
         }
 
         public bool CanPasteFromClipboard()
         {
-            return (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROL_FORMAT));
+            return (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROLS_FORMAT));
         }
 
-        public void CopyControlToClipboard(ReadOnlyCollection<PlayerControl> c)
+        public void CopyControlsToClipboard(ReadOnlyCollection<PlayerControl> c)
         {
-            // FIXME Copiarli tutti!!
-            if(c.Count > 0)
-                Clipboard.SetDataObject(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, c[0]), true);
+            Clipboard.SetDataObject(GetDataObject(CLIPBOARD_PLAYERCONTROLS_FORMAT, c), true);
         }
 
-        public void PasteControlFromClipboard(Container where)
+        public void PasteControlsFromClipboard(Container where)
         {
             if (CanPasteFromClipboard())
             {
-                var clipb = (SerializationHelper.SerializablePlayerControl)Clipboard.GetDataObject().GetData(CLIPBOARD_PLAYERCONTROL_FORMAT);
+                var box = Clipboard.GetDataObject().GetData(CLIPBOARD_PLAYERCONTROLS_FORMAT) as Collection<SerializationHelper.SerializablePlayerControl>;
+                if (box == null)
+                    return;
 
-                System.Xml.XmlDocument copy_xml = clipb.XmlDocument;
-                Dictionary<string, System.IO.MemoryStream> copy_resources = clipb.Resources;
+                var added = new Collection<PlayerControl>();
+                foreach (var clipb in box)
+                {
+                    System.Xml.XmlDocument copy_xml = clipb.XmlDocument;
+                    Dictionary<string, System.IO.MemoryStream> copy_resources = clipb.Resources;
 
-                var controlElement = copy_xml.ChildNodes[1];
+                    var controlElement = copy_xml.ChildNodes[1];
 
-                PlayerControls.PlayerControl copy = SerializationHelper.GetPlayerControlInstanceFromTagName(controlElement.Name);
-                copy.ParentView = this;
-                copy.FromXmlElement((System.Xml.XmlElement)controlElement, copy_resources);
+                    PlayerControls.PlayerControl copy = SerializationHelper.GetPlayerControlInstanceFromTagName(controlElement.Name);
+                    copy.ParentView = this;
+                    copy.FromXmlElement((System.Xml.XmlElement)controlElement, copy_resources);
 
-                copy.Parent = where;
-                copy.Location = new PointF(copy.Location.X + 15, copy.Location.Y + 15);
+                    copy.Parent = where;
+                    copy.Location = new PointF(copy.Location.X + 15, copy.Location.Y + 15);
 
+                    added.Add(copy);
+                }
+
+                this.SelectMultiple(added);
                 if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
-
-                this.Select(copy);
             }
         }
 
-        public void CutControlToClipboard(ReadOnlyCollection<PlayerControl> c)
+        public void CutControlsToClipboard(ReadOnlyCollection<PlayerControl> c)
         {
-            CopyControlToClipboard(c);
+            CopyControlsToClipboard(c);
 
             foreach (var ctl in c)
             {
