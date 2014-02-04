@@ -118,7 +118,7 @@ namespace PlayerUI.MetaControls
         }
 
         /// <summary>
-        /// Restituisce il rettangolo che inscrive tutti i metacontrolli (resize handles, righelli).
+        /// Restituisce il rettangolo che inscrive tutti i metacontrolli.
         /// </summary>
         /// <returns></returns>
         RectangleF getMetaControlsOuterRectangle(PointF controlAbsoluteLocation, SizeF controlSize)
@@ -127,7 +127,7 @@ namespace PlayerUI.MetaControls
 
             var topLeftHnd = resizeHandles[0];
             var bottomRightHnd = resizeHandles[7];
-            // FIXME Includere righelli!!!
+            
             return new RectangleF(
                 topLeftHnd.X,
                 topLeftHnd.Y,
