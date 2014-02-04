@@ -47,6 +47,7 @@
     <Compile Include="CustomPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomToolStripRender.cs" />
     <Compile Include="frmSkinPreview.cs">
       <SubType>Form</SubType>
     </Compile>

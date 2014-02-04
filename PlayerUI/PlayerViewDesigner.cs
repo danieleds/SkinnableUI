@@ -96,6 +96,13 @@ namespace PlayerUI
             }
         }
 
+        private Color designerBackColor = SystemColors.Control;
+        public Color DesignerBackColor
+        {
+            get { return designerBackColor; }
+            set { designerBackColor = value; this.Invalidate(); }
+        }
+
         /// <summary>
         /// Event handler che viene chiamato quando è necessario ridisegnare i metacontrolli
         /// (ad esempio, i resize handle).
@@ -169,6 +176,9 @@ namespace PlayerUI
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            e.Graphics.FillRectangle(new SolidBrush(this.DesignerBackColor), 0, 0, this.Width, this.Height);
+            e.Graphics.FillRectangle(new SolidBrush(this.BackColor), new RectangleF(this.containerControl.Location, this.containerControl.Size));
+
             base.OnPaint(e);
 
             if (DrawWindowDecorations)

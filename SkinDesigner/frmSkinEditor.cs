@@ -14,7 +14,20 @@ namespace SkinDesigner
     public partial class frmSkinEditor : Form
     {
         PlayerUI.PlayerViewDesigner playerView;
-        string filename = null;
+
+        string _filename;
+        string filename
+        {
+            get { return _filename; }
+            set
+            {
+                _filename = value;
+                if (_filename == null)
+                    lblFilename.Text = "New skin";
+                else
+                    lblFilename.Text = System.IO.Path.GetFileName(value);
+            }
+        }
 
         public frmSkinEditor()
         {
@@ -22,6 +35,7 @@ namespace SkinDesigner
 
             saveDialog.Filter = "Skin|*.skn";
             openDialog.Filter = "Skin|*.skn";
+            filename = null;
         }
 
         SaveFileDialog saveDialog = new SaveFileDialog();
@@ -31,6 +45,8 @@ namespace SkinDesigner
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            toolStrip1.Renderer = new CustomToolStripRender();
+
             // Riempiamo la listview con tutti i controlli disponibili
             foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
             {
@@ -59,6 +75,7 @@ namespace SkinDesigner
 
             playerView = new PlayerUI.PlayerViewDesigner() {
                 AllowDrop = true,
+                DesignerBackColor = Color.FromArgb(240, 240, 240),
                 BlockInputEvents = true,
                 DockContainerControl = false,
                 DebugShowPaints = btnShowPaints.Checked,
