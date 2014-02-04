@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using ExtensionMethods;
 
-namespace PlayerUI
+namespace PlayerUI.MetaControls
 {
     class MetaResizeHandles : MetaControl
     {

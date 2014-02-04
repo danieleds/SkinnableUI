@@ -35,8 +35,8 @@ namespace PlayerUI
         PlayerControl resizingControl;
         Direction resizingDirection;
 
-        MetaResizeHandles selectionResizeHandles;
-        MetaMeasure resizeMeasure;
+        MetaControls.MetaResizeHandles selectionResizeHandles;
+        MetaControls.MetaMeasure resizeMeasure;
 
         private Random rand = new Random();
 
@@ -57,8 +57,8 @@ namespace PlayerUI
 
         public PlayerViewDesigner()
         {
-            selectionResizeHandles = new MetaResizeHandles(this);
-            resizeMeasure = new MetaMeasure(this);
+            selectionResizeHandles = new MetaControls.MetaResizeHandles(this);
+            resizeMeasure = new MetaControls.MetaMeasure(this);
 
             DebugShowPaints = false;
             DebugShowRuler = false;
@@ -121,7 +121,7 @@ namespace PlayerUI
             {
                 resizeMeasure.Control = selectedControl;
                 resizeMeasure.Font = this.Font;
-                resizeMeasure.MeasureDirection = MetaMeasure.ResizeDirectionToMeasureDirection(this.resizingDirection);
+                resizeMeasure.MeasureDirection = MetaControls.MetaMeasure.ResizeDirectionToMeasureDirection(this.resizingDirection);
                 resizeMeasure.InvalidateView();
             }
         }
