@@ -33,12 +33,16 @@ namespace PlayerUI
         bool dragStarting = false; // true se è stato fatto un MouseDown e stiamo aspettando un delta di spostamento sufficiente.
         Point dragStartPosition; // Posizione del MouseDown iniziale (coordinate relative alla finestra). Ha senso solo se draggingControl != null.
 
-        PlayerControl resizingControl;
-        Direction resizingDirection;
+        PlayerControl resizingControl; // Il controllo che stiamo ridimensionando.
+        Direction resizingDirection; // La direzione in cui stiamo ridimensionando resizingControl. Ha senso solo se resizingControl != null.
 
         Collection<PlayerControl> selectedControls = new Collection<PlayerControl>();
         Dictionary<PlayerControl, MetaControls.MetaResizeHandles> selectionResizeHandles;
         Dictionary<PlayerControl, MetaControls.MetaMeasure> resizeMeasure;
+
+        bool selectingWithMouse = false; // Indica se stiamo trascinando il mouse per tracciare un rettangolo di selezione.
+        PointF selectionStartPoint, selectionEndPoint; // Punti di inizio e fine del rettangolo di selezione. Hanno senso solo se selectingWithMouse != null.
+        Container selectionStartContainer; // Container in cui stiamo tracciando il rettangolo di selezione. Ha senso solo se selectingWithMouse != null.
 
         private Random rand = new Random();
 
@@ -260,6 +264,11 @@ namespace PlayerUI
                 e.Graphics.DrawImageUnscaled(this.draggingBitmap, this.draggingPosition.X - (int)this.draggingOffset.X, this.draggingPosition.Y - (int)this.draggingOffset.Y);
             }
 
+            if (selectingWithMouse)
+            {
+                drawSelectionRectangle(e.Graphics);
+            }
+
             if (DebugShowPaints)
             {
                 var b = new SolidBrush(Color.FromArgb(60, rand.Next(255), rand.Next(255), rand.Next(255)));
@@ -290,6 +299,18 @@ namespace PlayerUI
                 g.FillPath(brushBack, path);
                 g.DrawPath(penBorder, path);
             }
+        }
+
+        private void drawSelectionRectangle(Graphics g)
+        {
+            Pen selectionPen = new Pen(Color.Black);
+            selectionPen.DashStyle = System.Drawing.Drawing2D.DashStyle.Dot;
+            g.DrawRectangle(
+                    selectionPen,
+                    Math.Min(selectionStartPoint.X, selectionEndPoint.X),
+                    Math.Min(selectionStartPoint.Y, selectionEndPoint.Y),
+                    Math.Abs(selectionStartPoint.X - selectionEndPoint.X),
+                    Math.Abs(selectionStartPoint.Y - selectionEndPoint.Y));
         }
 
         protected override void OnDragEnter(DragEventArgs e)
@@ -594,6 +615,8 @@ namespace PlayerUI
                 }
                 else
                 {
+                    bool startDrag = false;
+
                     var hitInfo = RecursiveHitTest(e.X, e.Y);
                     if (hitInfo != null && hitInfo.Item3 != this.containerControl)
                     {
@@ -603,10 +626,7 @@ namespace PlayerUI
                         else
                             this.Select(ctl);
 
-                        this.dragStarting = true;
-                        this.dragStartPosition = e.Location;
-                        this.draggingOffset.X = e.X - hitInfo.Item1;
-                        this.draggingOffset.Y = e.Y - hitInfo.Item2;
+                        startDrag = true;
                     }
                     else if (hitInfo != null && hitInfo.Item3 == this.containerControl)
                     {
@@ -615,6 +635,28 @@ namespace PlayerUI
                         else
                             this.Select(this.containerControl);
                     }
+
+
+                    if (hitInfo != null && hitInfo.Item3 is PlayerControls.Container)
+                    {
+                        // Fa partire la selezione col mouse
+                        this.selectingWithMouse = true;
+                        this.selectionStartPoint = e.Location;
+                        this.selectionEndPoint = e.Location;
+                        this.selectionStartContainer = (Container)hitInfo.Item3;
+                        this.Invalidate();
+                    }
+                    else
+                    {
+                        if (startDrag)
+                        {
+                            this.dragStarting = true;
+                            this.dragStartPosition = e.Location;
+                            this.draggingOffset.X = e.X - hitInfo.Item1;
+                            this.draggingOffset.Y = e.Y - hitInfo.Item2;
+                        }
+                    }
+                    
                 }
             }
         }
@@ -646,7 +688,13 @@ namespace PlayerUI
                 }
             }
 
-            if (draggingControl == null && resizingControl == null)
+            if (selectingWithMouse)
+            {
+                this.selectionEndPoint = e.Location;
+                this.Invalidate();
+            }
+
+            if (draggingControl == null && resizingControl == null && selectingWithMouse == false)
             {
                 // Non stiamo né draggando né ridimensionando.
 
@@ -722,6 +770,32 @@ namespace PlayerUI
             base.OnMouseUp(e);
 
             this.dragStarting = false;
+
+            if (this.selectingWithMouse)
+            {
+                this.selectingWithMouse = false;
+                
+                // Cerchiamo i controlli che cadono nel rettangolo di selezione
+                RectangleF selRect = new RectangleF(
+                        Math.Min(selectionStartPoint.X, selectionEndPoint.X),
+                        Math.Min(selectionStartPoint.Y, selectionEndPoint.Y),
+                        Math.Abs(selectionStartPoint.X - selectionEndPoint.X),
+                        Math.Abs(selectionStartPoint.Y - selectionEndPoint.Y));
+
+                foreach (var ctl in this.selectionStartContainer.Controls)
+                {
+                    RectangleF ctlRect = new RectangleF(ctl.GetAbsoluteLocation(), ctl.Size);
+                    if (selRect.IntersectsWith(ctlRect))
+                    {
+                        if (ModifierKeys == Keys.Control)
+                            this.ToggleSelection(ctl);
+                        else
+                            this.AddToSelection(ctl);
+                    }
+                }
+
+                this.Invalidate();
+            }
 
             if (resizingControl != null)
             {
