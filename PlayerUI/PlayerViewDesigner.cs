@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using PlayerUI.PlayerControls;
 using ExtensionMethods;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace PlayerUI
 {
@@ -35,8 +36,9 @@ namespace PlayerUI
         PlayerControl resizingControl;
         Direction resizingDirection;
 
-        MetaControls.MetaResizeHandles selectionResizeHandles;
-        MetaControls.MetaMeasure resizeMeasure;
+        Collection<PlayerControl> selectedControls = new Collection<PlayerControl>();
+        Dictionary<PlayerControl, MetaControls.MetaResizeHandles> selectionResizeHandles;
+        Dictionary<PlayerControl, MetaControls.MetaMeasure> resizeMeasure;
 
         private Random rand = new Random();
 
@@ -57,43 +59,89 @@ namespace PlayerUI
 
         public PlayerViewDesigner()
         {
-            selectionResizeHandles = new MetaControls.MetaResizeHandles(this);
-            resizeMeasure = new MetaControls.MetaMeasure(this);
+            selectionResizeHandles = new Dictionary<PlayerControl, MetaControls.MetaResizeHandles>();
+            resizeMeasure = new Dictionary<PlayerControl,MetaControls.MetaMeasure>();
 
             DebugShowPaints = false;
             DebugShowRuler = false;
             DrawWindowDecorations = false;
         }
 
-        private PlayerControl selectedControl;
-        public PlayerControl SelectedControl
+        /// <summary>
+        ///  Seleziona i controlli specificati.
+        /// </summary>
+        /// <param name="controls"></param>
+        public void SelectMultiple(Collection<PlayerControl> controls)
         {
-            get { return selectedControl; }
-            set
+            // Rimuove i vecchi handler
+            foreach (var ctl in this.selectedControls)
             {
-                if (selectedControl != value)
+                ctl.Resize -= selectedControl_MetaControlsNeedRepaint;
+                ctl.Move -= selectedControl_MetaControlsNeedRepaint;
+
+                selectedControl_MetaControlsNeedRepaint(ctl, new EventArgs());
+            }
+
+            selectedControls = new Collection<PlayerControl>();
+
+            if (controls != null)
+            {
+                foreach (var ctl in controls.Distinct())
                 {
-                    if (selectedControl != null)
-                    {
-                        selectedControl.Resize -= selectedControl_MetaControlsNeedRepaint;
-                        selectedControl.Move -= selectedControl_MetaControlsNeedRepaint;
+                    selectedControls.Add(ctl);
 
-                        selectedControl_MetaControlsNeedRepaint(selectedControl, new EventArgs());
-                    }
+                    ctl.Resize += selectedControl_MetaControlsNeedRepaint;
+                    ctl.Move += selectedControl_MetaControlsNeedRepaint;
 
-                    selectedControl = value;
-                    
-                    if (selectedControl != null)
-                    {
-                        selectedControl.Resize += selectedControl_MetaControlsNeedRepaint;
-                        selectedControl.Move += selectedControl_MetaControlsNeedRepaint;
-
-                        selectedControl_MetaControlsNeedRepaint(selectedControl, new EventArgs());
-                    }
-                    
-                    if (SelectionChanged != null) SelectionChanged(this, new EventArgs());
+                    selectedControl_MetaControlsNeedRepaint(ctl, new EventArgs());
                 }
             }
+
+            if (SelectionChanged != null) SelectionChanged(this, new EventArgs());
+        }
+
+        public void Select(PlayerControl control)
+        {
+            if (control == null)
+            {
+                SelectMultiple(null);
+            }
+            else
+            {
+                var tmp = new Collection<PlayerControl>();
+                tmp.Add(control);
+                SelectMultiple(tmp);
+            }
+        }
+
+        public void AddToSelection(PlayerControl control)
+        {
+            var tmp = this.selectedControls.ToList();
+            tmp.Add(control);
+            SelectMultiple(new Collection<PlayerControl>(tmp));
+        }
+
+        public void ToggleSelection(PlayerControl control)
+        {
+            if (this.selectedControls.Contains(control))
+                Deselect(control);
+            else
+                AddToSelection(control);
+        }
+
+        public void Deselect(PlayerControl control)
+        {
+            if (control != null)
+            {
+                var tmp = this.selectedControls.ToList();
+                tmp.Remove(control);
+                SelectMultiple(new Collection<PlayerControl>(tmp));
+            }
+        }
+
+        public ReadOnlyCollection<PlayerControl> SelectedControls
+        {
+            get { return this.selectedControls.ToList().AsReadOnly(); }
         }
 
         private Color designerBackColor = SystemColors.Control;
@@ -109,14 +157,23 @@ namespace PlayerUI
         /// Viene chiamato quando il controllo selezionato viene ridimensionato o spostato, o al
         /// MouseUp dopo un ridimensionamento (per nascondere i righelli).
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="sender">Il controllo i cui metacontrolli devono essere ridisegnati.</param>
         /// <param name="e"></param>
         void selectedControl_MetaControlsNeedRepaint(object sender, EventArgs e)
         {
-            selectionResizeHandles.Control = selectedControl;
-            selectionResizeHandles.IsWindow = this.containerControl == selectionResizeHandles.Control;
-            selectionResizeHandles.ClipRectanglePadding = CONTROL_CLIP_RECTANGLE_PADDING;
-            selectionResizeHandles.InvalidateView();
+            if (!(sender is PlayerControl))
+                return;
+
+            PlayerControl control = (PlayerControl)sender;
+
+            MetaControls.MetaResizeHandles resizeHandles = new MetaControls.MetaResizeHandles(this);
+            resizeHandles.Control = control;
+            resizeHandles.IsWindow = this.containerControl == resizeHandles.Control;
+            resizeHandles.ClipRectanglePadding = CONTROL_CLIP_RECTANGLE_PADDING;
+
+            selectionResizeHandles.Remove(control);
+            selectionResizeHandles.Add(control, resizeHandles);
+            resizeHandles.InvalidateView();
 
             // FIXME Il clipping funziona, ma non considera i righelli (che vengono tagliati fuori)...
             // questa è una mancanza (da fixare) di getMetaControlsOuterRectangle() in InvalidateView().
@@ -126,10 +183,14 @@ namespace PlayerUI
 
             if (DebugShowRuler)
             {
-                resizeMeasure.Control = selectedControl;
-                resizeMeasure.Font = this.Font;
-                resizeMeasure.MeasureDirection = MetaControls.MetaMeasure.ResizeDirectionToMeasureDirection(this.resizingDirection);
-                resizeMeasure.InvalidateView();
+                MetaControls.MetaMeasure measure = new MetaControls.MetaMeasure(this);
+                measure.Control = control;
+                measure.Font = this.Font;
+                measure.MeasureDirection = MetaControls.MetaMeasure.ResizeDirectionToMeasureDirection(this.resizingDirection);
+
+                resizeMeasure.Remove(control);
+                resizeMeasure.Add(control, measure);
+                measure.InvalidateView();
             }
         }
 
@@ -171,7 +232,7 @@ namespace PlayerUI
         {
             base.SetSkin(skin);
             if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
-            this.SelectedControl = null;
+            this.Select(null);
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -185,11 +246,14 @@ namespace PlayerUI
                 drawWindowDecorations(e.Graphics);
             
             // Disegna il rettangolo di selezione
-            if (selectedControl != null)
-                selectionResizeHandles.Paint(e.Graphics);
+            foreach (var ctl in selectedControls)
+                selectionResizeHandles[ctl].Paint(e.Graphics);
 
-            if (DebugShowRuler && resizingControl != null)
-                resizeMeasure.Paint(e.Graphics);
+            if (DebugShowRuler)
+            {
+                foreach (var ctl in selectedControls)
+                    resizeMeasure[ctl].Paint(e.Graphics);
+            }
 
             if (draggingControl != null && showDraggingBitmap)
             {
@@ -252,7 +316,7 @@ namespace PlayerUI
                 if (info != null)
                 {
                     e.Effect = DragDropEffects.Copy;
-                    this.SelectedControl = info.Item3;
+                    this.Select(info.Item3);
                 }
                 else
                 {
@@ -323,7 +387,7 @@ namespace PlayerUI
                     // Stavamo facendo il dragging di un nostro controllo
                     // Rimettiamo il controllo al suo posto
                     this.draggingControlOriginalContainer.Controls.Add(draggingControl);
-                    this.SelectedControl = draggingControl;
+                    this.Select(draggingControl);
                     this.draggingControl = null;
                 } 
             }
@@ -360,7 +424,7 @@ namespace PlayerUI
                     c.Location = new PointF(Math.Max(0, location.X - dropInfo.Item1 - mouseOffsetX), Math.Max(0, location.Y - dropInfo.Item2 - mouseOffsetY));
 
                     if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
-                    this.SelectedControl = c;
+                    this.Select(c);
 
                     this.Focus();
                 }
@@ -376,7 +440,7 @@ namespace PlayerUI
                     // credeva che il dragging fosse stato annullato).
                     // Togliamolo così più sotto lo reinseriamo al posto giusto.
                     c.Parent = null;
-                    this.SelectedControl = null;
+                    this.Select(null);
                 }
 
                 var dropInfo = ControlDropAllowed(this.PointToClient(new Point(e.X, e.Y)), false);
@@ -391,7 +455,7 @@ namespace PlayerUI
                     c.Location = new PointF(location.X - this.draggingOffset.X - dropInfo.Item1, location.Y - this.draggingOffset.Y - dropInfo.Item2);
                     this.draggingControl = null;
                     if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
-                    this.SelectedControl = c;
+                    this.Select(c);
                     if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
                 }
             }
@@ -441,9 +505,11 @@ namespace PlayerUI
             return (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROL_FORMAT));
         }
 
-        public void CopyControlToClipboard(PlayerControl c)
+        public void CopyControlToClipboard(ReadOnlyCollection<PlayerControl> c)
         {
-            Clipboard.SetDataObject(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, c), true);
+            // FIXME Copiarli tutti!!
+            if(c.Count > 0)
+                Clipboard.SetDataObject(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, c[0]), true);
         }
 
         public void PasteControlFromClipboard(Container where)
@@ -466,17 +532,18 @@ namespace PlayerUI
 
                 if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
 
-                this.SelectedControl = copy;
+                this.Select(copy);
             }
         }
 
-        public void CutControlToClipboard(PlayerControl c)
+        public void CutControlToClipboard(ReadOnlyCollection<PlayerControl> c)
         {
             CopyControlToClipboard(c);
-            c.Parent = null;
-            if (this.selectedControl == c)
+
+            foreach (var ctl in c)
             {
-                this.SelectedControl = null;
+                ctl.Parent = null;
+                this.Deselect(ctl);
             }
 
             if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
@@ -487,16 +554,17 @@ namespace PlayerUI
             base.OnMouseDown(e);
 
             // Gestione resize handle
-            if (selectedControl != null)
+            foreach (var ctl in selectedControls)
             {
-                Direction resizeDir = selectionResizeHandles.WhatResizeHandle(e.Location);
+                var resizeHandles = selectionResizeHandles[ctl];
+                Direction resizeDir = resizeHandles.WhatResizeHandle(e.Location);
                 if (resizeDir != Direction.None)
                 {
-                    if (selectedControl != this.containerControl ||
+                    if (ctl != this.containerControl ||
                         ((resizeDir & Direction.Left) != Direction.Left // containerControl non può ridimensionarsi a sx
                         && (resizeDir & Direction.Up) != Direction.Up)) // containerControl non può ridimensionarsi in alto
                     {
-                        this.resizingControl = selectedControl;
+                        this.resizingControl = ctl;
                         this.resizingDirection = resizeDir;
                     }
                 }
@@ -508,7 +576,10 @@ namespace PlayerUI
                 if (DrawWindowDecorations && getWindowDecorationsPath().IsVisible(e.Location))
                 {
                     // E' stata cliccata la decorazione della finestra
-                    this.SelectedControl = this.containerControl;
+                    if (ModifierKeys == Keys.Control)
+                        this.ToggleSelection(this.containerControl);
+                    else 
+                        this.Select(this.containerControl);
                 }
                 else
                 {
@@ -516,7 +587,10 @@ namespace PlayerUI
                     if (hitInfo != null && hitInfo.Item3 != this.containerControl)
                     {
                         PlayerControl ctl = hitInfo.Item3;
-                        this.SelectedControl = ctl;
+                        if (ModifierKeys == Keys.Control)
+                            this.ToggleSelection(ctl);
+                        else
+                            this.Select(ctl);
 
                         this.dragStarting = true;
                         this.dragStartPosition = e.Location;
@@ -525,7 +599,10 @@ namespace PlayerUI
                     }
                     else if (hitInfo != null && hitInfo.Item3 == this.containerControl)
                     {
-                        this.SelectedControl = this.containerControl;
+                        if (ModifierKeys == Keys.Control)
+                            this.ToggleSelection(this.containerControl);
+                        else
+                            this.Select(this.containerControl);
                     }
                 }
             }
@@ -535,7 +612,7 @@ namespace PlayerUI
         {
             base.OnMouseMove(e);
 
-            if (this.dragStarting && this.draggingControl == null && this.SelectedControl != null)
+            if (this.dragStarting && this.draggingControl == null && this.selectedControls.Count > 0)
             {
                 // Prima di far partire il drag controlliamo se il pulsante premuto è il sinistro e se abbiamo superato il delta di distanza
                 var delta = SystemInformation.DragSize;
@@ -544,11 +621,13 @@ namespace PlayerUI
                 {
                     this.dragStarting = false;
 
-                    this.draggingControl = this.SelectedControl;
+                    // FIXME Fare il drag di tutti i controlli selezionati invece che solo dell'ultimo!
+                    var lastctl = this.selectedControls.Last();
+                    this.draggingControl = lastctl;
                     this.draggingControlOriginalContainer = draggingControl.Parent;
-                    this.draggingBitmap = selectedControl.ToBitmap();
+                    this.draggingBitmap = lastctl.ToBitmap();
                     this.draggingControl.Parent.Controls.Remove(this.draggingControl);
-                    this.SelectedControl = null;
+                    this.Select(null);
 
                     //this.DoDragDrop(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
                     this.DoDragDrop(new DataObject(typeof(PlayerControl).FullName, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
@@ -563,21 +642,24 @@ namespace PlayerUI
                 bool actionSet = false;
 
                 // Controlliamo se siamo sopra a un resize handle
-                if (selectedControl != null)
+                foreach (var ctl in selectedControls)
                 {
-                    var cc = selectedControl == this.containerControl;
-                    Direction resizeDir = selectionResizeHandles.WhatResizeHandle(e.Location);
+                    var topctn = ctl == this.containerControl;
+                    Direction resizeDir = selectionResizeHandles[ctl].WhatResizeHandle(e.Location);
                     actionSet = true;
-                    if ((resizeDir == Direction.Left && !cc) || resizeDir == Direction.Right)
+                    if ((resizeDir == Direction.Left && !topctn) || resizeDir == Direction.Right)
                         this.Cursor = Cursors.SizeWE;
-                    else if ((resizeDir == Direction.Up && !cc) || resizeDir == Direction.Down)
+                    else if ((resizeDir == Direction.Up && !topctn) || resizeDir == Direction.Down)
                         this.Cursor = Cursors.SizeNS;
-                    else if ((resizeDir == (Direction.Up | Direction.Right) && !cc) || (resizeDir == (Direction.Down | Direction.Left) && !cc))
+                    else if ((resizeDir == (Direction.Up | Direction.Right) && !topctn) || (resizeDir == (Direction.Down | Direction.Left) && !topctn))
                         this.Cursor = Cursors.SizeNESW;
-                    else if ((resizeDir == (Direction.Up | Direction.Left) && !cc) || resizeDir == (Direction.Down | Direction.Right))
+                    else if ((resizeDir == (Direction.Up | Direction.Left) && !topctn) || resizeDir == (Direction.Down | Direction.Right))
                         this.Cursor = Cursors.SizeNWSE;
                     else
                         actionSet = false;
+
+                    if (actionSet)
+                        break;
                 }
 
                 if (!actionSet)
@@ -590,25 +672,33 @@ namespace PlayerUI
                 var resizingCtrlPos = resizingControl.GetAbsoluteLocation();
 
                 if ((resizingDirection & Direction.Down) == Direction.Down)
-                    resizingControl.Size = new SizeF(resizingControl.Size.Width, Math.Max(e.Y - resizingCtrlPos.Y, minHeight));
+                {
+                    float heightIncr = (e.Y - resizingCtrlPos.Y) - resizingControl.Size.Height;
+                    selectedControls.ForEach(c => c.Size = new SizeF(c.Size.Width, Math.Max(c.Size.Height + heightIncr, minHeight)));
+                }
                 if ((resizingDirection & Direction.Right) == Direction.Right)
-                    resizingControl.Size = new SizeF(Math.Max(e.X - resizingCtrlPos.X, minWidth), resizingControl.Size.Height);
+                {
+                    float widthIncr = (e.X - resizingCtrlPos.X) - resizingControl.Size.Width;
+                    selectedControls.ForEach(c => c.Size = new SizeF(Math.Max(c.Size.Width + widthIncr, minWidth), c.Size.Height));
+                }
                 if ((resizingDirection & Direction.Up) == Direction.Up)
                 {
-                    float tmp = resizingControl.Size.Height + (resizingCtrlPos.Y - e.Y);
-                    if (tmp >= minHeight)
+                    float height = resizingControl.Size.Height + (resizingCtrlPos.Y - e.Y);
+                    if (height >= minHeight)
                     {
-                        resizingControl.Top += (e.Y - resizingCtrlPos.Y);
-                        resizingControl.Size = new SizeF(resizingControl.Size.Width, tmp);
+                        float heightIncr = height - resizingControl.Size.Height;
+                        float topIncr = e.Y - resizingCtrlPos.Y;
+                        selectedControls.ForEach(c => { c.Top += topIncr; c.Size = new SizeF(c.Size.Width, c.Size.Height + heightIncr); });
                     }
                 }
                 if ((resizingDirection & Direction.Left) == Direction.Left)
                 {
-                    float tmp = resizingControl.Size.Width + (resizingCtrlPos.X - e.X);
-                    if (tmp >= minWidth)
+                    float width = resizingControl.Size.Width + (resizingCtrlPos.X - e.X);
+                    if (width >= minWidth)
                     {
-                        resizingControl.Left += (e.X - resizingCtrlPos.X);
-                        resizingControl.Size = new SizeF(tmp, resizingControl.Size.Height);
+                        float widthIncr = width - resizingControl.Size.Width;
+                        float leftIncr = e.X - resizingCtrlPos.X;
+                        selectedControls.ForEach(c => { c.Left += leftIncr; c.Size = new SizeF(c.Size.Width + widthIncr, c.Size.Height); });
                     }
                 }
 
@@ -625,7 +715,10 @@ namespace PlayerUI
             if (resizingControl != null)
             {
                 resizingControl = null;
-                selectedControl_MetaControlsNeedRepaint(selectedControl, new EventArgs());
+                
+                foreach (var ctl in selectedControls)
+                    selectedControl_MetaControlsNeedRepaint(ctl, new EventArgs());
+
                 if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
         }
@@ -636,76 +729,86 @@ namespace PlayerUI
 
             if (e.KeyData == Keys.Delete)
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Parent = null;
-                    this.SelectedControl = null;
-                    if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Parent = null;
                 }
+
+                this.Select(null);
+                if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
             }
             else if (e.KeyData == Keys.Down)
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Top += 1;
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Top += 1;
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
             else if (e.KeyData == Keys.Left)
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Left -= 1;
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Left -= 1;
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
             else if (e.KeyData == Keys.Right)
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Left += 1;
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Left += 1;
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
             else if (e.KeyData == Keys.Up)
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Top -= 1;
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Top -= 1;
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
             else if (e.KeyData == (Keys.Up | Keys.Shift))
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Size = new SizeF(this.SelectedControl.Size.Width, this.SelectedControl.Size.Height - 1);
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Size = new SizeF(ctl.Size.Width, ctl.Size.Height - 1);
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
             else if (e.KeyData == (Keys.Down | Keys.Shift))
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Size = new SizeF(this.SelectedControl.Size.Width, this.SelectedControl.Size.Height + 1);
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Size = new SizeF(ctl.Size.Width, ctl.Size.Height + 1);
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
             else if (e.KeyData == (Keys.Left | Keys.Shift))
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Size = new SizeF(this.SelectedControl.Size.Width - 1, this.SelectedControl.Size.Height);
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Size = new SizeF(ctl.Size.Width - 1, ctl.Size.Height);
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
             else if (e.KeyData == (Keys.Right | Keys.Shift))
             {
-                if (this.SelectedControl != null && this.SelectedControl != this.ContainerControl)
+                foreach (var ctl in selectedControls)
                 {
-                    this.SelectedControl.Size = new SizeF(this.SelectedControl.Size.Width + 1, this.SelectedControl.Size.Height);
-                    if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
+                    if (ctl != this.ContainerControl)
+                        ctl.Size = new SizeF(ctl.Size.Width + 1, ctl.Size.Height);
                 }
+                if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
         }
 

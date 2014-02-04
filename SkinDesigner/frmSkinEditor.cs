@@ -181,8 +181,12 @@ namespace SkinDesigner
 
         void playerView_SelectionChanged(object sender, EventArgs e)
         {
-            propertyGrid1.SelectedObject = playerView.SelectedControl;
-            cmbControls.SelectedItem = playerView.SelectedControl;
+            var sel = playerView.SelectedControls.ToArray();
+            propertyGrid1.SelectedObjects = sel;
+
+            cmbControls.SelectedIndexChanged -= cmbControls_SelectedIndexChanged;
+            cmbControls.SelectedItem = sel.Length == 1 ? sel[0] : null;
+            cmbControls.SelectedIndexChanged += cmbControls_SelectedIndexChanged;
         }
 
         void listView1_ItemDrag(object sender, ItemDragEventArgs e)
@@ -207,7 +211,7 @@ namespace SkinDesigner
 
         private void cmbControls_SelectedIndexChanged(object sender, EventArgs e)
         {
-            playerView.SelectedControl = (PlayerControls.PlayerControl)cmbControls.SelectedItem;
+            playerView.Select((PlayerControls.PlayerControl)cmbControls.SelectedItem);
         }
 
         private void openToolStripButton_Click(object sender, EventArgs e)
@@ -302,28 +306,26 @@ namespace SkinDesigner
 
         private void copyToolStripButton_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null)
-            {
-                playerView.CopyControlToClipboard(playerView.SelectedControl);
-            }
+            playerView.CopyControlToClipboard(playerView.SelectedControls);
         }
 
         private void pasteToolStripButton_Click(object sender, EventArgs e)
         {
             PlayerControls.Container where;
-            if (playerView.SelectedControl == null)
+            var sel = playerView.SelectedControls;
+            if (sel.Count == 0)
             {
                 where = playerView.ContainerControl;
             }
             else
             {
-                if (playerView.SelectedControl is PlayerControls.Container)
+                if (sel[0] is PlayerControls.Container)
                 {
-                    where = (PlayerControls.Container)playerView.SelectedControl;
+                    where = (PlayerControls.Container)sel[0];
                 }
                 else
                 {
-                    where = playerView.SelectedControl.Parent;
+                    where = sel[0].Parent;
                 }
             }
 
@@ -332,27 +334,24 @@ namespace SkinDesigner
 
         private void cutToolStripButton_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null)
-            {
-                playerView.CutControlToClipboard(playerView.SelectedControl);
-            }
+            playerView.CutControlToClipboard(playerView.SelectedControls);
         }
 
         private void btnBringForward_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
+            foreach (var ctl in playerView.SelectedControls)
             {
-                PlayerControls.PlayerControl ctl = playerView.SelectedControl;
-                ctl.Parent.BringToFront(ctl);
+                if (ctl.Parent != null)
+                    ctl.Parent.BringToFront(ctl);
             }
         }
 
         private void btnBringBackward_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
+            foreach (var ctl in playerView.SelectedControls)
             {
-                PlayerControls.PlayerControl ctl = playerView.SelectedControl;
-                ctl.Parent.SendToBack(ctl);
+                if (ctl.Parent != null)
+                    ctl.Parent.SendToBack(ctl);
             }
         }
 
