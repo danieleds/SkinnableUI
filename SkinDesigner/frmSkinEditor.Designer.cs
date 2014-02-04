@@ -47,6 +47,7 @@
             this.btnPreview = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
+            this.panelSurface = new SkinDesigner.CustomPanel();
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitter2 = new System.Windows.Forms.Splitter();
             this.splitter1 = new System.Windows.Forms.Splitter();
@@ -60,7 +61,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblFilename = new System.Windows.Forms.Label();
-            this.panelSurface = new SkinDesigner.CustomPanel();
             this.toolStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
             this.toolStripContainer1.TopToolStripPanel.SuspendLayout();
@@ -277,6 +277,15 @@
             this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
             this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
             // 
+            // panelSurface
+            // 
+            this.panelSurface.AutoScroll = true;
+            this.panelSurface.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelSurface.Location = new System.Drawing.Point(203, 3);
+            this.panelSurface.Name = "panelSurface";
+            this.panelSurface.Size = new System.Drawing.Size(547, 448);
+            this.panelSurface.TabIndex = 16;
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
@@ -332,6 +341,7 @@
             this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.Resize += new System.EventHandler(this.listView1_Resize);
             // 
             // columnHeader1
             // 
@@ -382,6 +392,7 @@
             this.cmbControls.Size = new System.Drawing.Size(216, 21);
             this.cmbControls.Sorted = true;
             this.cmbControls.TabIndex = 6;
+            this.cmbControls.SelectedIndexChanged += new System.EventHandler(this.cmbControls_SelectedIndexChanged);
             // 
             // label2
             // 
@@ -416,15 +427,6 @@
             this.lblFilename.TabIndex = 5;
             this.lblFilename.Text = "File name";
             this.lblFilename.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // panelSurface
-            // 
-            this.panelSurface.AutoScroll = true;
-            this.panelSurface.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelSurface.Location = new System.Drawing.Point(203, 3);
-            this.panelSurface.Name = "panelSurface";
-            this.panelSurface.Size = new System.Drawing.Size(547, 448);
-            this.panelSurface.TabIndex = 16;
             // 
             // frmSkinEditor
             // 
