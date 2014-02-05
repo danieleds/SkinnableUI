@@ -101,8 +101,16 @@ namespace PlayerUI.PlayerControls
 
         private void drawDefaultButton(Graphics g)
         {
-            g.FillRectangle(SystemBrushes.ButtonFace, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
-            g.DrawRectangle(SystemPens.ButtonShadow, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+            if (this.pressed)
+            {
+                g.FillRectangle(SystemBrushes.ButtonShadow, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+                g.DrawRectangle(SystemPens.ButtonFace, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+            }
+            else
+            {
+                g.FillRectangle(SystemBrushes.ButtonFace, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+                g.DrawRectangle(SystemPens.ButtonShadow, 0, 0, this.Size.Width - 1, this.Size.Height - 1);
+            }
         }
 
         public override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
