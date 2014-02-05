@@ -238,11 +238,15 @@ namespace PlayerUI.PlayerControls
             }
         }
 
-        private Font font = SystemFonts.DefaultFont;
+        private Font font = null;
         public Font Font
         {
-            get { return font; }
-            set { font = value ?? SystemFonts.DefaultFont; this.Invalidate(); }
+            get { return font ?? (this.parent == null ? SystemFonts.DefaultFont : this.parent.Font); }
+            set
+            {
+                font = value;
+                this.Invalidate();
+            }
         }
 
         private Color foreColor = Color.Black;
