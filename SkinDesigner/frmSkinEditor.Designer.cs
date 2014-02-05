@@ -34,6 +34,18 @@
             this.toolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
+            this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.saveAsToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.btnBringForward = new System.Windows.Forms.ToolStripButton();
+            this.btnBringBackward = new System.Windows.Forms.ToolStripButton();
+            this.btnShowPaints = new System.Windows.Forms.ToolStripButton();
+            this.rulerToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.btnPreview = new System.Windows.Forms.ToolStripButton();
             this.toolStripContainer1 = new System.Windows.Forms.ToolStripContainer();
             this.panel1 = new System.Windows.Forms.Panel();
             this.splitter2 = new System.Windows.Forms.Splitter();
@@ -48,18 +60,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblFilename = new System.Windows.Forms.Label();
-            this.newToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.openToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.saveToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.saveAsToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.cutToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.copyToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.pasteToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.btnBringForward = new System.Windows.Forms.ToolStripButton();
-            this.btnBringBackward = new System.Windows.Forms.ToolStripButton();
-            this.btnShowPaints = new System.Windows.Forms.ToolStripButton();
-            this.rulerToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.btnPreview = new System.Windows.Forms.ToolStripButton();
             this.panelSurface = new SkinDesigner.CustomPanel();
             this.toolStrip1.SuspendLayout();
             this.toolStripContainer1.ContentPanel.SuspendLayout();
@@ -116,186 +116,6 @@
             this.toolStrip1.Size = new System.Drawing.Size(312, 25);
             this.toolStrip1.TabIndex = 8;
             this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripContainer1
-            // 
-            // 
-            // toolStripContainer1.BottomToolStripPanel
-            // 
-            this.toolStripContainer1.BottomToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
-            // 
-            // toolStripContainer1.ContentPanel
-            // 
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.panelSurface);
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitter2);
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitter1);
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.leftPanel);
-            this.toolStripContainer1.ContentPanel.Controls.Add(this.rightPanel);
-            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1130, 524);
-            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            // 
-            // toolStripContainer1.LeftToolStripPanel
-            // 
-            this.toolStripContainer1.LeftToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
-            this.toolStripContainer1.LeftToolStripPanelVisible = false;
-            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
-            this.toolStripContainer1.Name = "toolStripContainer1";
-            // 
-            // toolStripContainer1.RightToolStripPanel
-            // 
-            this.toolStripContainer1.RightToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
-            this.toolStripContainer1.RightToolStripPanelVisible = false;
-            this.toolStripContainer1.Size = new System.Drawing.Size(1130, 549);
-            this.toolStripContainer1.TabIndex = 9;
-            this.toolStripContainer1.Text = "toolStripContainer1";
-            // 
-            // toolStripContainer1.TopToolStripPanel
-            // 
-            this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
-            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(236, 0);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(639, 3);
-            this.panel1.TabIndex = 17;
-            // 
-            // splitter2
-            // 
-            this.splitter2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
-            this.splitter2.Dock = System.Windows.Forms.DockStyle.Right;
-            this.splitter2.Location = new System.Drawing.Point(875, 0);
-            this.splitter2.Name = "splitter2";
-            this.splitter2.Size = new System.Drawing.Size(3, 524);
-            this.splitter2.TabIndex = 15;
-            this.splitter2.TabStop = false;
-            // 
-            // splitter1
-            // 
-            this.splitter1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
-            this.splitter1.Location = new System.Drawing.Point(233, 0);
-            this.splitter1.Name = "splitter1";
-            this.splitter1.Size = new System.Drawing.Size(3, 524);
-            this.splitter1.TabIndex = 14;
-            this.splitter1.TabStop = false;
-            // 
-            // leftPanel
-            // 
-            this.leftPanel.Controls.Add(this.listView1);
-            this.leftPanel.Controls.Add(this.label1);
-            this.leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.leftPanel.Location = new System.Drawing.Point(0, 0);
-            this.leftPanel.Name = "leftPanel";
-            this.leftPanel.Size = new System.Drawing.Size(233, 524);
-            this.leftPanel.TabIndex = 13;
-            // 
-            // listView1
-            // 
-            this.listView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
-            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1});
-            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listView1.FullRowSelect = true;
-            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.listView1.LabelWrap = false;
-            this.listView1.Location = new System.Drawing.Point(0, 24);
-            this.listView1.MultiSelect = false;
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(233, 500);
-            this.listView1.TabIndex = 0;
-            this.listView1.UseCompatibleStateImageBehavior = false;
-            this.listView1.View = System.Windows.Forms.View.Details;
-            this.listView1.Resize += new System.EventHandler(this.listView1_Resize);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Width = 200;
-            // 
-            // label1
-            // 
-            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
-            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label1.Location = new System.Drawing.Point(0, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(233, 24);
-            this.label1.TabIndex = 3;
-            this.label1.Text = "UI Elements";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // rightPanel
-            // 
-            this.rightPanel.Controls.Add(this.propertyGrid1);
-            this.rightPanel.Controls.Add(this.cmbControls);
-            this.rightPanel.Controls.Add(this.label2);
-            this.rightPanel.Dock = System.Windows.Forms.DockStyle.Right;
-            this.rightPanel.Location = new System.Drawing.Point(878, 0);
-            this.rightPanel.Name = "rightPanel";
-            this.rightPanel.Size = new System.Drawing.Size(252, 524);
-            this.rightPanel.TabIndex = 12;
-            // 
-            // propertyGrid1
-            // 
-            this.propertyGrid1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
-            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.propertyGrid1.HelpBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
-            this.propertyGrid1.HelpBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(155)))), ((int)(((byte)(188)))));
-            this.propertyGrid1.Location = new System.Drawing.Point(0, 47);
-            this.propertyGrid1.Name = "propertyGrid1";
-            this.propertyGrid1.Size = new System.Drawing.Size(252, 477);
-            this.propertyGrid1.TabIndex = 5;
-            // 
-            // cmbControls
-            // 
-            this.cmbControls.Dock = System.Windows.Forms.DockStyle.Top;
-            this.cmbControls.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbControls.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.cmbControls.FormattingEnabled = true;
-            this.cmbControls.Location = new System.Drawing.Point(0, 24);
-            this.cmbControls.Name = "cmbControls";
-            this.cmbControls.Size = new System.Drawing.Size(252, 23);
-            this.cmbControls.Sorted = true;
-            this.cmbControls.TabIndex = 6;
-            this.cmbControls.SelectedIndexChanged += new System.EventHandler(this.cmbControls_SelectedIndexChanged);
-            // 
-            // label2
-            // 
-            this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
-            this.label2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.label2.Location = new System.Drawing.Point(0, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(252, 24);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Style";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
-            this.panel2.Controls.Add(this.lblFilename);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel2.Location = new System.Drawing.Point(0, 549);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1130, 23);
-            this.panel2.TabIndex = 18;
-            // 
-            // lblFilename
-            // 
-            this.lblFilename.AutoSize = true;
-            this.lblFilename.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
-            this.lblFilename.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.lblFilename.Location = new System.Drawing.Point(3, 4);
-            this.lblFilename.Name = "lblFilename";
-            this.lblFilename.Size = new System.Drawing.Size(58, 15);
-            this.lblFilename.TabIndex = 5;
-            this.lblFilename.Text = "File name";
-            this.lblFilename.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // newToolStripButton
             // 
@@ -419,13 +239,193 @@
             this.btnPreview.Text = "Preview";
             this.btnPreview.Click += new System.EventHandler(this.btnPreview_Click);
             // 
+            // toolStripContainer1
+            // 
+            // 
+            // toolStripContainer1.BottomToolStripPanel
+            // 
+            this.toolStripContainer1.BottomToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
+            // 
+            // toolStripContainer1.ContentPanel
+            // 
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.panelSurface);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.panel1);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitter2);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.splitter1);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.leftPanel);
+            this.toolStripContainer1.ContentPanel.Controls.Add(this.rightPanel);
+            this.toolStripContainer1.ContentPanel.Size = new System.Drawing.Size(1130, 524);
+            this.toolStripContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            // 
+            // toolStripContainer1.LeftToolStripPanel
+            // 
+            this.toolStripContainer1.LeftToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
+            this.toolStripContainer1.LeftToolStripPanelVisible = false;
+            this.toolStripContainer1.Location = new System.Drawing.Point(0, 0);
+            this.toolStripContainer1.Name = "toolStripContainer1";
+            // 
+            // toolStripContainer1.RightToolStripPanel
+            // 
+            this.toolStripContainer1.RightToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
+            this.toolStripContainer1.RightToolStripPanelVisible = false;
+            this.toolStripContainer1.Size = new System.Drawing.Size(1130, 549);
+            this.toolStripContainer1.TabIndex = 9;
+            this.toolStripContainer1.Text = "toolStripContainer1";
+            // 
+            // toolStripContainer1.TopToolStripPanel
+            // 
+            this.toolStripContainer1.TopToolStripPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
+            this.toolStripContainer1.TopToolStripPanel.Controls.Add(this.toolStrip1);
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(223, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(652, 3);
+            this.panel1.TabIndex = 17;
+            // 
+            // splitter2
+            // 
+            this.splitter2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
+            this.splitter2.Dock = System.Windows.Forms.DockStyle.Right;
+            this.splitter2.Location = new System.Drawing.Point(875, 0);
+            this.splitter2.Name = "splitter2";
+            this.splitter2.Size = new System.Drawing.Size(3, 524);
+            this.splitter2.TabIndex = 15;
+            this.splitter2.TabStop = false;
+            // 
+            // splitter1
+            // 
+            this.splitter1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
+            this.splitter1.Location = new System.Drawing.Point(220, 0);
+            this.splitter1.Name = "splitter1";
+            this.splitter1.Size = new System.Drawing.Size(3, 524);
+            this.splitter1.TabIndex = 14;
+            this.splitter1.TabStop = false;
+            // 
+            // leftPanel
+            // 
+            this.leftPanel.Controls.Add(this.listView1);
+            this.leftPanel.Controls.Add(this.label1);
+            this.leftPanel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.leftPanel.Location = new System.Drawing.Point(0, 0);
+            this.leftPanel.Name = "leftPanel";
+            this.leftPanel.Size = new System.Drawing.Size(220, 524);
+            this.leftPanel.TabIndex = 13;
+            // 
+            // listView1
+            // 
+            this.listView1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
+            this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1});
+            this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listView1.FullRowSelect = true;
+            this.listView1.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.listView1.LabelWrap = false;
+            this.listView1.Location = new System.Drawing.Point(0, 24);
+            this.listView1.MultiSelect = false;
+            this.listView1.Name = "listView1";
+            this.listView1.Size = new System.Drawing.Size(220, 500);
+            this.listView1.TabIndex = 0;
+            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.listView1.View = System.Windows.Forms.View.Details;
+            this.listView1.Resize += new System.EventHandler(this.listView1_Resize);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Width = 200;
+            // 
+            // label1
+            // 
+            this.label1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
+            this.label1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label1.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label1.Location = new System.Drawing.Point(0, 0);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(220, 24);
+            this.label1.TabIndex = 3;
+            this.label1.Text = "UI Elements";
+            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // rightPanel
+            // 
+            this.rightPanel.Controls.Add(this.propertyGrid1);
+            this.rightPanel.Controls.Add(this.cmbControls);
+            this.rightPanel.Controls.Add(this.label2);
+            this.rightPanel.Dock = System.Windows.Forms.DockStyle.Right;
+            this.rightPanel.Location = new System.Drawing.Point(878, 0);
+            this.rightPanel.Name = "rightPanel";
+            this.rightPanel.Size = new System.Drawing.Size(252, 524);
+            this.rightPanel.TabIndex = 12;
+            // 
+            // propertyGrid1
+            // 
+            this.propertyGrid1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
+            this.propertyGrid1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.propertyGrid1.HelpBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(214)))), ((int)(((byte)(219)))), ((int)(((byte)(233)))));
+            this.propertyGrid1.HelpBorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(142)))), ((int)(((byte)(155)))), ((int)(((byte)(188)))));
+            this.propertyGrid1.Location = new System.Drawing.Point(0, 47);
+            this.propertyGrid1.Name = "propertyGrid1";
+            this.propertyGrid1.Size = new System.Drawing.Size(252, 477);
+            this.propertyGrid1.TabIndex = 5;
+            // 
+            // cmbControls
+            // 
+            this.cmbControls.Dock = System.Windows.Forms.DockStyle.Top;
+            this.cmbControls.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbControls.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.cmbControls.FormattingEnabled = true;
+            this.cmbControls.Location = new System.Drawing.Point(0, 24);
+            this.cmbControls.Name = "cmbControls";
+            this.cmbControls.Size = new System.Drawing.Size(252, 23);
+            this.cmbControls.Sorted = true;
+            this.cmbControls.TabIndex = 6;
+            this.cmbControls.SelectedIndexChanged += new System.EventHandler(this.cmbControls_SelectedIndexChanged);
+            // 
+            // label2
+            // 
+            this.label2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
+            this.label2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.label2.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.label2.Location = new System.Drawing.Point(0, 0);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(252, 24);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Style";
+            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
+            this.panel2.Controls.Add(this.lblFilename);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panel2.Location = new System.Drawing.Point(0, 549);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(1130, 23);
+            this.panel2.TabIndex = 18;
+            // 
+            // lblFilename
+            // 
+            this.lblFilename.AutoSize = true;
+            this.lblFilename.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(77)))), ((int)(((byte)(96)))), ((int)(((byte)(130)))));
+            this.lblFilename.ForeColor = System.Drawing.SystemColors.ControlLightLight;
+            this.lblFilename.Location = new System.Drawing.Point(3, 4);
+            this.lblFilename.Name = "lblFilename";
+            this.lblFilename.Size = new System.Drawing.Size(58, 15);
+            this.lblFilename.TabIndex = 5;
+            this.lblFilename.Text = "File name";
+            this.lblFilename.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
             // panelSurface
             // 
             this.panelSurface.AutoScroll = true;
             this.panelSurface.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelSurface.Location = new System.Drawing.Point(236, 3);
+            this.panelSurface.Location = new System.Drawing.Point(223, 3);
             this.panelSurface.Name = "panelSurface";
-            this.panelSurface.Size = new System.Drawing.Size(639, 521);
+            this.panelSurface.Size = new System.Drawing.Size(652, 521);
             this.panelSurface.TabIndex = 16;
             // 
             // frmSkinEditor
