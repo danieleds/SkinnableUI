@@ -22,7 +22,7 @@ namespace PlayerUI.PlayerControls
         NinePatch lastDrawnPatch = null;
 
         protected NinePatch backgroundNormal9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundNormal9P
         {
             get { return backgroundNormal9P != null ? backgroundNormal9P.Image : null; }
@@ -37,7 +37,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundOver9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundOver9P
         {
             get { return backgroundOver9P != null ? backgroundOver9P.Image : null; }
@@ -52,7 +52,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundPressed9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundPressed9P
         {
             get { return backgroundPressed9P != null ? backgroundPressed9P.Image : null; }
@@ -67,12 +67,13 @@ namespace PlayerUI.PlayerControls
         }
 
         private string text;
+        [Category("Appearance")]
         public string Text { get { return text; } set { text = value; this.Invalidate(); } }
 
         /// <summary>
         /// True per attivare le animazioni su mouse enter / mouse leave.
         /// </summary>
-        [DefaultValue(false)]
+        [DefaultValue(false), Category("Appearance")]
         public bool EnterLeave9PAnimation { get; set; }
 
         protected override void OnPaint(System.Drawing.Graphics g)

@@ -43,7 +43,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundNormal9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundNormal9P
         {
             get { return backgroundNormal9P != null ? backgroundNormal9P.Image : null; }

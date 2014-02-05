@@ -18,11 +18,11 @@ namespace PlayerUI.PlayerControls
         }
 
         private Image image;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Image Image { get { return image; } set { image = value; this.Invalidate(); } }
 
         private Image defaultImage;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Image DefaultImage { get { return defaultImage; } set { defaultImage = value; this.Invalidate(); } }
 
         protected override void OnPaint(System.Drawing.Graphics g)

@@ -18,10 +18,16 @@ namespace PlayerUI.PlayerControls
         }
 
         private string text = "";
+        [Category("Appearance")]
         public string Text { get { return text; } set { text = value; this.Invalidate(); } }
 
         private ContentAlignment textAlign = ContentAlignment.MiddleLeft;
-        public ContentAlignment TextAlign { get { return textAlign; } set { textAlign = value; this.Invalidate(); } }
+        [Category("Appearance")]
+        public ContentAlignment TextAlign
+        {
+            get { return textAlign; }
+            set { textAlign = value; this.Invalidate(); }
+        }
 
         protected override void OnPaint(System.Drawing.Graphics g)
         {

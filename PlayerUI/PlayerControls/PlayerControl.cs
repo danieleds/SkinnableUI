@@ -181,23 +181,25 @@ namespace PlayerUI.PlayerControls
             }
         }
 
+        [Category("Layout")]
         public float Top
         {
             get { return this.location.Y; }
             set { this.Location = new PointF(this.location.X, value); }
         }
 
+        [Category("Layout")]
         public float Left
         {
             get { return this.location.X; }
             set { this.Location = new PointF(value, this.location.Y); }
         }
 
-        [DefaultValue(AnchorStyles.Top | AnchorStyles.Left)]
+        [DefaultValue(AnchorStyles.Top | AnchorStyles.Left), Category("Layout")]
         public AnchorStyles Anchor { get; set; }
 
         private SizeF size = new SizeF(50, 50);
-        [Description("The size of the control in pixels.")]
+        [Description("The size of the control in pixels."), Category("Layout")]
         public SizeF Size
         {
             get { return this.size; }
@@ -239,6 +241,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private Font font = SystemFonts.DefaultFont;
+        [Category("Appearance")]
         public Font Font
         {
             get { return font; }
@@ -246,7 +249,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private Color foreColor = Color.Black;
-        [DefaultValue(typeof(Color), "0x000000")]
+        [DefaultValue(typeof(Color), "0x000000"), Category("Appearance")]
         public Color ForeColor
         {
             get { return foreColor; }

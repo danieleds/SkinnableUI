@@ -27,7 +27,7 @@ namespace PlayerUI.PlayerControls
         private const float DEFAULT_INDICATOR_WIDTH = 10f;
 
         private NinePatch backgroundNormal9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundNormal9P
         {
             get { return backgroundNormal9P != null ? backgroundNormal9P.Image : null; }
@@ -42,7 +42,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private NinePatch indicatorNormal9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap IndicatorNormal9P
         {
             get { return indicatorNormal9P != null ? indicatorNormal9P.Image : null; }
@@ -57,7 +57,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private NinePatch indicatorOver9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap IndicatorOver9P
         {
             get { return indicatorOver9P != null ? indicatorOver9P.Image : null; }
@@ -72,7 +72,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private NinePatch indicatorPressed9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap IndicatorPressed9P
         {
             get { return indicatorPressed9P != null ? indicatorPressed9P.Image : null; }
@@ -87,7 +87,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private NinePatch indicatorBar9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap IndicatorBar9P
         {
             get { return indicatorBar9P != null ? indicatorBar9P.Image : null; }

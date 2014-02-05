@@ -37,7 +37,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundNormal9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundNormal9P
         {
             get { return backgroundNormal9P != null ? backgroundNormal9P.Image : null; }
@@ -52,7 +52,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundHeaderBar9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundHeaderBar9P
         {
             get { return backgroundHeaderBar9P != null ? backgroundHeaderBar9P.Image : null; }
@@ -67,7 +67,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundColumnHeader9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundColumnHeader9P
         {
             get { return backgroundColumnHeader9P != null ? backgroundColumnHeader9P.Image : null; }
@@ -82,7 +82,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundRowOver9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundRowOver9P
         {
             get { return backgroundRowOver9P != null ? backgroundRowOver9P.Image : null; }
@@ -97,7 +97,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundRowSelected9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundRowSelected9P
         {
             get { return backgroundRowSelected9P != null ? backgroundRowSelected9P.Image : null; }
@@ -112,7 +112,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundRowSelectedOver9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundRowSelectedOver9P
         {
             get { return backgroundRowSelectedOver9P != null ? backgroundRowSelectedOver9P.Image : null; }
@@ -127,7 +127,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch backgroundRowNormal9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap BackgroundRowNormal9P
         {
             get { return backgroundRowNormal9P != null ? backgroundRowNormal9P.Image : null; }
@@ -142,7 +142,7 @@ namespace PlayerUI.PlayerControls
         }
 
         protected NinePatch scrollbarNormal9P;
-        [DefaultValue(null)]
+        [DefaultValue(null), Category("Appearance")]
         public Bitmap ScrollbarNormal9P
         {
             get { return scrollbarNormal9P != null ? scrollbarNormal9P.Image : null; }
@@ -157,6 +157,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private Font headerFont = SystemFonts.DefaultFont;
+        [Category("Appearance")]
         public Font HeaderFont
         {
             get { return headerFont; }
@@ -164,7 +165,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private Color headerForeColor = Color.Black;
-        [DefaultValue(typeof(Color), "0x000000")]
+        [DefaultValue(typeof(Color), "0x000000"), Category("Appearance")]
         public Color HeaderForeColor
         {
             get { return headerForeColor; }
@@ -172,6 +173,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private Font activeRowFont = SystemFonts.DefaultFont;
+        [Category("Appearance")]
         public Font ActiveRowFont
         {
             get { return activeRowFont; }
@@ -179,7 +181,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private Color activeRowForeColor = Color.Black;
-        [DefaultValue(typeof(Color), "0x000000")]
+        [DefaultValue(typeof(Color), "0x000000"), Category("Appearance")]
         public Color ActiveRowForeColor
         {
             get { return activeRowForeColor; }
