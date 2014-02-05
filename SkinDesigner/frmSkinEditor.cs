@@ -200,6 +200,13 @@ namespace SkinDesigner
             cmbControls.SelectedIndexChanged -= cmbControls_SelectedIndexChanged;
             cmbControls.SelectedItem = sel.Length == 1 ? sel[0] : null;
             cmbControls.SelectedIndexChanged += cmbControls_SelectedIndexChanged;
+
+            bool someSelected = sel.Length > 0;
+            cutToolStripButton.Enabled = someSelected;
+            copyToolStripButton.Enabled = someSelected;
+            pasteToolStripButton.Enabled = someSelected;
+            btnBringForward.Enabled = someSelected;
+            btnBringBackward.Enabled = someSelected;
         }
 
         void listView1_ItemDrag(object sender, ItemDragEventArgs e)
