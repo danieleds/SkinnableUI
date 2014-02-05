@@ -48,11 +48,24 @@ namespace SkinDesigner
             toolStrip1.Renderer = new CustomToolStripRender();
 
             // Riempiamo la listview con tutti i controlli disponibili
+            ImageList imgs = new ImageList();
+            imgs.ImageSize = new Size(30, 20);
+            imgs.Images.Add("container", SkinDesigner.Properties.Resources.container);
+            imgs.Images.Add("control", SkinDesigner.Properties.Resources.control);
+            imgs.Images.Add("text", SkinDesigner.Properties.Resources.text);
+            listView1.SmallImageList = imgs;
             foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
             {
                 PlayerControls.PlayerControl.SemanticTypeMeta info = PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(c);
                 ListViewItem item = new ListViewItem(info.Title);
                 item.Tag = c; // Salviamo il tipo del controllo (Play, Pause) nel campo Tag (ci servirà per il drag n' drop)
+
+                item.ImageKey = "control";
+                if (typeof(PlayerControls.Container).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "container";
+                else if (typeof(PlayerControls.Label).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "text";
+
                 listView1.Items.Add(item);
             }
             
