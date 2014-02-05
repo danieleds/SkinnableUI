@@ -217,25 +217,6 @@ namespace PlayerUI.PlayerControls
         private ObservableCollection<ListViewColumn> columns = new ObservableCollection<ListViewColumn>();
         public ObservableCollection<ListViewColumn> Columns { get { return columns; } }
 
-        public class ListViewRow
-        {
-            public ListViewRow() {
-                this.Values = new System.Collections.ArrayList();
-            }
-            public System.Collections.ArrayList Values { get; set; }
-        }
-
-        public class ListViewColumn
-        {
-            public ListViewColumn()
-            {
-                this.Width = 100;
-            }
-
-            public string Title { get; set; }
-            public float Width { get; set; }
-        }
-
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             //var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);
@@ -298,7 +279,7 @@ namespace PlayerUI.PlayerControls
         {
             var headerHeight = GetHeaderHeight();
             var rowHeight = GetRowHeight();
-            var viewHeight = getViewHeight(headerHeight);
+            var viewHeight = GetViewHeight(headerHeight);
             float totWidth = this.columns.Sum(c => c.Width);
 
             var t = g.Save();
@@ -392,16 +373,17 @@ namespace PlayerUI.PlayerControls
             g.Restore(t);
         }
 
-        private float getViewHeight(float headerHeight)
+        private float GetViewHeight(float headerHeight)
         {
-            return this.Size.Height - headerHeight - 2;
+            var sz = this.Size.Height - headerHeight - 2;
+            return sz < 0 ? 0 : sz;
         }
 
         private void drawScrollbar(Graphics g)
         {
             var headerHeight = GetHeaderHeight();
             var rowHeight = GetRowHeight();
-            var viewHeight = getViewHeight(headerHeight);
+            var viewHeight = GetViewHeight(headerHeight);
             var contentHeight = rowHeight * this.items.Count;
             if (contentHeight > viewHeight)
             {
@@ -520,7 +502,7 @@ namespace PlayerUI.PlayerControls
                 var headerHeight = GetHeaderHeight();
                 var rowHeight = GetRowHeight();
 
-                var viewHeight = getViewHeight(headerHeight);
+                var viewHeight = GetViewHeight(headerHeight);
                 var contentHeight = rowHeight * this.items.Count;
 
                 if (contentHeight < viewHeight)
@@ -637,6 +619,26 @@ namespace PlayerUI.PlayerControls
             SerializationHelper.LoadColor(element, "activeRowForeColor", s => this.ActiveRowForeColor = s);
             //SerializationHelper.LoadInteger(element, "activeRow", s => { if (s >= 0 && s < this.items.Count) this.ActiveRow = this.items[s]; else this.activeRow = null; });
 
+        }
+
+        public class ListViewRow
+        {
+            public ListViewRow()
+            {
+                this.Values = new System.Collections.ArrayList();
+            }
+            public System.Collections.ArrayList Values { get; set; }
+        }
+
+        public class ListViewColumn
+        {
+            public ListViewColumn()
+            {
+                this.Width = 100;
+            }
+
+            public string Title { get; set; }
+            public float Width { get; set; }
         }
 
     }

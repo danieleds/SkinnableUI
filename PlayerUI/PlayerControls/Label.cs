@@ -24,9 +24,6 @@ namespace PlayerUI.PlayerControls
         private ContentAlignment textAlign = ContentAlignment.MiddleLeft;
         public ContentAlignment TextAlign { get { return textAlign; } set { textAlign = value; this.Invalidate(); } }
 
-        [DefaultValue(false)]
-        public override bool TabStop { get; set; }
-
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             var strSize = g.MeasureString(this.Text, this.Font);

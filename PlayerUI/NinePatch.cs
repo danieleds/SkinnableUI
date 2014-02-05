@@ -153,7 +153,9 @@ namespace PlayerUI
 
                     // Per lo stesso motivo di prima (taglio dei pixel) spostiamo i rettangoli sorgente e destinazione
                     // di -0.5px in alto e a sinistra.
-                    g.DrawImage(this.image, new RectangleF(destRect.X - 0.5f, destRect.Y - 0.5f, destRect.Width, destRect.Height),
+                    g.DrawImage(
+                        this.image,
+                        new RectangleF(destRect.X - 0.5f, destRect.Y - 0.5f, destRect.Width, destRect.Height),
                         new RectangleF(xLines[xi].Item1 - 0.5f, yLines[yi].Item1 - 0.5f, xLines[xi].Item3, yLines[yi].Item3),
                         GraphicsUnit.Pixel);
 

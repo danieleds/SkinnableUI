@@ -28,5 +28,11 @@ namespace ExtensionMethods
         {
             return new SizeF(size.Width + expand, size.Height + expand);
         }
+
+        public static void ForEach<T>(this System.Collections.ObjectModel.Collection<T> source, Action<T> action)
+        {
+            foreach (var item in source)
+                action(item);
+        }
     }
 }

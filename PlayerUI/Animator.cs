@@ -9,13 +9,13 @@ using System.Windows.Forms;
 
 namespace PlayerUI
 {
-    public class Animator
+    public class Animator : IDisposable
     {
+        const int min_interval = 50;
+
         Timer tmr = new Timer();
         List<Animation> animations = new List<Animation>();
         List<Animation> detachQueue = new List<Animation>();
-
-        const int min_interval = 50;
 
         public Animator()
         {
@@ -125,5 +125,20 @@ namespace PlayerUI
             animationPlaceholder.Start();
         }
 
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                // dispose managed resources
+                tmr.Dispose();
+            }
+            // free native resources
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

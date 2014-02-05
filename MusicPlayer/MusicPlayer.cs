@@ -54,8 +54,38 @@ namespace Player
                 this.controls.Add(c, new List<PlayerControls.PlayerControl>());
             
             waveOut = new WaveOut();
-
+            waveOut.PlaybackStopped += waveOut_PlaybackStopped;
+            
             tmr.Tick += tmr_Tick;
+        }
+
+        void waveOut_PlaybackStopped(object sender, StoppedEventArgs e)
+        {
+            if (mp3Reader != null && mp3Reader.CurrentTime >= mp3Reader.TotalTime.Add(new TimeSpan(0, 0, 0, 0, -100)))
+            {
+                var pl = playlist.FirstOrDefault();
+                if (pl != null)
+                {
+                    for (int i = 0; i < pl.Items.Count; i++)
+                    {
+                        if (pl.Items[i] == currentSong)
+                        {
+                            if (i + 1 < pl.Items.Count)
+                            {
+                                currentSong = pl.Items[i + 1];
+                                LoadSong(currentSong.Values[3].ToString(), currentSong);
+                            }
+                            else
+                            {
+                                currentSong = pl.Items[0];
+                                LoadSong(currentSong.Values[3].ToString(), currentSong);
+                                stopAction();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         void tmr_Tick(object sender, EventArgs e)
@@ -81,7 +111,7 @@ namespace Player
             if (e.Data.GetDataPresent(DataFormats.FileDrop))
             {
                 var files = (string[])e.Data.GetData(DataFormats.FileDrop);
-                foreach (var file in files)
+                foreach (var file in files.OrderBy(k => k))
                 {
                     TagLib.File f = null;
                     try
@@ -231,7 +261,7 @@ namespace Player
 
                 mp3Reader = new Mp3FileReader(path);
                 waveOut.Init(mp3Reader);
-
+                
                 songProgress.ForEach(item => item.Maximum = (int)mp3Reader.TotalTime.TotalMilliseconds);
                 currentTime.ForEach(item => item.Text = FormatTime(mp3Reader.CurrentTime, mp3Reader.TotalTime));
                 totalTime.ForEach(item => item.Text = FormatTime(mp3Reader.TotalTime, mp3Reader.TotalTime));
@@ -270,6 +300,11 @@ namespace Player
         }
 
         void stop_Click(object sender, EventArgs e)
+        {
+            stopAction();
+        }
+
+        void stopAction()
         {
             playPause.ForEach(item => item.Checked = false);
             waveOut.Stop();
@@ -320,9 +355,13 @@ namespace Player
         {
             var ctl = (PlayerControls.ToggleButton)sender;
             if (ctl.Checked)
+            {
                 if (mp3Reader != null) waveOut.Play();
+            }
             else
+            {
                 waveOut.Pause();
+            }
         }
 
         private void pause_Click(object sender, EventArgs e)
@@ -355,6 +394,23 @@ namespace Player
         private void playerView1_DragOver(object sender, DragEventArgs e)
         {
 
+        }
+
+        /// <summary>
+        /// Clean up any resources being used.
+        /// </summary>
+        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.waveOut != null) this.waveOut.Dispose();
+                if (this.mp3Reader != null) this.mp3Reader.Dispose();
+
+                if(components != null)
+                    components.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

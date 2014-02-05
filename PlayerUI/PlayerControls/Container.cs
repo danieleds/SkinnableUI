@@ -56,9 +56,6 @@ namespace PlayerUI.PlayerControls
                 this.Invalidate();
             }
         }
-
-        [DefaultValue(false)]
-        public override bool TabStop { get; set; }
         
         [Browsable(false)]
         public PlayerControlCollection Controls { get { return this.controls; } }

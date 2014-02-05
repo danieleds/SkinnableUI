@@ -14,7 +14,20 @@ namespace SkinDesigner
     public partial class frmSkinEditor : Form
     {
         PlayerUI.PlayerViewDesigner playerView;
-        string filename = null;
+
+        string _filename;
+        string filename
+        {
+            get { return _filename; }
+            set
+            {
+                _filename = value;
+                if (_filename == null)
+                    lblFilename.Text = "New skin";
+                else
+                    lblFilename.Text = System.IO.Path.GetFileName(value);
+            }
+        }
 
         public frmSkinEditor()
         {
@@ -22,6 +35,7 @@ namespace SkinDesigner
 
             saveDialog.Filter = "Skin|*.skn";
             openDialog.Filter = "Skin|*.skn";
+            filename = null;
         }
 
         SaveFileDialog saveDialog = new SaveFileDialog();
@@ -31,12 +45,27 @@ namespace SkinDesigner
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            toolStrip1.Renderer = new CustomToolStripRender();
+
             // Riempiamo la listview con tutti i controlli disponibili
+            ImageList imgs = new ImageList();
+            imgs.ImageSize = new Size(30, 20);
+            imgs.Images.Add("container", SkinDesigner.Properties.Resources.container);
+            imgs.Images.Add("control", SkinDesigner.Properties.Resources.control);
+            imgs.Images.Add("text", SkinDesigner.Properties.Resources.text);
+            listView1.SmallImageList = imgs;
             foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
             {
                 PlayerControls.PlayerControl.SemanticTypeMeta info = PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(c);
                 ListViewItem item = new ListViewItem(info.Title);
                 item.Tag = c; // Salviamo il tipo del controllo (Play, Pause) nel campo Tag (ci servirà per il drag n' drop)
+
+                item.ImageKey = "control";
+                if (typeof(PlayerControls.Container).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "container";
+                else if (typeof(PlayerControls.Label).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "text";
+
                 listView1.Items.Add(item);
             }
             
@@ -59,6 +88,7 @@ namespace SkinDesigner
 
             playerView = new PlayerUI.PlayerViewDesigner() {
                 AllowDrop = true,
+                DesignerBackColor = Color.FromArgb(240, 240, 240),
                 BlockInputEvents = true,
                 DockContainerControl = false,
                 DebugShowPaints = btnShowPaints.Checked,
@@ -164,8 +194,12 @@ namespace SkinDesigner
 
         void playerView_SelectionChanged(object sender, EventArgs e)
         {
-            propertyGrid1.SelectedObject = playerView.SelectedControl;
-            cmbControls.SelectedItem = playerView.SelectedControl;
+            var sel = playerView.SelectedControls.ToArray();
+            propertyGrid1.SelectedObjects = sel;
+
+            cmbControls.SelectedIndexChanged -= cmbControls_SelectedIndexChanged;
+            cmbControls.SelectedItem = sel.Length == 1 ? sel[0] : null;
+            cmbControls.SelectedIndexChanged += cmbControls_SelectedIndexChanged;
         }
 
         void listView1_ItemDrag(object sender, ItemDragEventArgs e)
@@ -190,7 +224,7 @@ namespace SkinDesigner
 
         private void cmbControls_SelectedIndexChanged(object sender, EventArgs e)
         {
-            playerView.SelectedControl = (PlayerControls.PlayerControl)cmbControls.SelectedItem;
+            playerView.Select((PlayerControls.PlayerControl)cmbControls.SelectedItem);
         }
 
         private void openToolStripButton_Click(object sender, EventArgs e)
@@ -285,57 +319,52 @@ namespace SkinDesigner
 
         private void copyToolStripButton_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null)
-            {
-                playerView.CopyControlToClipboard(playerView.SelectedControl);
-            }
+            playerView.CopyControlsToClipboard(playerView.SelectedControls);
         }
 
         private void pasteToolStripButton_Click(object sender, EventArgs e)
         {
             PlayerControls.Container where;
-            if (playerView.SelectedControl == null)
+            var sel = playerView.SelectedControls;
+            if (sel.Count == 0)
             {
                 where = playerView.ContainerControl;
             }
             else
             {
-                if (playerView.SelectedControl is PlayerControls.Container)
+                if (sel[0] is PlayerControls.Container)
                 {
-                    where = (PlayerControls.Container)playerView.SelectedControl;
+                    where = (PlayerControls.Container)sel[0];
                 }
                 else
                 {
-                    where = playerView.SelectedControl.Parent;
+                    where = sel[0].Parent;
                 }
             }
 
-            playerView.PasteControlFromClipboard(where);
+            playerView.PasteControlsFromClipboard(where);
         }
 
         private void cutToolStripButton_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null)
-            {
-                playerView.CutControlToClipboard(playerView.SelectedControl);
-            }
+            playerView.CutControlsToClipboard(playerView.SelectedControls);
         }
 
         private void btnBringForward_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
+            foreach (var ctl in playerView.SelectedControls)
             {
-                PlayerControls.PlayerControl ctl = playerView.SelectedControl;
-                ctl.Parent.BringToFront(ctl);
+                if (ctl.Parent != null)
+                    ctl.Parent.BringToFront(ctl);
             }
         }
 
         private void btnBringBackward_Click(object sender, EventArgs e)
         {
-            if (playerView.SelectedControl != null && playerView.SelectedControl.Parent != null)
+            foreach (var ctl in playerView.SelectedControls)
             {
-                PlayerControls.PlayerControl ctl = playerView.SelectedControl;
-                ctl.Parent.SendToBack(ctl);
+                if (ctl.Parent != null)
+                    ctl.Parent.SendToBack(ctl);
             }
         }
 

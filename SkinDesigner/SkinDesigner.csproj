@@ -47,6 +47,7 @@
     <Compile Include="CustomPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomToolStripRender.cs" />
     <Compile Include="frmSkinPreview.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -95,6 +96,15 @@
       <Project>{d96d4fd6-c8f0-4481-86e3-93de761e77f8}</Project>
       <Name>PlayerUI</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\container.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\control.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\text.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

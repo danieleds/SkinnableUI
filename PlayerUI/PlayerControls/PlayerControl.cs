@@ -217,7 +217,7 @@ namespace PlayerUI.PlayerControls
         public int TabIndex { get; set; }
 
         [DefaultValue(true)]
-        public virtual bool TabStop { get; set; }
+        public bool TabStop { get; set; }
 
         private SemanticType semantic;
         [Browsable(false)]

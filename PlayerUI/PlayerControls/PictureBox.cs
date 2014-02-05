@@ -20,9 +20,6 @@ namespace PlayerUI.PlayerControls
         private Image image;
         public Image Image { get { return image; } set { image = value; this.Invalidate(); } }
 
-        [DefaultValue(false)]
-        public override bool TabStop { get; set; }
-
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             if (image != null)

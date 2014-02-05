@@ -44,6 +44,11 @@
   <ItemGroup>
     <Compile Include="Animation.cs" />
     <Compile Include="Animator.cs" />
+    <Compile Include="Direction.cs" />
+    <Compile Include="MetaControls\MetaControl.cs" />
+    <Compile Include="MetaControls\MetaDragContainer.cs" />
+    <Compile Include="MetaControls\MetaMeasure.cs" />
+    <Compile Include="MetaControls\MetaResizeHandles.cs" />
     <Compile Include="NinePatch.cs" />
     <Compile Include="PlayerControls\Button.cs" />
     <Compile Include="PlayerControls\FlowLayoutContainer.cs" />
@@ -64,8 +69,25 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="SerializationHelper.cs" />
     <Compile Include="Skin.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Move.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\move.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
