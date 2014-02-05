@@ -326,9 +326,12 @@ namespace PlayerUI.PlayerControls
                         ctl.OnMouseDoubleClick(new MouseEventArgs(e.Button, e.Clicks + 1, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta));
                 }
             }
-            lastDoubleClickMsec = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
-            lastDoubleClickPt = e.Location;
-            lastDoubleClickCtl = ctl;
+            else
+            {
+                lastDoubleClickMsec = DateTime.UtcNow.Ticks / TimeSpan.TicksPerMillisecond;
+                lastDoubleClickPt = e.Location;
+                lastDoubleClickCtl = ctl;
+            }
         }
 
         public override void OnMouseMove(MouseEventArgs e)

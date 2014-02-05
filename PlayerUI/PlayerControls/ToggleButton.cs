@@ -213,6 +213,12 @@ namespace PlayerUI.PlayerControls
             this.Checked = !this.Checked;
         }
 
+        public override void OnMouseDoubleClick(System.Windows.Forms.MouseEventArgs e)
+        {
+            base.OnMouseDoubleClick(e);
+            this.Checked = !this.Checked;
+        }
+
         public override System.Xml.XmlElement GetXmlElement(System.Xml.XmlDocument document, Dictionary<string, System.IO.MemoryStream> resources)
         {
             var node = base.GetXmlElement(document, resources);
