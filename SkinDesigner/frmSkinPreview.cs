@@ -26,7 +26,8 @@ namespace SkinDesigner
             playerView1.Width = playerView1.Width - 1;
             playerView1.Width = playerView1.Width + 1;
             playerView1.Dock = DockStyle.Fill;
-            playerView1.Resize += (sender2, e2) => this.ClientSize = playerView1.Size;
+            //playerView1.Resize += (sender2, e2) => this.ClientSize = playerView1.Size;
+            this.ClientSize = playerView1.Size;
         }
     }
 }

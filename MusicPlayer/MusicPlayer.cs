@@ -194,8 +194,8 @@ namespace Player
 
         private void AttachEvents()
         {
-            //ResetUI();
-            playerView1.Resize += (sender, e) => this.ClientSize = playerView1.Size;
+            //playerView1.Resize += (sender, e) => this.ClientSize = playerView1.Size;
+            this.ClientSize = playerView1.Size;
 
             var ctrls = this.playerView1.ContainerControl.GetAllChildren();
             foreach (var item in ctrls)
