@@ -106,6 +106,18 @@
   <ItemGroup>
     <None Include="Images\text.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\togglebutton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\trackbar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\picturebox.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Images\listview.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

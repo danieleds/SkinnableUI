@@ -53,7 +53,13 @@ namespace SkinDesigner
             imgs.Images.Add("container", SkinDesigner.Properties.Resources.container);
             imgs.Images.Add("control", SkinDesigner.Properties.Resources.control);
             imgs.Images.Add("text", SkinDesigner.Properties.Resources.text);
+            imgs.Images.Add("togglebutton", SkinDesigner.Properties.Resources.togglebutton);
+            imgs.Images.Add("trackbar", SkinDesigner.Properties.Resources.trackbar);
+            imgs.Images.Add("picturebox", SkinDesigner.Properties.Resources.picturebox);
+            imgs.Images.Add("listview", SkinDesigner.Properties.Resources.listview);
+
             listView1.SmallImageList = imgs;
+
             foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
             {
                 PlayerControls.PlayerControl.SemanticTypeMeta info = PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(c);
@@ -65,6 +71,14 @@ namespace SkinDesigner
                     item.ImageKey = "container";
                 else if (typeof(PlayerControls.Label).IsAssignableFrom(info.InstanceType))
                     item.ImageKey = "text";
+                else if (typeof(PlayerControls.ToggleButton).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "togglebutton";
+                else if (typeof(PlayerControls.TrackBar).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "trackbar";
+                else if (typeof(PlayerControls.PictureBox).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "picturebox";
+                else if (typeof(PlayerControls.ListView).IsAssignableFrom(info.InstanceType))
+                    item.ImageKey = "listview";
 
                 listView1.Items.Add(item);
             }

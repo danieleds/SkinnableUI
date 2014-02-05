@@ -46,8 +46,8 @@ namespace PlayerUI.PlayerControls
             [SemanticTypeMeta("Artist", typeof(PlayerControls.Label))] Artist,
             [SemanticTypeMeta("Album", typeof(PlayerControls.Label))] Album,
             [SemanticTypeMeta("Year", typeof(PlayerControls.Label))] Year,
-            [SemanticTypeMeta("Album Art", typeof(PlayerControls.PictureBox))] AlbumArt,
             [SemanticTypeMeta("Free Text", typeof(PlayerControls.Label))] FreeText,
+            [SemanticTypeMeta("Album Art", typeof(PlayerControls.PictureBox))] AlbumArt,
             [SemanticTypeMeta("Playlist", typeof(PlayerControls.ListView))] Playlist
         }
 
