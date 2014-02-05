@@ -18,13 +18,22 @@ namespace PlayerUI.PlayerControls
         }
 
         private Image image;
+        [DefaultValue(null)]
         public Image Image { get { return image; } set { image = value; this.Invalidate(); } }
+
+        private Image defaultImage;
+        [DefaultValue(null)]
+        public Image DefaultImage { get { return defaultImage; } set { defaultImage = value; this.Invalidate(); } }
 
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             if (image != null)
             {
                 g.DrawImage(image, new RectangleF(0, 0, this.Size.Width, this.Size.Height));
+            }
+            else if(defaultImage != null)
+            {
+                g.DrawImage(defaultImage, new RectangleF(0, 0, this.Size.Width, this.Size.Height));
             }
             
             if (this.ParentView != null && this.ParentView.DesignSkinMode)
@@ -40,6 +49,7 @@ namespace PlayerUI.PlayerControls
         {
             var node = base.GetXmlElement(document, resources);
             SerializationHelper.SetImage(this.image, "image", resources, node);
+            SerializationHelper.SetImage(this.defaultImage, "defaultImage", resources, node);
 
             return node;
         }
@@ -48,6 +58,7 @@ namespace PlayerUI.PlayerControls
         {
             base.FromXmlElement(element, resources);
             SerializationHelper.LoadBitmapFromResources(element, "image", resources, s => this.Image = s);
+            SerializationHelper.LoadBitmapFromResources(element, "defaultImage", resources, s => this.DefaultImage = s);
         }
 
     }
