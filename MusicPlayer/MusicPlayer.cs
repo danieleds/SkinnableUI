@@ -143,36 +143,6 @@ namespace Player
             }
         }
 
-        private void MusicPlayer_Load(object sender, EventArgs e)
-        {
-            OpenFileDialog fd = new OpenFileDialog { Filter = "Skin file|*.skn" };
-            if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                playerView1.LoadSkin(fd.FileName);
-                this.ClientSize = playerView1.Size;
-                playerView1.Width -= 1;
-                playerView1.Width += 1;
-                playerView1.Dock = DockStyle.Fill;
-                AttachEvents();
-
-                playlist.ForEach(item => item.Items.Clear());
-
-                LoadSong(null, null);
-                
-                tmr.Start();
-
-                this.WindowState = FormWindowState.Normal;
-                this.TopMost = true;
-                this.Focus();
-                this.BringToFront();
-                this.TopMost = false;
-            }
-            else
-            {
-                this.Close();
-            }
-        }
-
         List<T> GetControls<T>(PlayerControls.PlayerControl.SemanticType type) where T : PlayerControls.PlayerControl
         {
             var tmp = from ctl in controls[type]
@@ -409,6 +379,38 @@ namespace Player
                     components.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private void MusicPlayer_Shown(object sender, EventArgs e)
+        {
+            OpenFileDialog fd = new OpenFileDialog { Filter = "Skin file|*.skn" };
+            if (fd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                this.SuspendLayout();
+                playerView1.Visible = false;
+
+                this.Controls.Remove(this.panelLoadSkin);
+
+                playerView1.LoadSkin(fd.FileName);
+                this.ClientSize = playerView1.Size;
+                playerView1.Width -= 1;
+                playerView1.Width += 1;
+                playerView1.Dock = DockStyle.Fill;
+                AttachEvents();
+
+                playlist.ForEach(item => item.Items.Clear());
+
+                LoadSong(null, null);
+
+                tmr.Start();
+
+                playerView1.Visible = true;
+                this.ResumeLayout();
+            }
+            else
+            {
+                this.Close();
+            }
         }
     }
 }
