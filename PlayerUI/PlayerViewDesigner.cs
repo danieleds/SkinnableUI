@@ -79,6 +79,11 @@ namespace PlayerUI
         /// <param name="controls"></param>
         public void SelectMultiple(Collection<PlayerControl> controls)
         {
+            // Se i controlli coincidono con quelli già selezionati è inutile perdere tempo
+            if ((controls == null && this.selectedControls.Count == 0)
+                || (controls != null && selectedControls.SequenceEqual(controls)))
+                return;
+
             // Rimuove i vecchi handler
             foreach (var ctl in this.selectedControls)
             {
