@@ -88,6 +88,7 @@ namespace PlayerUI.PlayerControls
         public bool EnterLeave9PAnimation { get; set; }
 
         private bool checked_;
+        [Category("Behavior")]
         public bool Checked
         {
             get { return checked_; }

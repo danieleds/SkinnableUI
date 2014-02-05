@@ -102,7 +102,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private int minimum = 0;
-        [DefaultValue(0)]
+        [DefaultValue(0), Category("Behavior")]
         public int Minimum
         {
             get { return minimum; }
@@ -117,7 +117,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private int maximum = 100;
-        [DefaultValue(100)]
+        [DefaultValue(100), Category("Behavior")]
         public int Maximum
         {
             get { return maximum; }
@@ -132,7 +132,7 @@ namespace PlayerUI.PlayerControls
         }
 
         private int value = 0;
-        [DefaultValue(0)]
+        [DefaultValue(0), Category("Behavior")]
         public int Value
         {
             get { return value; }

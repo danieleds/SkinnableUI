@@ -214,9 +214,11 @@ namespace PlayerUI.PlayerControls
         }
 
         private ObservableCollection<ListViewRow> items = new ObservableCollection<ListViewRow>();
+        [Category("Behavior")]
         public ObservableCollection<ListViewRow> Items { get { return items; } }
 
         private ObservableCollection<ListViewColumn> columns = new ObservableCollection<ListViewColumn>();
+        [Category("Behavior")]
         public ObservableCollection<ListViewColumn> Columns { get { return columns; } }
 
         protected override void OnPaint(System.Drawing.Graphics g)

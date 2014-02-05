@@ -216,9 +216,10 @@ namespace PlayerUI.PlayerControls
             }
         }
 
+        [Category("Behavior")]
         public int TabIndex { get; set; }
 
-        [DefaultValue(true)]
+        [DefaultValue(true), Category("Behavior")]
         public bool TabStop { get; set; }
 
         private SemanticType semantic;
