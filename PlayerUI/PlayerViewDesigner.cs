@@ -468,6 +468,17 @@ namespace PlayerUI
                     // Istanziamo un nuovo oggetto del tipo draggato, e lo aggiungiamo al playerView
                     PlayerControls.PlayerControl c = (PlayerControls.PlayerControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
 
+                    // Inizializiamo qualche proprietà per i controlli standard
+                    if (c is PlayerControls.Button)
+                        ((PlayerControls.Button)c).Text = info.Title;
+                    else if (c is PlayerControls.ToggleButton)
+                    {
+                        ((PlayerControls.ToggleButton)c).Text = info.Title;
+                        ((PlayerControls.ToggleButton)c).CheckedText = info.Title;
+                    }
+                    else if (c is PlayerControls.Label)
+                        ((PlayerControls.Label)c).Text = info.Title;
+
                     dropInfo.Item3.Controls.AddFirst(c);
                     var location = this.PointToClient(new Point(e.X, e.Y));
                     // Non posizioniamo sotto al mouse le coordinate (0,0) del controllo: lo spostiamo un pochino in alto e a sinistra.

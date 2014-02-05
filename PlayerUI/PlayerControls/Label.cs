@@ -14,11 +14,10 @@ namespace PlayerUI.PlayerControls
         public Label(SemanticType c) : base(c)
         {
             this.Size = new SizeF(75, 20);
-            this.Text = GetPlayerControlInstanceInfo(c).Title;
             this.TabStop = false;
         }
 
-        private string text;
+        private string text = "";
         public string Text { get { return text; } set { text = value; this.Invalidate(); } }
 
         private ContentAlignment textAlign = ContentAlignment.MiddleLeft;
