@@ -221,6 +221,11 @@ namespace PlayerUI.PlayerControls
         [Category("Behavior")]
         public ObservableCollection<ListViewColumn> Columns { get { return columns; } }
 
+        public override bool IsInside(PointF p)
+        {
+            return this.IsInside(p, false);
+        }
+
         protected override void OnPaint(System.Drawing.Graphics g)
         {
             //var contentBox = new RectangleF(0, 0, this.Size.Width, this.Size.Height);

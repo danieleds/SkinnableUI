@@ -398,10 +398,15 @@ namespace PlayerUI.PlayerControls
         // Lavora nelle coordinate del controllo
         public virtual bool IsInside(PointF p)
         {
+            return this.IsInside(p, true);
+        }
+
+        protected bool IsInside(PointF p, bool skipTransparent)
+        {
             bool inRectangle = new RectangleF(new PointF(), this.size).Contains(p);
-            if (inRectangle)
+            if (inRectangle && skipTransparent)
             {
-                // Esclude le parti trasparenti (invece le accetta se siamo in modalità design)
+                // Esclude le parti trasparenti (invece le accetta sempre se siamo in modalità design)
                 if (!this.ParentView.DesignSkinMode)
                 {
                     int x = (int)Math.Round(p.X, 0, MidpointRounding.AwayFromZero);
