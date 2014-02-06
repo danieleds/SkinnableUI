@@ -630,6 +630,18 @@ namespace PlayerUI
             if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
         }
 
+        public void DeleteSelectedControls()
+        {
+            foreach (var ctl in selectedControls)
+            {
+                if (ctl != this.ContainerControl)
+                    ctl.Parent = null;
+            }
+
+            this.Select(null);
+            if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
+        }
+
         protected override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
@@ -700,6 +712,8 @@ namespace PlayerUI
                         PlayerControl ctl = hitInfo.Item3;
                         if (ModifierKeys == Keys.Control)
                             this.ToggleSelection(ctl);
+                        else if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                            this.AddToSelection(ctl);
                         else
                             this.Select(ctl);
 
@@ -709,6 +723,8 @@ namespace PlayerUI
                     {
                         if (ModifierKeys == Keys.Control)
                             this.ToggleSelection(this.containerControl);
+                        else if (e.Button == System.Windows.Forms.MouseButtons.Right)
+                            this.AddToSelection(this.containerControl);
                         else
                             this.Select(this.containerControl);
                     }
@@ -933,14 +949,7 @@ namespace PlayerUI
 
             if (e.KeyData == Keys.Delete)
             {
-                foreach (var ctl in selectedControls)
-                {
-                    if (ctl != this.ContainerControl)
-                        ctl.Parent = null;
-                }
-
-                this.Select(null);
-                if (DesignerControlsTreeChanged != null) DesignerControlsTreeChanged(this, new EventArgs());
+                DeleteSelectedControls();
             }
             else if (e.KeyData == Keys.Down)
             {

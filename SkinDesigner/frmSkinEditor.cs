@@ -396,5 +396,10 @@ namespace SkinDesigner
                 e.Cancel = true;
         }
 
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            playerView.DeleteSelectedControls();
+        }
+
     }
 }
