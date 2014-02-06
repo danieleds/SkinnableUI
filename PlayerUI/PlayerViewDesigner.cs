@@ -62,6 +62,9 @@ namespace PlayerUI
         public delegate void DesignerControlsTreeChangedEventHandler(object sender, EventArgs e);
         public event DesignerControlsTreeChangedEventHandler DesignerControlsTreeChanged;
 
+        //public delegate void ContextMenuRequestedEventHandler(object sender, EventArgs e);
+        //public event ContextMenuRequestedEventHandler ContextMenuRequested;
+
         public PlayerViewDesigner()
         {
             selectionResizeHandles = new Dictionary<PlayerControl, MetaControls.MetaResizeHandles>();
@@ -631,40 +634,46 @@ namespace PlayerUI
         {
             base.OnMouseDown(e);
 
-            // Gestione handle di spostamento Container
-            foreach (var ctl in selectedControls)
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                if (ctl != this.containerControl)
+                // Gestione handle di spostamento Container
+                foreach (var ctl in selectedControls)
                 {
-                    var rect = dragContainerHandles[ctl].GetHandleRectangle();
-                    if (rect.Contains(e.Location))
+                    if (ctl != this.containerControl)
                     {
-                        var absLoc = ctl.GetAbsoluteLocation();
+                        var rect = dragContainerHandles[ctl].GetHandleRectangle();
+                        if (rect.Contains(e.Location))
+                        {
+                            var absLoc = ctl.GetAbsoluteLocation();
 
-                        this.dragStarting = true;
-                        this.dragStartPosition = e.Location;
-                        this.draggingOffset.X = e.X - absLoc.X;
-                        this.draggingOffset.Y = e.Y - absLoc.Y;
-                        break;
+                            this.dragStarting = true;
+                            this.dragStartPosition = e.Location;
+                            this.draggingOffset.X = e.X - absLoc.X;
+                            this.draggingOffset.Y = e.Y - absLoc.Y;
+                            break;
+                        }
                     }
                 }
             }
 
-            // Gestione resize handle (se non sta partendo il drag)
-            if (!dragStarting)
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                foreach (var ctl in selectedControls)
+                // Gestione resize handle (se non sta partendo il drag)
+                if (!dragStarting)
                 {
-                    var resizeHandles = selectionResizeHandles[ctl];
-                    Direction resizeDir = resizeHandles.WhatResizeHandle(e.Location);
-                    if (resizeDir != Direction.None)
+                    foreach (var ctl in selectedControls)
                     {
-                        if (ctl != this.containerControl ||
-                            ((resizeDir & Direction.Left) != Direction.Left // containerControl non può ridimensionarsi a sx
-                            && (resizeDir & Direction.Up) != Direction.Up)) // containerControl non può ridimensionarsi in alto
+                        var resizeHandles = selectionResizeHandles[ctl];
+                        Direction resizeDir = resizeHandles.WhatResizeHandle(e.Location);
+                        if (resizeDir != Direction.None)
                         {
-                            this.resizingControl = ctl;
-                            this.resizingDirection = resizeDir;
+                            if (ctl != this.containerControl ||
+                                ((resizeDir & Direction.Left) != Direction.Left // containerControl non può ridimensionarsi a sx
+                                && (resizeDir & Direction.Up) != Direction.Up)) // containerControl non può ridimensionarsi in alto
+                            {
+                                this.resizingControl = ctl;
+                                this.resizingDirection = resizeDir;
+                            }
                         }
                     }
                 }
@@ -678,7 +687,7 @@ namespace PlayerUI
                     // E' stata cliccata la decorazione della finestra
                     if (ModifierKeys == Keys.Control)
                         this.ToggleSelection(this.containerControl);
-                    else 
+                    else
                         this.Select(this.containerControl);
                 }
                 else
@@ -704,25 +713,28 @@ namespace PlayerUI
                             this.Select(this.containerControl);
                     }
 
-                    if (hitInfo != null && hitInfo.Item3 is PlayerControls.Container)
+                    if (e.Button == System.Windows.Forms.MouseButtons.Left)
                     {
-                        // Fa partire la selezione col mouse
-                        this.selectingWithMouse = true;
-                        this.selectionStartPoint = e.Location;
-                        this.selectionEndPoint = e.Location;
-                        this.selectionStartContainer = (Container)hitInfo.Item3;
-                        this.Invalidate();
-                    }
-                    else
-                    {
-                        if (startDrag)
+                        if (hitInfo != null && hitInfo.Item3 is PlayerControls.Container)
                         {
-                            StartingControlDrag(e.Location, e.X - hitInfo.Item1, e.Y - hitInfo.Item2);
+                            // Fa partire la selezione col mouse
+                            this.selectingWithMouse = true;
+                            this.selectionStartPoint = e.Location;
+                            this.selectionEndPoint = e.Location;
+                            this.selectionStartContainer = (Container)hitInfo.Item3;
+                            this.Invalidate();
+                        }
+                        else
+                        {
+                            if (startDrag)
+                            {
+                                StartingControlDrag(e.Location, e.X - hitInfo.Item1, e.Y - hitInfo.Item2);
+                            }
                         }
                     }
-                    
                 }
             }
+            
         }
 
         private void StartingControlDrag(Point startPos, float offsetX, float offsetY)
@@ -911,6 +923,8 @@ namespace PlayerUI
 
                 if (SelectedObjectPropertyChanged != null) SelectedObjectPropertyChanged(this, new EventArgs());
             }
+
+            //if (ContextMenuRequested != null) ContextMenuRequested(this, new EventArgs());
         }
 
         protected override void OnKeyDown(KeyEventArgs e)

@@ -108,7 +108,8 @@ namespace SkinDesigner
                 DebugShowPaints = btnShowPaints.Checked,
                 DebugShowRuler = rulerToolStripButton.Checked,
                 DrawWindowDecorations = true,
-                Location = new Point(0, 0)
+                Location = new Point(0, 0),
+                ContextMenuStrip = designerContextMenu,
             };
 
             panelSurface.Controls.Add(playerView);
@@ -387,6 +388,12 @@ namespace SkinDesigner
                 if (ctl.Parent != null)
                     ctl.Parent.SendToBack(ctl);
             }
+        }
+
+        private void designerContextMenu_Opening(object sender, CancelEventArgs e)
+        {
+            if (playerView.SelectedControls.Count == 0)
+                e.Cancel = true;
         }
 
     }
