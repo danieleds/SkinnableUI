@@ -3,7 +3,7 @@ SkinnableUI
 
 Library for skinnable user interfaces in Windows Forms.
 
-This library lets you create totally skinnable Windows Forms applications. Please note that the toolkit is not complete yet, and some of the functionalities that your app requires might not be available. Nonetheless, extending the library is a very easy task.
+This library lets you create totally skinnable Windows Forms applications. Please note that the toolkit is not complete yet, and some of the functionalities that your app requires might not be available. Nonetheless, extending the library should be a very easy task.
 
 Example
 -------
