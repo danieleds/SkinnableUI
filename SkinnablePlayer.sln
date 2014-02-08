@@ -5,7 +5,7 @@ VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinDesigner", "SkinDesigner\SkinDesigner.csproj", "{A1564AAC-C9BC-4A2D-8856-2E12F79939DB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinnableUI", "PlayerUI\SkinnableUI.csproj", "{D96D4FD6-C8F0-4481-86E3-93DE761E77F8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinnableUI", "SkinnableUI\SkinnableUI.csproj", "{D96D4FD6-C8F0-4481-86E3-93DE761E77F8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicPlayer", "MusicPlayer\MusicPlayer.csproj", "{29A9B304-63B3-4542-84E0-3735332CB71B}"
 EndProject
