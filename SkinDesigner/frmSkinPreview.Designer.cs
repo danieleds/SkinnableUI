@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.playerView1 = new PlayerUI.PlayerView();
+            this.playerView1 = new SkinnableUI.SkinnableView();
             this.SuspendLayout();
             // 
             // playerView1
@@ -55,6 +55,6 @@
 
         #endregion
 
-        private PlayerUI.PlayerView playerView1;
+        private SkinnableUI.SkinnableView playerView1;
     }
 }

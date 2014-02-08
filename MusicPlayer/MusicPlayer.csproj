@@ -89,9 +89,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PlayerUI\PlayerUI.csproj">
+    <ProjectReference Include="..\PlayerUI\SkinnableUI.csproj">
       <Project>{d96d4fd6-c8f0-4481-86e3-93de761e77f8}</Project>
-      <Name>PlayerUI</Name>
+      <Name>SkinnableUI</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

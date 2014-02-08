@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public class Label : PlayerControl
+    public class Label : SkinnableControl
     {
 
         public Label(SemanticType c) : base(c)

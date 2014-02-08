@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public class PictureBox : PlayerControl
+    public class PictureBox : SkinnableControl
     {
 
         public PictureBox(SemanticType c) : base(c)

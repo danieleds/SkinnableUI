@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using ExtensionMethods;
 
-namespace PlayerUI.MetaControls
+namespace SkinnableUI.MetaControls
 {
     class MetaResizeHandles : MetaControl
     {
         // dimensioni resize handles
         const int HANDLE_W = 6, HANDLE_H = 6;
 
-        PlayerControls.PlayerControl control;
+        SkinnableControls.SkinnableControl control;
         bool isWindow;
 
         struct ControlRectangleInfo
@@ -23,12 +23,12 @@ namespace PlayerUI.MetaControls
         }
         ControlRectangleInfo selectedControlOldRect = new ControlRectangleInfo();
 
-        public MetaResizeHandles(PlayerView parentView) : base(parentView)
+        public MetaResizeHandles(SkinnableView parentView) : base(parentView)
         {
 
         }
 
-        public PlayerControls.PlayerControl Control
+        public SkinnableControls.SkinnableControl Control
         {
             get { return this.control; }
             set { this.control = value; }
@@ -143,7 +143,7 @@ namespace PlayerUI.MetaControls
         /// <returns></returns>
         public Direction WhatResizeHandle(PointF p)
         {
-            PlayerControls.PlayerControl c = this.control;
+            SkinnableControls.SkinnableControl c = this.control;
             if (c == null) return Direction.None;
 
             Direction dir = Direction.None;

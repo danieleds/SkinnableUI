@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 
-namespace PlayerUI
+namespace SkinnableUI
 {
     public class NinePatch
     {

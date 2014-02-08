@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
     public class FlowLayoutContainer : Container
     {
@@ -26,27 +26,27 @@ namespace PlayerUI.PlayerControls
             this.SetLayout();
         }
 
-        void FlowLayoutContainer_ControlAdded(object sender, PlayerControlEventArgs e)
+        void FlowLayoutContainer_ControlAdded(object sender, SkinnableControlEventArgs e)
         {
             SnapTopToGrid(e.Control);
             AttachUpdateEvents(e.Control);
             this.SetLayout();
         }
 
-        void FlowLayoutContainer_ControlRemoved(object sender, PlayerControlEventArgs e)
+        void FlowLayoutContainer_ControlRemoved(object sender, SkinnableControlEventArgs e)
         {
             DetachUpdateEvents(e.Control);
             this.SetLayout();
         }
 
-        void AttachUpdateEvents(PlayerControl c)
+        void AttachUpdateEvents(SkinnableControl c)
         {
             DetachUpdateEvents(c);
             c.Resize += Control_Resize;
             c.Move += Control_Move;
         }
 
-        void DetachUpdateEvents(PlayerControl c)
+        void DetachUpdateEvents(SkinnableControl c)
         {
             c.Resize -= Control_Resize;
             c.Move -= Control_Move;
@@ -54,15 +54,15 @@ namespace PlayerUI.PlayerControls
 
         void Control_Move(object sender, EventArgs e)
         {
-            SnapTopToGrid((PlayerControl)sender);
+            SnapTopToGrid((SkinnableControl)sender);
 
             this.SetLayout();
         }
 
-        void SnapTopToGrid(PlayerControl control)
+        void SnapTopToGrid(SkinnableControl control)
         {
             float minHeightDifference = float.MaxValue;
-            PlayerControl minHeightDifferenceCtl = control;
+            SkinnableControl minHeightDifferenceCtl = control;
 
             foreach (var ctl in this.controls)
             {

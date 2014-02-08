@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public class TrackBar : PlayerControl
+    public class TrackBar : SkinnableControl
     {
 
         public TrackBar(SemanticType c) : base(c)

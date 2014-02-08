@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using PlayerUI.PlayerControls;
+using SkinnableUI.SkinnableControls;
 using System.Drawing;
 
-namespace PlayerUI
+namespace SkinnableUI
 {
     /* Contenitore di oggetti PlayerControl */
-    public class PlayerView : UserControl
+    public class SkinnableView : UserControl
     {
         /// <summary>
         /// L'ordine degli elementi in questa lista rappresenta il loro z-order.
@@ -30,12 +30,12 @@ namespace PlayerUI
         /// </summary>
         public bool DockContainerControl { get; set; }
 
-        public PlayerView()
+        public SkinnableView()
         {
             BlockInputEvents = false;
             DockContainerControl = true;
 
-            var cc = new Container(PlayerControl.SemanticType.Container);
+            var cc = new Container(SkinnableControl.SemanticType.Container);
             cc.Top = 0;
             cc.Left = 0;
             cc.Anchor = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Top;
@@ -43,7 +43,7 @@ namespace PlayerUI
             this.SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.OptimizedDoubleBuffer, true);
         }
 
-        public bool DesignSkinMode { get { return this is PlayerViewDesigner; } }
+        public bool DesignSkinMode { get { return this is SkinnableViewDesigner; } }
 
         public Container ContainerControl
         {
@@ -96,7 +96,7 @@ namespace PlayerUI
 
             var theme = doc.GetElementsByTagName("Theme")[0];
 
-            this.ContainerControl = new Container(PlayerControl.SemanticType.Container);
+            this.ContainerControl = new Container(SkinnableControl.SemanticType.Container);
             this.ContainerControl.ParentView = this;
             this.ContainerControl.FromXmlElement((System.Xml.XmlElement)theme.ChildNodes[0], resources);
 

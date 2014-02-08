@@ -9,7 +9,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Drawing;
 
-namespace PlayerUI
+namespace SkinnableUI
 {
     class SerializationHelper
     {
@@ -32,14 +32,14 @@ namespace PlayerUI
             }
         }
 
-        public static PlayerControls.PlayerControl GetPlayerControlInstanceFromTagName(String tag)
+        public static SkinnableControls.SkinnableControl GetPlayerControlInstanceFromTagName(String tag)
         {
-            var ctype = (PlayerControls.PlayerControl.SemanticType)Enum.Parse(typeof(PlayerControls.PlayerControl.SemanticType), tag);
+            var ctype = (SkinnableControls.SkinnableControl.SemanticType)Enum.Parse(typeof(SkinnableControls.SkinnableControl.SemanticType), tag);
 
-            PlayerControls.PlayerControl.SemanticTypeMeta info =
-                    PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(ctype);
+            SkinnableControls.SkinnableControl.SemanticTypeMeta info =
+                    SkinnableControls.SkinnableControl.GetPlayerControlInstanceInfo(ctype);
 
-            PlayerControls.PlayerControl c = (PlayerControls.PlayerControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
+            SkinnableControls.SkinnableControl c = (SkinnableControls.SkinnableControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
             return c;
         }
 

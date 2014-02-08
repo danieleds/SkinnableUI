@@ -8,35 +8,35 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Collections.ObjectModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public partial class Container : PlayerControl
+    public partial class Container : SkinnableControl
     {
         /// <summary>
         /// L'ordine degli elementi in questa lista rappresenta il loro z-order.
         /// Gli elementi in testa sono sopra rispetto a quelli in coda.
         /// </summary>
-        protected readonly PlayerControlCollection controls;
+        protected readonly SkinnableControlCollection controls;
 
-        public delegate void ControlAddedEventHandler(object sender, PlayerControlEventArgs e);
+        public delegate void ControlAddedEventHandler(object sender, SkinnableControlEventArgs e);
         public event ControlAddedEventHandler ControlAdded;
 
-        public delegate void ControlRemovedEventHandler(object sender, PlayerControlEventArgs e);
+        public delegate void ControlRemovedEventHandler(object sender, SkinnableControlEventArgs e);
         public event ControlRemovedEventHandler ControlRemoved;
 
-        PlayerControl lastEnterControl = null;
+        SkinnableControl lastEnterControl = null;
         private SizeF sizeBeforeResize;
 
         long lastDoubleClickMsec = 0;
         Point lastDoubleClickPt = new Point();
-        PlayerControl lastDoubleClickCtl = null;
+        SkinnableControl lastDoubleClickCtl = null;
         bool suppressNextClick = false;
 
-        public partial class PlayerControlCollection : Collection<PlayerControl> { }
+        public partial class SkinnableControlCollection : Collection<SkinnableControl> { }
 
         public Container(SemanticType c) : base(c)
         {
-            this.controls = new PlayerControlCollection(this);
+            this.controls = new SkinnableControlCollection(this);
 
             this.Size = new SizeF(150, 100);
             this.TabStop = false;
@@ -58,33 +58,33 @@ namespace PlayerUI.PlayerControls
         }
         
         [Browsable(false)]
-        public PlayerControlCollection Controls { get { return this.controls; } }
+        public SkinnableControlCollection Controls { get { return this.controls; } }
 
-        protected void OnControlAdded(PlayerControl c)
+        protected void OnControlAdded(SkinnableControl c)
         {
             c.ParentView = this.ParentView;
             c.Parent = this;
             this.Invalidate();
-            if (ControlAdded != null) ControlAdded(this, new PlayerControlEventArgs(c));
+            if (ControlAdded != null) ControlAdded(this, new SkinnableControlEventArgs(c));
         }
 
-        protected virtual void OnControlRemoved(PlayerControl c)
+        protected virtual void OnControlRemoved(SkinnableControl c)
         {
             c.ParentView = null;
             c.Parent = null;
             if (lastEnterControl == c)
                 lastEnterControl = null;
             this.Invalidate();
-            if (ControlAdded != null) ControlRemoved(this, new PlayerControlEventArgs(c));
+            if (ControlAdded != null) ControlRemoved(this, new SkinnableControlEventArgs(c));
         }
 
-        public virtual void BringToFront(PlayerControl c)
+        public virtual void BringToFront(SkinnableControl c)
         {
             controls.MoveToFirst(c);
             c.Invalidate();
         }
 
-        public virtual void SendToBack(PlayerControl c)
+        public virtual void SendToBack(SkinnableControl c)
         {
             controls.MoveToLast(c);
             c.Invalidate();
@@ -110,7 +110,7 @@ namespace PlayerUI.PlayerControls
         /// </summary>
         /// <param name="control">Controllo di cui correggere dimensione e posizione</param>
         /// <param name="oldContainerSize">La vecchia dimensione di this</param>
-        private void AdjustSizeWithAnchor(PlayerControl control, SizeF oldContainerSize)
+        private void AdjustSizeWithAnchor(SkinnableControl control, SizeF oldContainerSize)
         {
             var a_left = (control.Anchor & AnchorStyles.Left) == AnchorStyles.Left;
             var a_right = (control.Anchor & AnchorStyles.Right) == AnchorStyles.Right;
@@ -151,10 +151,10 @@ namespace PlayerUI.PlayerControls
             }
         }
 
-        public List<PlayerControl> GetAllChildren()
+        public List<SkinnableControl> GetAllChildren()
         {
-            var result = new List<PlayerControl>();
-            var containers = new Stack<PlayerControls.Container>();
+            var result = new List<SkinnableControl>();
+            var containers = new Stack<SkinnableControls.Container>();
             result.Add(this);
             containers.Push(this);
 
@@ -164,9 +164,9 @@ namespace PlayerUI.PlayerControls
                 foreach (var ctrl in parent.Controls)
                 {
                     result.Add(ctrl);
-                    if (ctrl is PlayerControls.Container)
+                    if (ctrl is SkinnableControls.Container)
                     {
-                        containers.Push((PlayerControls.Container)ctrl);
+                        containers.Push((SkinnableControls.Container)ctrl);
                     }
                 }
             }
@@ -181,9 +181,9 @@ namespace PlayerUI.PlayerControls
         /// <param name="ctl">Controllo da cui iniziare la ricerca. Se è null, parte dall'inizio (o dalla fine).</param>
         /// <param name="forward"></param>
         /// <returns></returns>
-        public PlayerControl GetNextControl(PlayerControl ctl, bool forward)
+        public SkinnableControl GetNextControl(SkinnableControl ctl, bool forward)
         {
-            IEnumerable<PlayerControl> ctrls;
+            IEnumerable<SkinnableControl> ctrls;
 
             if (ctl == null)
             {
@@ -227,14 +227,14 @@ namespace PlayerUI.PlayerControls
             return ctrls.FirstOrDefault(c => c != ctl);
         }
 
-        private PlayerControl focusedControl;
+        private SkinnableControl focusedControl;
         [Browsable(false)]
-        public PlayerControl FocusedControl
+        public SkinnableControl FocusedControl
         {
             get { return this.focusedControl; }
             set
             {
-                PlayerControl oldFocusCtl = this.focusedControl;
+                SkinnableControl oldFocusCtl = this.focusedControl;
                 this.focusedControl = value;
                 if(oldFocusCtl != null) oldFocusCtl.Invalidate();
                 if(value != null) value.Invalidate();
@@ -257,7 +257,7 @@ namespace PlayerUI.PlayerControls
                     return true;
             }
 
-            PlayerControl ctl = GetNextControl(this.FocusedControl, forward);
+            SkinnableControl ctl = GetNextControl(this.FocusedControl, forward);
             if(this.focusedControl != null) this.focusedControl.IsShowingFocusRect = false;
             if(ctl != null) ctl.IsShowingFocusRect = showTabFocus;
             this.FocusedControl = ctl;
@@ -289,7 +289,7 @@ namespace PlayerUI.PlayerControls
             if (backgroundNormal9P != null)
                 backgroundNormal9P.Paint(g, this.Size);
             
-            foreach (PlayerControl c in this.controls.Reverse())
+            foreach (SkinnableControl c in this.controls.Reverse())
             {
                 c.InternalPaint(g);
             }
@@ -305,7 +305,7 @@ namespace PlayerUI.PlayerControls
         public override void OnMouseDown(MouseEventArgs e)
         {
             base.OnMouseDown(e);
-            PlayerControl ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
+            SkinnableControl ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
             if (ctl != null)
             {
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
@@ -340,7 +340,7 @@ namespace PlayerUI.PlayerControls
 
             //var someoneHit = false;
 
-            PlayerControl ctl = controls.FirstOrDefault(c => c.Capture);
+            SkinnableControl ctl = controls.FirstOrDefault(c => c.Capture);
             if (ctl == null)
             {
                 ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
@@ -380,7 +380,7 @@ namespace PlayerUI.PlayerControls
         {
             base.OnMouseUp(e);
 
-            PlayerControl ctl = controls.FirstOrDefault(c => c.Capture);
+            SkinnableControl ctl = controls.FirstOrDefault(c => c.Capture);
             if(ctl == null) ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
 
             if (ctl == null)
@@ -412,7 +412,7 @@ namespace PlayerUI.PlayerControls
                     // Il capturing è finito e ora ci ritroviamo su un controllo diverso... lanciamo
                     // gli eventi MouseLeave / MouseEnter
                     ctl.OnMouseLeave(new EventArgs());
-                    PlayerControl enterctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
+                    SkinnableControl enterctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
                     if (enterctl != null)
                     {
                         lastEnterControl = enterctl;
@@ -439,7 +439,7 @@ namespace PlayerUI.PlayerControls
         {
             base.OnMouseWheel(e);
 
-            PlayerControl ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
+            SkinnableControl ctl = controls.FirstOrDefault(c => c.HitTest(e.Location));
             if (ctl != null)
             {
                 MouseEventArgs e2 = new MouseEventArgs(e.Button, e.Clicks, e.X - (int)Math.Round(ctl.Left, 0, MidpointRounding.ToEven), e.Y - (int)Math.Round(ctl.Top, 0, MidpointRounding.ToEven), e.Delta);
@@ -493,7 +493,7 @@ namespace PlayerUI.PlayerControls
 
             foreach (System.Xml.XmlElement child in element.ChildNodes)
             {
-                PlayerControls.PlayerControl c = SerializationHelper.GetPlayerControlInstanceFromTagName(child.Name);
+                SkinnableControls.SkinnableControl c = SerializationHelper.GetPlayerControlInstanceFromTagName(child.Name);
                 this.OnControlAdded(c);
                 c.FromXmlElement(child, resources);
             }

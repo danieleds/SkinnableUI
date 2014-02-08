@@ -7,7 +7,7 @@
     <ProjectGuid>{D96D4FD6-C8F0-4481-86E3-93DE761E77F8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PlayerUI</RootNamespace>
+    <RootNamespace>SkinnableUI</RootNamespace>
     <AssemblyName>PlayerUI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -50,22 +50,22 @@
     <Compile Include="MetaControls\MetaMeasure.cs" />
     <Compile Include="MetaControls\MetaResizeHandles.cs" />
     <Compile Include="NinePatch.cs" />
-    <Compile Include="PlayerControls\Button.cs" />
-    <Compile Include="PlayerControls\FlowLayoutContainer.cs" />
-    <Compile Include="PlayerControls\Container.cs" />
-    <Compile Include="PlayerControls\PictureBox.cs" />
-    <Compile Include="PlayerControls\Label.cs" />
-    <Compile Include="PlayerControls\ListView.cs" />
-    <Compile Include="PlayerControls\PlayerControl.cs" />
-    <Compile Include="PlayerControls\PlayerControlCollection.cs" />
-    <Compile Include="PlayerControls\PlayerControlEventArgs.cs" />
-    <Compile Include="PlayerControls\ToggleButton.cs" />
-    <Compile Include="PlayerControls\TrackBar.cs" />
+    <Compile Include="SkinnableControls\Button.cs" />
+    <Compile Include="SkinnableControls\FlowLayoutContainer.cs" />
+    <Compile Include="SkinnableControls\Container.cs" />
+    <Compile Include="SkinnableControls\PictureBox.cs" />
+    <Compile Include="SkinnableControls\Label.cs" />
+    <Compile Include="SkinnableControls\ListView.cs" />
+    <Compile Include="SkinnableControls\SkinnableControl.cs" />
+    <Compile Include="SkinnableControls\SkinnableControlCollection.cs" />
+    <Compile Include="SkinnableControls\SkinnableControlEventArgs.cs" />
+    <Compile Include="SkinnableControls\ToggleButton.cs" />
+    <Compile Include="SkinnableControls\TrackBar.cs" />
     <Compile Include="PlayerExtensionMethods.cs" />
-    <Compile Include="PlayerView.cs">
+    <Compile Include="SkinnableView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PlayerViewDesigner.cs">
+    <Compile Include="SkinnableViewDesigner.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

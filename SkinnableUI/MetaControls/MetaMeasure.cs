@@ -6,18 +6,18 @@ using System.Text;
 using System.Threading.Tasks;
 using ExtensionMethods;
 
-namespace PlayerUI.MetaControls
+namespace SkinnableUI.MetaControls
 {
     class MetaMeasure : MetaControl
     {
-        PlayerControls.PlayerControl control;
+        SkinnableControls.SkinnableControl control;
 
-        public MetaMeasure(PlayerView parentView) : base(parentView)
+        public MetaMeasure(SkinnableView parentView) : base(parentView)
         {
            
         }
 
-        public PlayerControls.PlayerControl Control
+        public SkinnableControls.SkinnableControl Control
         {
             get { return this.control; }
             set { this.control = value; }

@@ -7,9 +7,9 @@ using System.Drawing;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public class ListView : PlayerControl
+    public class ListView : SkinnableControl
     {
         float curViewPosition = 0;
         ListViewRow curOverRow = null;

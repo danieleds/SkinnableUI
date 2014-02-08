@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public class Button : PlayerControl
+    public class Button : SkinnableControl
     {
 
         public Button(SemanticType c) : base(c)

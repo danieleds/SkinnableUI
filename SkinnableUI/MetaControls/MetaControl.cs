@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlayerUI.MetaControls
+namespace SkinnableUI.MetaControls
 {
     abstract class MetaControl
     {
-        protected readonly PlayerView parentView;
+        protected readonly SkinnableView parentView;
 
-        public MetaControl(PlayerView parentView)
+        public MetaControl(SkinnableView parentView)
         {
             this.parentView = parentView;
         }

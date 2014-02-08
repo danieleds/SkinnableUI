@@ -5,11 +5,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public partial class Container : PlayerControl
+    public partial class Container : SkinnableControl
     {
-        public partial class PlayerControlCollection : Collection<PlayerControl>
+        public partial class SkinnableControlCollection : Collection<SkinnableControl>
         {
             private int ignoreInsertEvent = 0;
             private int ignoreRemoveEvent = 0;
@@ -17,18 +17,18 @@ namespace PlayerUI.PlayerControls
             private Container owner = null;
             public Container Owner { get { return this.owner; } }
 
-            public PlayerControlCollection(Container owner)
+            public SkinnableControlCollection(Container owner)
                 : base()
             {
                 this.owner = owner;
             }
 
-            public void AddFirst(PlayerControl item)
+            public void AddFirst(SkinnableControl item)
             {
                 this.Insert(0, item);
             }
 
-            public void MoveToFirst(PlayerControl item)
+            public void MoveToFirst(SkinnableControl item)
             {
                 this.ignoreRemoveEvent++;
                 this.Remove(item);
@@ -36,7 +36,7 @@ namespace PlayerUI.PlayerControls
                 this.Insert(0, item);
             }
 
-            public void MoveToLast(PlayerControl item)
+            public void MoveToLast(SkinnableControl item)
             {
                 this.ignoreRemoveEvent++;
                 this.Remove(item);
@@ -44,7 +44,7 @@ namespace PlayerUI.PlayerControls
                 this.Add(item);
             }
 
-            protected override void InsertItem(int index, PlayerControl item)
+            protected override void InsertItem(int index, SkinnableControl item)
             {
                 base.InsertItem(index, item);
 
@@ -56,7 +56,7 @@ namespace PlayerUI.PlayerControls
 
             protected override void RemoveItem(int index)
             {
-                PlayerControl c = this[index];
+                SkinnableControl c = this[index];
                 base.RemoveItem(index);
 
                 if (ignoreRemoveEvent == 0)
@@ -71,7 +71,7 @@ namespace PlayerUI.PlayerControls
                 //base.ClearItems();
             }
 
-            protected override void SetItem(int index, PlayerControl item)
+            protected override void SetItem(int index, SkinnableControl item)
             {
                 throw new NotSupportedException();
                 //base.SetItem(index, item);

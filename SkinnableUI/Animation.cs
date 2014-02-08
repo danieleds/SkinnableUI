@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PlayerUI
+namespace SkinnableUI
 {
     public class Animation : IDisposable
     {

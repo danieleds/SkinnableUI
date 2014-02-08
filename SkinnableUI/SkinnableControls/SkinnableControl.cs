@@ -9,9 +9,9 @@ using System.ComponentModel;
 using System.Xml;
 using ExtensionMethods;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public abstract class PlayerControl
+    public abstract class SkinnableControl
     {
         public bool IsShowingFocusRect = false;
 
@@ -30,28 +30,28 @@ namespace PlayerUI.PlayerControls
 
         public enum SemanticType
         {
-            [SemanticTypeMeta("Container", typeof(PlayerControls.Container))] Container,
-            [SemanticTypeMeta("Flow Layout Container", typeof(PlayerControls.FlowLayoutContainer))] FlowLayoutContainer,
-            [SemanticTypeMeta("Play", typeof(PlayerControls.Button))] Play,
-            [SemanticTypeMeta("Pause", typeof(PlayerControls.Button))] Pause,
-            [SemanticTypeMeta("Play/Pause", typeof(PlayerControls.ToggleButton))] PlayPause,
-            [SemanticTypeMeta("Stop", typeof(PlayerControls.Button))] Stop,
-            [SemanticTypeMeta("Back", typeof(PlayerControls.Button))] Back,
-            [SemanticTypeMeta("Forward", typeof(PlayerControls.Button))] Forward,
-            [SemanticTypeMeta("Song Progress", typeof(PlayerControls.TrackBar))] SongProgress,
-            [SemanticTypeMeta("Current Time", typeof(PlayerControls.Label))] CurrentTime,
-            [SemanticTypeMeta("Total Time", typeof(PlayerControls.Label))] TotalTime,
-            [SemanticTypeMeta("Remaining Time", typeof(PlayerControls.Label))] RemainingTime,
-            [SemanticTypeMeta("Title", typeof(PlayerControls.Label))] Title,
-            [SemanticTypeMeta("Artist", typeof(PlayerControls.Label))] Artist,
-            [SemanticTypeMeta("Album", typeof(PlayerControls.Label))] Album,
-            [SemanticTypeMeta("Year", typeof(PlayerControls.Label))] Year,
-            [SemanticTypeMeta("Free Text", typeof(PlayerControls.Label))] FreeText,
-            [SemanticTypeMeta("Album Art", typeof(PlayerControls.PictureBox))] AlbumArt,
-            [SemanticTypeMeta("Playlist", typeof(PlayerControls.ListView))] Playlist
+            [SemanticTypeMeta("Container", typeof(SkinnableControls.Container))] Container,
+            [SemanticTypeMeta("Flow Layout Container", typeof(SkinnableControls.FlowLayoutContainer))] FlowLayoutContainer,
+            [SemanticTypeMeta("Play", typeof(SkinnableControls.Button))] Play,
+            [SemanticTypeMeta("Pause", typeof(SkinnableControls.Button))] Pause,
+            [SemanticTypeMeta("Play/Pause", typeof(SkinnableControls.ToggleButton))] PlayPause,
+            [SemanticTypeMeta("Stop", typeof(SkinnableControls.Button))] Stop,
+            [SemanticTypeMeta("Back", typeof(SkinnableControls.Button))] Back,
+            [SemanticTypeMeta("Forward", typeof(SkinnableControls.Button))] Forward,
+            [SemanticTypeMeta("Song Progress", typeof(SkinnableControls.TrackBar))] SongProgress,
+            [SemanticTypeMeta("Current Time", typeof(SkinnableControls.Label))] CurrentTime,
+            [SemanticTypeMeta("Total Time", typeof(SkinnableControls.Label))] TotalTime,
+            [SemanticTypeMeta("Remaining Time", typeof(SkinnableControls.Label))] RemainingTime,
+            [SemanticTypeMeta("Title", typeof(SkinnableControls.Label))] Title,
+            [SemanticTypeMeta("Artist", typeof(SkinnableControls.Label))] Artist,
+            [SemanticTypeMeta("Album", typeof(SkinnableControls.Label))] Album,
+            [SemanticTypeMeta("Year", typeof(SkinnableControls.Label))] Year,
+            [SemanticTypeMeta("Free Text", typeof(SkinnableControls.Label))] FreeText,
+            [SemanticTypeMeta("Album Art", typeof(SkinnableControls.PictureBox))] AlbumArt,
+            [SemanticTypeMeta("Playlist", typeof(SkinnableControls.ListView))] Playlist
         }
 
-        protected PlayerControl(SemanticType controlType)
+        protected SkinnableControl(SemanticType controlType)
         {
             this.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             this.Semantic = controlType;
@@ -110,7 +110,7 @@ namespace PlayerUI.PlayerControls
         public event KeyDownEventHandler KeyDown;
 
         [Browsable(false)]
-        public PlayerView ParentView { get; set; }
+        public SkinnableView ParentView { get; set; }
 
         private Container parent = null;
         [Browsable(false)]

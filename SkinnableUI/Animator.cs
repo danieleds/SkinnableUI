@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace PlayerUI
+namespace SkinnableUI
 {
     public class Animator : IDisposable
     {

@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NAudio;
 using NAudio.Wave;
-using PlayerControls = PlayerUI.PlayerControls;
+using PlayerControls = SkinnableUI.SkinnableControls;
 
 namespace Player
 {
     public partial class MusicPlayer : Form
     {
-        Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>> controls = new Dictionary<PlayerControls.PlayerControl.SemanticType, List<PlayerControls.PlayerControl>>();
+        Dictionary<PlayerControls.SkinnableControl.SemanticType, List<PlayerControls.SkinnableControl>> controls = new Dictionary<PlayerControls.SkinnableControl.SemanticType, List<PlayerControls.SkinnableControl>>();
         List<PlayerControls.Button> play = new List<PlayerControls.Button>();
         List<PlayerControls.Button> pause = new List<PlayerControls.Button>();
         List<PlayerControls.ToggleButton> playPause = new List<PlayerControls.ToggleButton>();
@@ -48,8 +48,8 @@ namespace Player
         {
             InitializeComponent();
 
-            foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
-                this.controls.Add(c, new List<PlayerControls.PlayerControl>());
+            foreach (PlayerControls.SkinnableControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.SkinnableControl.SemanticType)))
+                this.controls.Add(c, new List<PlayerControls.SkinnableControl>());
             
             waveOut = new WaveOut();
             waveOut.PlaybackStopped += waveOut_PlaybackStopped;
@@ -143,7 +143,7 @@ namespace Player
             }
         }
 
-        List<T> GetControls<T>(PlayerControls.PlayerControl.SemanticType type) where T : PlayerControls.PlayerControl
+        List<T> GetControls<T>(PlayerControls.SkinnableControl.SemanticType type) where T : PlayerControls.SkinnableControl
         {
             var tmp = from ctl in controls[type]
                       where ctl is T
@@ -173,22 +173,22 @@ namespace Player
                 this.controls[item.Semantic].Add(item);
             }
 
-            play = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Play);
-            pause = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Pause);
-            playPause = GetControls<PlayerControls.ToggleButton>(PlayerControls.PlayerControl.SemanticType.PlayPause);
-            stop = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Stop);
-            back = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Back);
-            forward = GetControls<PlayerControls.Button>(PlayerControls.PlayerControl.SemanticType.Forward);
-            songProgress = GetControls<PlayerControls.TrackBar>(PlayerControls.PlayerControl.SemanticType.SongProgress);
-            title = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Title);
-            artist = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Artist);
-            album = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Album);
-            year = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.Year);
-            currentTime = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.CurrentTime);
-            totalTime = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.TotalTime);
-            remainingTime = GetControls<PlayerControls.Label>(PlayerControls.PlayerControl.SemanticType.RemainingTime);
-            playlist = GetControls<PlayerControls.ListView>(PlayerControls.PlayerControl.SemanticType.Playlist);
-            albumArt = GetControls<PlayerControls.PictureBox>(PlayerControls.PlayerControl.SemanticType.AlbumArt);
+            play = GetControls<PlayerControls.Button>(PlayerControls.SkinnableControl.SemanticType.Play);
+            pause = GetControls<PlayerControls.Button>(PlayerControls.SkinnableControl.SemanticType.Pause);
+            playPause = GetControls<PlayerControls.ToggleButton>(PlayerControls.SkinnableControl.SemanticType.PlayPause);
+            stop = GetControls<PlayerControls.Button>(PlayerControls.SkinnableControl.SemanticType.Stop);
+            back = GetControls<PlayerControls.Button>(PlayerControls.SkinnableControl.SemanticType.Back);
+            forward = GetControls<PlayerControls.Button>(PlayerControls.SkinnableControl.SemanticType.Forward);
+            songProgress = GetControls<PlayerControls.TrackBar>(PlayerControls.SkinnableControl.SemanticType.SongProgress);
+            title = GetControls<PlayerControls.Label>(PlayerControls.SkinnableControl.SemanticType.Title);
+            artist = GetControls<PlayerControls.Label>(PlayerControls.SkinnableControl.SemanticType.Artist);
+            album = GetControls<PlayerControls.Label>(PlayerControls.SkinnableControl.SemanticType.Album);
+            year = GetControls<PlayerControls.Label>(PlayerControls.SkinnableControl.SemanticType.Year);
+            currentTime = GetControls<PlayerControls.Label>(PlayerControls.SkinnableControl.SemanticType.CurrentTime);
+            totalTime = GetControls<PlayerControls.Label>(PlayerControls.SkinnableControl.SemanticType.TotalTime);
+            remainingTime = GetControls<PlayerControls.Label>(PlayerControls.SkinnableControl.SemanticType.RemainingTime);
+            playlist = GetControls<PlayerControls.ListView>(PlayerControls.SkinnableControl.SemanticType.Playlist);
+            albumArt = GetControls<PlayerControls.PictureBox>(PlayerControls.SkinnableControl.SemanticType.AlbumArt);
 
             play.ForEach(c => c.Click += play_Click);
             pause.ForEach(c => c.Click += pause_Click);

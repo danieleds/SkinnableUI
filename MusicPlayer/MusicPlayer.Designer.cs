@@ -1,4 +1,4 @@
-﻿using PlayerUI;
+﻿using SkinnableUI;
 namespace Player
 {
     partial class MusicPlayer
@@ -16,7 +16,7 @@ namespace Player
         /// </summary>
         private void InitializeComponent()
         {
-            this.playerView1 = new PlayerUI.PlayerView();
+            this.playerView1 = new SkinnableUI.SkinnableView();
             this.panelLoadSkin = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.panelLoadSkin.SuspendLayout();
@@ -73,7 +73,7 @@ namespace Player
 
         #endregion
 
-        private PlayerView playerView1;
+        private SkinnableView playerView1;
         private System.Windows.Forms.Panel panelLoadSkin;
         private System.Windows.Forms.Label label1;
     }

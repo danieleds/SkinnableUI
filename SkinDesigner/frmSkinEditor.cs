@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using PlayerControls = PlayerUI.PlayerControls;
+using PlayerControls = SkinnableUI.SkinnableControls;
 
 namespace SkinDesigner
 {
     public partial class frmSkinEditor : Form
     {
-        PlayerUI.PlayerViewDesigner playerView;
+        SkinnableUI.SkinnableViewDesigner playerView;
 
         string _filename;
         string filename
@@ -60,9 +60,9 @@ namespace SkinDesigner
 
             listView1.SmallImageList = imgs;
 
-            foreach (PlayerControls.PlayerControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.PlayerControl.SemanticType)))
+            foreach (PlayerControls.SkinnableControl.SemanticType c in Enum.GetValues(typeof(PlayerControls.SkinnableControl.SemanticType)))
             {
-                PlayerControls.PlayerControl.SemanticTypeMeta info = PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(c);
+                PlayerControls.SkinnableControl.SemanticTypeMeta info = PlayerControls.SkinnableControl.GetPlayerControlInstanceInfo(c);
                 ListViewItem item = new ListViewItem(info.Title);
                 item.Tag = c; // Salviamo il tipo del controllo (Play, Pause) nel campo Tag (ci servirà per il drag n' drop)
 
@@ -100,7 +100,7 @@ namespace SkinDesigner
             cmbControls.Items.Clear();
             propertyGrid1.SelectedObject = null;
 
-            playerView = new PlayerUI.PlayerViewDesigner() {
+            playerView = new SkinnableUI.SkinnableViewDesigner() {
                 AllowDrop = true,
                 DesignerBackColor = Color.FromArgb(240, 240, 240),
                 BlockInputEvents = true,
@@ -227,7 +227,7 @@ namespace SkinDesigner
         void listView1_ItemDrag(object sender, ItemDragEventArgs e)
         {
             ListViewItem item = (ListViewItem)e.Item;
-            PlayerControls.PlayerControl.SemanticType ctype = (PlayerControls.PlayerControl.SemanticType)item.Tag;
+            PlayerControls.SkinnableControl.SemanticType ctype = (PlayerControls.SkinnableControl.SemanticType)item.Tag;
             listView1.DoDragDrop(ctype, DragDropEffects.Copy);
         }
 
@@ -246,7 +246,7 @@ namespace SkinDesigner
 
         private void cmbControls_SelectedIndexChanged(object sender, EventArgs e)
         {
-            playerView.Select((PlayerControls.PlayerControl)cmbControls.SelectedItem);
+            playerView.Select((PlayerControls.SkinnableControl)cmbControls.SelectedItem);
         }
 
         private void openToolStripButton_Click(object sender, EventArgs e)

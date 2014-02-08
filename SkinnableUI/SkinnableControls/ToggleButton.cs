@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using System.Drawing;
 using System.ComponentModel;
 
-namespace PlayerUI.PlayerControls
+namespace SkinnableUI.SkinnableControls
 {
-    public class ToggleButton : PlayerControl
+    public class ToggleButton : SkinnableControl
     {
 
         public ToggleButton(SemanticType c) : base(c)

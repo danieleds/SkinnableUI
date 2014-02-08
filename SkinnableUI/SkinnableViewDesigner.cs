@@ -2,14 +2,14 @@
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using PlayerUI.PlayerControls;
+using SkinnableUI.SkinnableControls;
 using ExtensionMethods;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace PlayerUI
+namespace SkinnableUI
 {
-    public class PlayerViewDesigner : PlayerView
+    public class SkinnableViewDesigner : SkinnableView
     {
         public bool DebugShowPaints { get; set; }
         public bool DebugShowRuler { get; set; }
@@ -24,7 +24,7 @@ namespace PlayerUI
         const string CLIPBOARD_PLAYERCONTROLS_FORMAT = "skinPlayerControl";
 
         // Variabili helper per il dragging in design mode
-        PlayerControl draggingControl;
+        SkinnableControl draggingControl;
         Point draggingPosition; // Posizione corrente del puntatore (coordinate relative a this). Ha senso solo se draggingControl != null.
         Bitmap draggingBitmap; // Ha senso solo se draggingControl != null.
         bool showDraggingBitmap; // Se false, la bitmap che viene mostrata durante il dragging viene nascosta. Ha senso solo se draggingControl != null.
@@ -33,13 +33,13 @@ namespace PlayerUI
         bool dragStarting = false; // true se è stato fatto un MouseDown e stiamo aspettando un delta di spostamento sufficiente.
         Point dragStartPosition; // Posizione del MouseDown iniziale (coordinate relative alla finestra). Ha senso solo se draggingControl != null.
 
-        PlayerControl resizingControl; // Il controllo che stiamo ridimensionando.
+        SkinnableControl resizingControl; // Il controllo che stiamo ridimensionando.
         Direction resizingDirection; // La direzione in cui stiamo ridimensionando resizingControl. Ha senso solo se resizingControl != null.
 
-        Collection<PlayerControl> selectedControls = new Collection<PlayerControl>();
-        Dictionary<PlayerControl, MetaControls.MetaResizeHandles> selectionResizeHandles;
-        Dictionary<PlayerControl, MetaControls.MetaMeasure> resizeMeasure;
-        Dictionary<PlayerControl, MetaControls.MetaDragContainer> dragContainerHandles;
+        Collection<SkinnableControl> selectedControls = new Collection<SkinnableControl>();
+        Dictionary<SkinnableControl, MetaControls.MetaResizeHandles> selectionResizeHandles;
+        Dictionary<SkinnableControl, MetaControls.MetaMeasure> resizeMeasure;
+        Dictionary<SkinnableControl, MetaControls.MetaDragContainer> dragContainerHandles;
 
         bool selectingWithMouse = false; // Indica se stiamo trascinando il mouse per tracciare un rettangolo di selezione.
         PointF selectionStartPoint, selectionEndPoint; // Punti di inizio e fine del rettangolo di selezione. Hanno senso solo se selectingWithMouse != null.
@@ -65,11 +65,11 @@ namespace PlayerUI
         //public delegate void ContextMenuRequestedEventHandler(object sender, EventArgs e);
         //public event ContextMenuRequestedEventHandler ContextMenuRequested;
 
-        public PlayerViewDesigner()
+        public SkinnableViewDesigner()
         {
-            selectionResizeHandles = new Dictionary<PlayerControl, MetaControls.MetaResizeHandles>();
-            resizeMeasure = new Dictionary<PlayerControl, MetaControls.MetaMeasure>();
-            dragContainerHandles = new Dictionary<PlayerControl, MetaControls.MetaDragContainer>();
+            selectionResizeHandles = new Dictionary<SkinnableControl, MetaControls.MetaResizeHandles>();
+            resizeMeasure = new Dictionary<SkinnableControl, MetaControls.MetaMeasure>();
+            dragContainerHandles = new Dictionary<SkinnableControl, MetaControls.MetaDragContainer>();
 
             DebugShowPaints = false;
             DebugShowRuler = false;
@@ -80,7 +80,7 @@ namespace PlayerUI
         ///  Seleziona i controlli specificati.
         /// </summary>
         /// <param name="controls"></param>
-        public void SelectMultiple(Collection<PlayerControl> controls)
+        public void SelectMultiple(Collection<SkinnableControl> controls)
         {
             // Se i controlli coincidono con quelli già selezionati è inutile perdere tempo
             if ((controls == null && this.selectedControls.Count == 0)
@@ -96,7 +96,7 @@ namespace PlayerUI
                 selectedControl_MetaControlsNeedRepaint(ctl, new EventArgs());
             }
 
-            selectedControls = new Collection<PlayerControl>();
+            selectedControls = new Collection<SkinnableControl>();
 
             if (controls != null)
             {
@@ -114,7 +114,7 @@ namespace PlayerUI
             if (SelectionChanged != null) SelectionChanged(this, new EventArgs());
         }
 
-        public void Select(PlayerControl control)
+        public void Select(SkinnableControl control)
         {
             if (control == null)
             {
@@ -122,20 +122,20 @@ namespace PlayerUI
             }
             else
             {
-                var tmp = new Collection<PlayerControl>();
+                var tmp = new Collection<SkinnableControl>();
                 tmp.Add(control);
                 SelectMultiple(tmp);
             }
         }
 
-        public void AddToSelection(PlayerControl control)
+        public void AddToSelection(SkinnableControl control)
         {
             var tmp = this.selectedControls.ToList();
             tmp.Add(control);
-            SelectMultiple(new Collection<PlayerControl>(tmp));
+            SelectMultiple(new Collection<SkinnableControl>(tmp));
         }
 
-        public bool ToggleSelection(PlayerControl control)
+        public bool ToggleSelection(SkinnableControl control)
         {
             if (this.selectedControls.Contains(control))
             {
@@ -149,17 +149,17 @@ namespace PlayerUI
             }
         }
 
-        public void Deselect(PlayerControl control)
+        public void Deselect(SkinnableControl control)
         {
             if (control != null)
             {
                 var tmp = this.selectedControls.ToList();
                 tmp.Remove(control);
-                SelectMultiple(new Collection<PlayerControl>(tmp));
+                SelectMultiple(new Collection<SkinnableControl>(tmp));
             }
         }
 
-        public ReadOnlyCollection<PlayerControl> SelectedControls
+        public ReadOnlyCollection<SkinnableControl> SelectedControls
         {
             get { return this.selectedControls.ToList().AsReadOnly(); }
         }
@@ -181,10 +181,10 @@ namespace PlayerUI
         /// <param name="e"></param>
         void selectedControl_MetaControlsNeedRepaint(object sender, EventArgs e)
         {
-            if (!(sender is PlayerControl))
+            if (!(sender is SkinnableControl))
                 return;
 
-            PlayerControl control = (PlayerControl)sender;
+            SkinnableControl control = (SkinnableControl)sender;
 
             
             // Handles per il resize
@@ -229,13 +229,13 @@ namespace PlayerUI
             }
         }
 
-        private Tuple<float, float, PlayerControl> RecursiveHitTest(int x, int y)
+        private Tuple<float, float, SkinnableControl> RecursiveHitTest(int x, int y)
         {
             if (this.containerControl.HitTest(new PointF(x, y)) == false)
                 return null;
 
             var closerContainer = this.containerControl;
-            PlayerControl finalHit = this.containerControl;
+            SkinnableControl finalHit = this.containerControl;
             float absX = closerContainer.Left, absY = closerContainer.Top;
             do
             {
@@ -248,9 +248,9 @@ namespace PlayerUI
                     absX += tmp.Left;
                     absY += tmp.Top;
                     finalHit = tmp;
-                    if (tmp is PlayerControls.Container)
+                    if (tmp is SkinnableControls.Container)
                     {
-                        closerContainer = (PlayerControls.Container)tmp;
+                        closerContainer = (SkinnableControls.Container)tmp;
                     }
                     else
                     {
@@ -260,7 +260,7 @@ namespace PlayerUI
                 }
             } while (true);
 
-            return new Tuple<float, float, PlayerControl>(absX, absY, finalHit);
+            return new Tuple<float, float, SkinnableControl>(absX, absY, finalHit);
         }
 
         public override void SetSkin(Skin skin)
@@ -287,7 +287,7 @@ namespace PlayerUI
                 selectionResizeHandles[ctl].Paint(e.Graphics);
 
                 // Disegna l'handle per spostare i Container
-                if (ctl is PlayerControls.Container)
+                if (ctl is SkinnableControls.Container)
                     dragContainerHandles[ctl].Paint(e.Graphics);
             }
 
@@ -369,7 +369,7 @@ namespace PlayerUI
         {
             base.OnDragOver(e);
 
-            if (e.Data.GetDataPresent(typeof(PlayerControls.PlayerControl.SemanticType)))
+            if (e.Data.GetDataPresent(typeof(SkinnableControls.SkinnableControl.SemanticType)))
             {
                 var info = ControlDropAllowed(this.PointToClient(new Point(e.X, e.Y)), true);
                 if (info != null)
@@ -382,7 +382,7 @@ namespace PlayerUI
                     e.Effect = DragDropEffects.None;
                 }
             }
-            else if (e.Data.GetDataPresent(typeof(PlayerControl).FullName))
+            else if (e.Data.GetDataPresent(typeof(SkinnableControl).FullName))
             {
                 if (draggingControl != null)
                 {
@@ -458,34 +458,34 @@ namespace PlayerUI
         {
             base.OnDragDrop(e);
 
-            if (e.Data.GetDataPresent(typeof(PlayerControls.PlayerControl.SemanticType)))
+            if (e.Data.GetDataPresent(typeof(SkinnableControls.SkinnableControl.SemanticType)))
             {
                 // Drop dalla toolbox
 
                 var dropInfo = ControlDropAllowed(this.PointToClient(new Point(e.X, e.Y)), true);
                 if (dropInfo != null)
                 {
-                    PlayerControls.PlayerControl.SemanticType ctype =
-                        (PlayerControls.PlayerControl.SemanticType)e.Data.GetData(typeof(PlayerControls.PlayerControl.SemanticType));
+                    SkinnableControls.SkinnableControl.SemanticType ctype =
+                        (SkinnableControls.SkinnableControl.SemanticType)e.Data.GetData(typeof(SkinnableControls.SkinnableControl.SemanticType));
 
-                    PlayerControls.PlayerControl.SemanticTypeMeta info =
-                        PlayerControls.PlayerControl.GetPlayerControlInstanceInfo(ctype);
+                    SkinnableControls.SkinnableControl.SemanticTypeMeta info =
+                        SkinnableControls.SkinnableControl.GetPlayerControlInstanceInfo(ctype);
 
                     e.Effect = DragDropEffects.Copy;
 
                     // Istanziamo un nuovo oggetto del tipo draggato, e lo aggiungiamo al playerView
-                    PlayerControls.PlayerControl c = (PlayerControls.PlayerControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
+                    SkinnableControls.SkinnableControl c = (SkinnableControls.SkinnableControl)Activator.CreateInstance(info.InstanceType, new object[] { ctype });
 
                     // Inizializiamo qualche proprietà per i controlli standard
-                    if (c is PlayerControls.Button)
-                        ((PlayerControls.Button)c).Text = info.Title;
-                    else if (c is PlayerControls.ToggleButton)
+                    if (c is SkinnableControls.Button)
+                        ((SkinnableControls.Button)c).Text = info.Title;
+                    else if (c is SkinnableControls.ToggleButton)
                     {
-                        ((PlayerControls.ToggleButton)c).Text = info.Title;
-                        ((PlayerControls.ToggleButton)c).CheckedText = info.Title;
+                        ((SkinnableControls.ToggleButton)c).Text = info.Title;
+                        ((SkinnableControls.ToggleButton)c).CheckedText = info.Title;
                     }
-                    else if (c is PlayerControls.Label)
-                        ((PlayerControls.Label)c).Text = info.Title;
+                    else if (c is SkinnableControls.Label)
+                        ((SkinnableControls.Label)c).Text = info.Title;
 
                     dropInfo.Item3.Controls.AddFirst(c);
                     var location = this.PointToClient(new Point(e.X, e.Y));
@@ -499,10 +499,10 @@ namespace PlayerUI
                     this.Focus();
                 }
             }
-            else if (e.Data.GetDataPresent(typeof(PlayerControl).FullName))
+            else if (e.Data.GetDataPresent(typeof(SkinnableControl).FullName))
             {
                 // Drop di un controllo
-                var c = (PlayerControl)e.Data.GetData(typeof(PlayerControl).FullName);
+                var c = (SkinnableControl)e.Data.GetData(typeof(SkinnableControl).FullName);
 
                 if (c.Parent != null)
                 {
@@ -539,7 +539,7 @@ namespace PlayerUI
         /// <param name="point">Posizione (relativa a this)</param>
         /// <param name="onlyInContainers">True se si vuole evitare il drop su un controllo che non è un Container</param>
         /// <returns></returns>
-        private Tuple<float, float, PlayerControls.Container> ControlDropAllowed(Point point, bool onlyInContainers)
+        private Tuple<float, float, SkinnableControls.Container> ControlDropAllowed(Point point, bool onlyInContainers)
         {
             var location = point;
             var hitInfo = RecursiveHitTest(location.X, location.Y);
@@ -547,17 +547,17 @@ namespace PlayerUI
             {
                 if (hitInfo.Item3 is Container)
                 {
-                    return new Tuple<float, float, PlayerControls.Container>(hitInfo.Item1, hitInfo.Item2, (Container)hitInfo.Item3);
+                    return new Tuple<float, float, SkinnableControls.Container>(hitInfo.Item1, hitInfo.Item2, (Container)hitInfo.Item3);
                 }
                 else if (onlyInContainers == false)
                 {
-                    return new Tuple<float, float, PlayerControls.Container>(hitInfo.Item1 - hitInfo.Item3.Left, hitInfo.Item2 - hitInfo.Item3.Top, hitInfo.Item3.Parent);
+                    return new Tuple<float, float, SkinnableControls.Container>(hitInfo.Item1 - hitInfo.Item3.Left, hitInfo.Item2 - hitInfo.Item3.Top, hitInfo.Item3.Parent);
                 }
             }
             return null;
         }
 
-        private DataObject GetDataObject(string format, ReadOnlyCollection<PlayerControl> controls)
+        private DataObject GetDataObject(string format, ReadOnlyCollection<SkinnableControl> controls)
         {
             var box = new Collection<SerializationHelper.SerializablePlayerControl>();
             foreach (var c in controls)
@@ -581,7 +581,7 @@ namespace PlayerUI
             return (Clipboard.ContainsData(CLIPBOARD_PLAYERCONTROLS_FORMAT));
         }
 
-        public void CopyControlsToClipboard(ReadOnlyCollection<PlayerControl> c)
+        public void CopyControlsToClipboard(ReadOnlyCollection<SkinnableControl> c)
         {
             Clipboard.SetDataObject(GetDataObject(CLIPBOARD_PLAYERCONTROLS_FORMAT, c), true);
         }
@@ -594,7 +594,7 @@ namespace PlayerUI
                 if (box == null)
                     return;
 
-                var added = new Collection<PlayerControl>();
+                var added = new Collection<SkinnableControl>();
                 foreach (var clipb in box)
                 {
                     System.Xml.XmlDocument copy_xml = clipb.XmlDocument;
@@ -602,7 +602,7 @@ namespace PlayerUI
 
                     var controlElement = copy_xml.ChildNodes[1];
 
-                    PlayerControls.PlayerControl copy = SerializationHelper.GetPlayerControlInstanceFromTagName(controlElement.Name);
+                    SkinnableControls.SkinnableControl copy = SerializationHelper.GetPlayerControlInstanceFromTagName(controlElement.Name);
                     copy.ParentView = this;
                     copy.FromXmlElement((System.Xml.XmlElement)controlElement, copy_resources);
 
@@ -617,7 +617,7 @@ namespace PlayerUI
             }
         }
 
-        public void CutControlsToClipboard(ReadOnlyCollection<PlayerControl> c)
+        public void CutControlsToClipboard(ReadOnlyCollection<SkinnableControl> c)
         {
             CopyControlsToClipboard(c);
 
@@ -709,7 +709,7 @@ namespace PlayerUI
                     var hitInfo = RecursiveHitTest(e.X, e.Y);
                     if (hitInfo != null && hitInfo.Item3 != this.containerControl)
                     {
-                        PlayerControl ctl = hitInfo.Item3;
+                        SkinnableControl ctl = hitInfo.Item3;
                         if (ModifierKeys == Keys.Control)
                             this.ToggleSelection(ctl);
                         else if (e.Button == System.Windows.Forms.MouseButtons.Right)
@@ -731,7 +731,7 @@ namespace PlayerUI
 
                     if (e.Button == System.Windows.Forms.MouseButtons.Left)
                     {
-                        if (hitInfo != null && hitInfo.Item3 is PlayerControls.Container)
+                        if (hitInfo != null && hitInfo.Item3 is SkinnableControls.Container)
                         {
                             // Fa partire la selezione col mouse
                             this.selectingWithMouse = true;
@@ -783,7 +783,7 @@ namespace PlayerUI
                     this.Select(null);
 
                     //this.DoDragDrop(GetDataObject(CLIPBOARD_PLAYERCONTROL_FORMAT, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
-                    this.DoDragDrop(new DataObject(typeof(PlayerControl).FullName, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
+                    this.DoDragDrop(new DataObject(typeof(SkinnableControl).FullName, this.draggingControl), DragDropEffects.Move | DragDropEffects.Scroll);
 
                 }
             }
