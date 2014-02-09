@@ -12,8 +12,8 @@ Included in this repository, as an example, there is a skinnable music player:
 ![Skin "WMP"](_readme_images/skin2.png)
 ![Skin "Mac"](_readme_images/skin1.png)
 
-Graphical skin designer inclued
--------------------------------
+Graphical skin designer included
+--------------------------------
 
 In this repository you can find a graphical skin designer.
 
