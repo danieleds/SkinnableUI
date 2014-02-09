@@ -11,3 +11,12 @@ Example
 Included in this repository, as an example, there is a skinnable music player:
 ![Skin "WMP"](_readme_images/skin2.png)
 ![Skin "Mac"](_readme_images/skin1.png)
+
+Graphical skin designer inclued
+-------------------------------
+
+In this repository you can find a graphical skin designer.
+
+Note that you can use [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) images to style almost any control.
+
+![Designer](_readme_images/designer.png)
