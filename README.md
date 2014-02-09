@@ -17,6 +17,6 @@ Graphical skin designer included
 
 In this repository you'll find a graphical skin designer too.
 
-Note that you can use [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) images to style almost any control.
+Note that you can use [NinePatch](http://developer.android.com/guide/topics/graphics/2d-graphics.html#nine-patch) images to style almost any control.
 
 ![Designer](_readme_images/designer.png)
