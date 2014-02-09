@@ -15,7 +15,7 @@ Included in this repository, as an example, there is a skinnable music player:
 Graphical skin designer included
 --------------------------------
 
-In this repository you can find a graphical skin designer.
+In this repository you'll find a graphical skin designer too.
 
 Note that you can use [NinePatch](http://developer.android.com/reference/android/graphics/NinePatch.html) images to style almost any control.
 
